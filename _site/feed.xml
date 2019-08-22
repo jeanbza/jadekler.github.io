@@ -1,17 +1,165 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="jadekler.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="jadekler.github.io/" rel="alternate" type="text/html" /><updated>2019-08-21T16:03:31-06:00</updated><id>jadekler.github.io/feed.xml</id><title type="html">Jean de Klerk</title><subtitle>This is my personal website. The views represented here are my own, and do not represent my employer.</subtitle><entry><title type="html">Welcome to Jekyll!</title><link href="jadekler.github.io/jekyll/update/2019/08/21/welcome-to-jekyll.html" rel="alternate" type="text/html" title="Welcome to Jekyll!" /><published>2019-08-21T15:55:23-06:00</published><updated>2019-08-21T15:55:23-06:00</updated><id>jadekler.github.io/jekyll/update/2019/08/21/welcome-to-jekyll</id><content type="html" xml:base="jadekler.github.io/jekyll/update/2019/08/21/welcome-to-jekyll.html">&lt;p&gt;You’ll find this post in your &lt;code class=&quot;highlighter-rouge&quot;&gt;_posts&lt;/code&gt; directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run &lt;code class=&quot;highlighter-rouge&quot;&gt;jekyll serve&lt;/code&gt;, which launches a web server and auto-regenerates your site when a file is updated.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="jadekler.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="jadekler.github.io/" rel="alternate" type="text/html" /><updated>2019-08-21T21:00:49-06:00</updated><id>jadekler.github.io/feed.xml</id><title type="html">Jean de Klerk</title><subtitle>This is my personal website. The views represented here are my own, and do not represent my employer.</subtitle><entry><title type="html">Migrating to Go Modules</title><link href="jadekler.github.io/2019/08/21/migrating-to-go-modules.html" rel="alternate" type="text/html" title="Migrating to Go Modules" /><published>2019-08-21T15:55:23-06:00</published><updated>2019-08-21T15:55:23-06:00</updated><id>jadekler.github.io/2019/08/21/migrating-to-go-modules</id><content type="html" xml:base="jadekler.github.io/2019/08/21/migrating-to-go-modules.html">&lt;p&gt;Posted at &lt;a href=&quot;https://blog.golang.org/migrating-to-go-modules&quot;&gt;blog.golang.org&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">Posted at blog.golang.org.</summary></entry><entry><title type="html">Designing CRUD operations in Go</title><link href="jadekler.github.io/2019/06/08/designing-crud-operations-in-go.html" rel="alternate" type="text/html" title="Designing CRUD operations in Go" /><published>2019-06-08T15:55:23-06:00</published><updated>2019-06-08T15:55:23-06:00</updated><id>jadekler.github.io/2019/06/08/designing-crud-operations-in-go</id><content type="html" xml:base="jadekler.github.io/2019/06/08/designing-crud-operations-in-go.html">&lt;p&gt;This post is intended to provide some insight into the considerations that
+go into adding CRUD operations in a Go client library.&lt;/p&gt;
 
-&lt;p&gt;Jekyll requires blog post files to be named according to the following format:&lt;/p&gt;
+&lt;h2 id=&quot;the-problem-ambiguity&quot;&gt;The Problem: Ambiguity&lt;/h2&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;YEAR-MONTH-DAY-title.MARKUP&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Every time we add a new create or update RPC - &lt;code class=&quot;highlighter-rouge&quot;&gt;CreateFoo&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;UpdateFoo&lt;/code&gt; - that
+takes parameters, we have to ask the questions:&lt;/p&gt;
 
-&lt;p&gt;Where &lt;code class=&quot;highlighter-rouge&quot;&gt;YEAR&lt;/code&gt; is a four-digit number, &lt;code class=&quot;highlighter-rouge&quot;&gt;MONTH&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;DAY&lt;/code&gt; are both two-digit numbers, and &lt;code class=&quot;highlighter-rouge&quot;&gt;MARKUP&lt;/code&gt; is the file extension representing the format used in the file. After that, include the necessary front matter. Take a look at the source for this post to get an idea about how it works.&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Is it possible to perform a delete a parameter when updating Foo?&lt;/li&gt;
+  &lt;li&gt;How should users ignore that parameter when updating Foo?&lt;/li&gt;
+  &lt;li&gt;How should users delete that parameter when updating Foo?&lt;/li&gt;
+&lt;/ul&gt;
 
-&lt;p&gt;Jekyll also offers powerful support for code snippets:&lt;/p&gt;
+&lt;p&gt;Consider the following RPC:&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;print_hi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-  &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Hi, &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;print_hi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'Tom'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;#=&amp;gt; prints 'Hi, Tom' to STDOUT.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;message FooUpdateRequest {
+  google.protobuf.Duration ttl = 1;        // When set to 0, deletes TTL.
+  google.protobuf.Duration expiration = 2; // When set to 0, deletes expiration.
+}
 
-&lt;p&gt;Check out the &lt;a href=&quot;https://jekyllrb.com/docs/home&quot;&gt;Jekyll docs&lt;/a&gt; for more info on how to get the most out of Jekyll. File all bugs/feature requests at &lt;a href=&quot;https://github.com/jekyll/jekyll&quot;&gt;Jekyll’s GitHub repo&lt;/a&gt;. If you have questions, you can ask them on &lt;a href=&quot;https://talk.jekyllrb.com/&quot;&gt;Jekyll Talk&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">You’ll find this post in your _posts directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run jekyll serve, which launches a web server and auto-regenerates your site when a file is updated.</summary></entry></feed>
+service Foo {
+  rpc UpdateFoo(FooUpdateRequest) returns (SomeResponse)
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Building a manual layer wrapper around this might look very similar:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;type FooConfigToUpdate struct {
+  Ttl        time.Duration
+  Expiration time.Duration
+}
+
+func (f *Foo) Update(ctx context.Context, cfg *FooConfigToUpdate) error {
+  // ...
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This seems fairly innocuous, but consider those questions again:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Is it possible to perform a delete a parameter when updating Foo?
+A: Yes, both parameters in the .proto definition mention that 0 is used as a delete.&lt;/li&gt;
+  &lt;li&gt;How should users ignore that parameter when updating Foo?
+A: Set it to time.Duration(0).&lt;/li&gt;
+  &lt;li&gt;How should users delete that parameter when updating Foo?
+A: Uhh… also set it to time.Duration(0)?&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;As you can see, there’s currently no way to distinguish between Delete and
+Ignore. That is, if a user passes:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;f.Update(ctx, &amp;amp;foopkg.FooConfigToUpdate{Expiration: 5 * time.Second})
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;It’s clear that we need to update Expiration to 5s, but what do we do with ttl?
+Its default value is &lt;code class=&quot;highlighter-rouge&quot;&gt;time.Duration(0)&lt;/code&gt; - do we delete it, or ignore it?&lt;/p&gt;
+
+&lt;p&gt;We need a way to get around this. Broadly, there are three options we use in client libraries:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Sentinel values.&lt;/li&gt;
+  &lt;li&gt;Pointers.&lt;/li&gt;
+  &lt;li&gt;Optionals.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;sentinel-values&quot;&gt;Sentinel Values&lt;/h2&gt;
+
+&lt;p&gt;Sentinel values are basically special values that signal to the client library
+to perform special logic. For example, consider:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;var NeverExpire time.Duration = -1 * time.Second
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;No user would ever specify -1s as an expiration value, so the library picks that
+value as its sentinel. Then, any time the library sees -1s, it knows this is the
+special value used to indicate “delete”.&lt;/p&gt;
+
+&lt;p&gt;If the empty value is passed, the library ignores the operation. If the user
+passes the sentinel value, the library performs the delete. A user uses the
+sentinel to delete as such:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;f.Update(ctx, &amp;amp;foopkg.FooConfigToUpdate{Expiration: foopkg.NeverExpire})
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;pointers&quot;&gt;Pointers&lt;/h2&gt;
+
+&lt;p&gt;When using pointers, we automatically resolve ambiguity, because beside the
+empty value we now also have the nil value.&lt;/p&gt;
+
+&lt;p&gt;The nil value is taken as “ignore this” (unspecified), and the empty value is
+taken as “delete this”.&lt;/p&gt;
+
+&lt;p&gt;A user uses the empty value to delete as such:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;f.Update(ctx, &amp;amp;foopkg.FooConfigToUpdate{Expiration: &amp;amp;time.Duration(0)})
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;optionals&quot;&gt;Optionals&lt;/h2&gt;
+
+&lt;p&gt;Optionals are a Java concept. Without involving pointers, they add an
+additional “set or unset” parameter to a value in a similar way that pointers
+are set or nil.&lt;/p&gt;
+
+&lt;p&gt;Unlike Java, however, optionals are not part of the stdlib. In
+&lt;code class=&quot;highlighter-rouge&quot;&gt;cloud.google.com/go&lt;/code&gt;, we’ve created a very light wrapper around &lt;code class=&quot;highlighter-rouge&quot;&gt;interface{}&lt;/code&gt;
+to implement optional types. Since they’re light wrappers around &lt;code class=&quot;highlighter-rouge&quot;&gt;interface{}&lt;/code&gt;,
+values are nil-able.&lt;/p&gt;
+
+&lt;p&gt;Like pointers, the nil value is taken as “ignore this” (unspecified), and the
+empty value is taken as “delete this”.&lt;/p&gt;
+
+&lt;p&gt;A user uses the empty value to delete as such:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;f.Update(ctx, &amp;amp;foopkg.FooConfigToUpdate{Expiration: time.Duration(0)})
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;choosing-the-right-solution&quot;&gt;Choosing The Right Solution&lt;/h2&gt;
+
+&lt;p&gt;There are downsides to each solution:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Sentinels add to the API surface, and reduce the range of values users can
+use. They are not described by the type system, like pointers: users have to
+read docs to find out how to use them. Finally, they may surprise users using
+the reserved value without knowing that they are.&lt;/li&gt;
+  &lt;li&gt;Pointers only work on types - ints, strings, bools, and other primitives
+become quite burdensome to use. Furthermore, pointers can’t be added in a
+backwards-compatible fashion, since they change the signature of a
+parameter/method.&lt;/li&gt;
+  &lt;li&gt;Optionals are untyped (since they’re wrappers around interface{}), and not
+idiomatic Go.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;On the other hand, the advantages to each solution:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Sentinels can be added in a backwards-compatible fashion, since they don’t
+change the signature of a parameter/method.&lt;/li&gt;
+  &lt;li&gt;Pointers are very idiomatic to Go, widely used, and their semantics are
+encoded in the type system, making them very easy and obvious to use.&lt;/li&gt;
+  &lt;li&gt;Optionals can be added (but not removed) in a backwards-compatible fashion,
+since their untyped nature is compatible with an pre-existing inputs supplied
+by the user.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Sentinels should generally be avoided, since we try to minimize API surface
+additions. They are commonly used in “uh oh” moments where we have to go amend
+a stable client’s API surface in which the to-be-fixed portion is already
+released.&lt;/p&gt;
+
+&lt;p&gt;Pointers are generally the preferred choice but fall short on primitive types,
+and aren’t backwards-compatible. Optionals are fairly widely used, too.&lt;/p&gt;
+
+&lt;p&gt;In general, it’s best to investigate the client you’re working on and focus on
+consistency of choice. Ideally, all clients would be consistent with each other, too.&lt;/p&gt;
+
+&lt;h2 id=&quot;a-note-on--experimental&quot;&gt;A Note On // Experimental&lt;/h2&gt;
+
+&lt;p&gt;Note that if a part of the API surface is marked experimental, the above notes
+on backwards compatibility don’t apply. Therefore, if you’re adding to an API
+surface and not sure how it’ll evolve over time, opt to add the
+&lt;code class=&quot;highlighter-rouge&quot;&gt;// Experimental&lt;/code&gt; tag:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// It is EXPERIMENTAL and subject to change or removal without notice.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name></name></author><summary type="html">This post is intended to provide some insight into the considerations that go into adding CRUD operations in a Go client library.</summary></entry><entry><title type="html">Resolving Problems From Modified Module Path</title><link href="jadekler.github.io/2019/04/23/resolving-problems-from-modified-module-path.html" rel="alternate" type="text/html" title="Resolving Problems From Modified Module Path" /><published>2019-04-23T15:55:23-06:00</published><updated>2019-04-23T15:55:23-06:00</updated><id>jadekler.github.io/2019/04/23/resolving-problems-from-modified-module-path</id><content type="html" xml:base="jadekler.github.io/2019/04/23/resolving-problems-from-modified-module-path.html">&lt;p&gt;Posted at &lt;a href=&quot;https://github.com/golang/go/wiki/Resolving-Problems-From-Modified-Module-Path&quot;&gt;github.com/golang/go/wiki&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">Posted at github.com/golang/go/wiki.</summary></entry><entry><title type="html">Multi-Module Repositories</title><link href="jadekler.github.io/2019/02/25/multi-module-repositories.html" rel="alternate" type="text/html" title="Multi-Module Repositories" /><published>2019-02-25T14:55:23-07:00</published><updated>2019-02-25T14:55:23-07:00</updated><id>jadekler.github.io/2019/02/25/multi-module-repositories</id><content type="html" xml:base="jadekler.github.io/2019/02/25/multi-module-repositories.html">&lt;p&gt;Posted at &lt;a href=&quot;https://github.com/golang/go/wiki/Modules#faqs--multi-module-repositories&quot;&gt;github.com/golang/go/wiki&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">Posted at github.com/golang/go/wiki.</summary></entry><entry><title type="html">gRPC on HTTP/2: Engineering a Robust, High Performance Protocol</title><link href="jadekler.github.io/2018/08/20/grpc-on-http.html" rel="alternate" type="text/html" title="gRPC on HTTP/2: Engineering a Robust, High Performance Protocol" /><published>2018-08-20T15:55:23-06:00</published><updated>2018-08-20T15:55:23-06:00</updated><id>jadekler.github.io/2018/08/20/grpc-on-http</id><content type="html" xml:base="jadekler.github.io/2018/08/20/grpc-on-http.html">&lt;p&gt;Posted on &lt;a href=&quot;https://grpc.io/blog/grpc_on_http2/&quot;&gt;grpc.io&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">Posted on grpc.io.</summary></entry><entry><title type="html">HTTP/2: Smarter At Scale</title><link href="jadekler.github.io/2018/07/21/http2-smarter-at-scale.html" rel="alternate" type="text/html" title="HTTP/2: Smarter At Scale" /><published>2018-07-21T15:55:23-06:00</published><updated>2018-07-21T15:55:23-06:00</updated><id>jadekler.github.io/2018/07/21/http2-smarter-at-scale</id><content type="html" xml:base="jadekler.github.io/2018/07/21/http2-smarter-at-scale.html">&lt;p&gt;Posted at &lt;a href=&quot;https://www.cncf.io/blog/2018/07/03/http-2-smarter-at-scale/&quot;&gt;cncf.io&lt;/a&gt; and &lt;a href=&quot;https://grpc.io/blog/http2_smarter_at_scale/&quot;&gt;grpc.io&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">Posted at cncf.io and grpc.io.</summary></entry><entry><title type="html">Which protocol should I use?</title><link href="jadekler.github.io/2018/03/03/which-protocol-should-i-use.html" rel="alternate" type="text/html" title="Which protocol should I use?" /><published>2018-03-03T14:55:23-07:00</published><updated>2018-03-03T14:55:23-07:00</updated><id>jadekler.github.io/2018/03/03/which-protocol-should-i-use</id><content type="html" xml:base="jadekler.github.io/2018/03/03/which-protocol-should-i-use.html">&lt;p&gt;Posted on &lt;a href=&quot;https://medium.com/@deklerk_22602/which-protocol-should-i-use-d82cb449f065&quot;&gt;medium.com&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">Posted on medium.com.</summary></entry></feed>

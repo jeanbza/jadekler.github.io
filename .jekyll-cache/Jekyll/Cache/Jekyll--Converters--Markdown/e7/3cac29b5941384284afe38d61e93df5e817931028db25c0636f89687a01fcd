@@ -1,0 +1,166 @@
+I"�<p>This post is intended to provide some insight into the considerations that
+go into adding CRUD operations in a Go client library.</p>
+
+<h2 id="the-problem-ambiguity">The Problem: Ambiguity</h2>
+
+<p>Every time we add a new create or update RPC - <code class="highlighter-rouge">CreateFoo</code> or <code class="highlighter-rouge">UpdateFoo</code> - that
+takes parameters, we have to ask the questions:</p>
+
+<ul>
+  <li>Is it possible to perform a delete a parameter when updating Foo?</li>
+  <li>How should users ignore that parameter when updating Foo?</li>
+  <li>How should users delete that parameter when updating Foo?</li>
+</ul>
+
+<p>Consider the following RPC:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>message FooUpdateRequest {
+  google.protobuf.Duration ttl = 1;        // When set to 0, deletes TTL.
+  google.protobuf.Duration expiration = 2; // When set to 0, deletes expiration.
+}
+
+service Foo {
+  rpc UpdateFoo(FooUpdateRequest) returns (SomeResponse)
+}
+</code></pre></div></div>
+
+<p>Building a manual layer wrapper around this might look very similar:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>type FooConfigToUpdate struct {
+  Ttl        time.Duration
+  Expiration time.Duration
+}
+
+func (f *Foo) Update(ctx context.Context, cfg *FooConfigToUpdate) error {
+  // ...
+}
+</code></pre></div></div>
+
+<p>This seems fairly innocuous, but consider those questions again:</p>
+
+<ul>
+  <li>Is it possible to perform a delete a parameter when updating Foo?
+A: Yes, both parameters in the .proto definition mention that 0 is used as a delete.</li>
+  <li>How should users ignore that parameter when updating Foo?
+A: Set it to time.Duration(0).</li>
+  <li>How should users delete that parameter when updating Foo?
+A: Uhh… also set it to time.Duration(0)?</li>
+</ul>
+
+<p>As you can see, there’s currently no way to distinguish between Delete and
+Ignore. That is, if a user passes:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f.Update(ctx, &amp;foopkg.FooConfigToUpdate{Expiration: 5 * time.Second})
+</code></pre></div></div>
+
+<p>It’s clear that we need to update Expiration to 5s, but what do we do with ttl?
+Its default value is <code class="highlighter-rouge">time.Duration(0)</code> - do we delete it, or ignore it?</p>
+
+<p>We need a way to get around this. Broadly, there are three options we use in client libraries:</p>
+
+<ul>
+  <li>Sentinel values.</li>
+  <li>Pointers.</li>
+  <li>Optionals.</li>
+</ul>
+
+<h2 id="sentinel-values">Sentinel Values</h2>
+
+<p>Sentinel values are basically special values that signal to the client library
+to perform special logic. For example, consider:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var NeverExpire time.Duration = -1 * time.Second
+</code></pre></div></div>
+
+<p>No user would ever specify -1s as an expiration value, so the library picks that
+value as its sentinel. Then, any time the library sees -1s, it knows this is the
+special value used to indicate “delete”.</p>
+
+<p>If the empty value is passed, the library ignores the operation. If the user
+passes the sentinel value, the library performs the delete. A user uses the
+sentinel to delete as such:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f.Update(ctx, &amp;foopkg.FooConfigToUpdate{Expiration: foopkg.NeverExpire})
+</code></pre></div></div>
+
+<h2 id="pointers">Pointers</h2>
+
+<p>When using pointers, we automatically resolve ambiguity, because beside the
+empty value we now also have the nil value.</p>
+
+<p>The nil value is taken as “ignore this” (unspecified), and the empty value is
+taken as “delete this”.</p>
+
+<p>A user uses the empty value to delete as such:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f.Update(ctx, &amp;foopkg.FooConfigToUpdate{Expiration: &amp;time.Duration(0)})
+</code></pre></div></div>
+
+<h2 id="optionals">Optionals</h2>
+
+<p>Optionals are a Java concept. Without involving pointers, they add an
+additional “set or unset” parameter to a value in a similar way that pointers
+are set or nil.</p>
+
+<p>Unlike Java, however, optionals are not part of the stdlib. In
+<code class="highlighter-rouge">cloud.google.com/go</code>, we’ve created a very light wrapper around <code class="highlighter-rouge">interface{}</code>
+to implement optional types. Since they’re light wrappers around <code class="highlighter-rouge">interface{}</code>,
+values are nil-able.</p>
+
+<p>Like pointers, the nil value is taken as “ignore this” (unspecified), and the
+empty value is taken as “delete this”.</p>
+
+<p>A user uses the empty value to delete as such:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f.Update(ctx, &amp;foopkg.FooConfigToUpdate{Expiration: time.Duration(0)})
+</code></pre></div></div>
+
+<h2 id="choosing-the-right-solution">Choosing The Right Solution</h2>
+
+<p>There are downsides to each solution:</p>
+
+<ul>
+  <li>Sentinels add to the API surface, and reduce the range of values users can
+use. They are not described by the type system, like pointers: users have to
+read docs to find out how to use them. Finally, they may surprise users using
+the reserved value without knowing that they are.</li>
+  <li>Pointers only work on types - ints, strings, bools, and other primitives
+become quite burdensome to use. Furthermore, pointers can’t be added in a
+backwards-compatible fashion, since they change the signature of a
+parameter/method.</li>
+  <li>Optionals are untyped (since they’re wrappers around interface{}), and not
+idiomatic Go.</li>
+</ul>
+
+<p>On the other hand, the advantages to each solution:</p>
+<ul>
+  <li>Sentinels can be added in a backwards-compatible fashion, since they don’t
+change the signature of a parameter/method.</li>
+  <li>Pointers are very idiomatic to Go, widely used, and their semantics are
+encoded in the type system, making them very easy and obvious to use.</li>
+  <li>Optionals can be added (but not removed) in a backwards-compatible fashion,
+since their untyped nature is compatible with an pre-existing inputs supplied
+by the user.</li>
+</ul>
+
+<p>Sentinels should generally be avoided, since we try to minimize API surface
+additions. They are commonly used in “uh oh” moments where we have to go amend
+a stable client’s API surface in which the to-be-fixed portion is already
+released.</p>
+
+<p>Pointers are generally the preferred choice but fall short on primitive types,
+and aren’t backwards-compatible. Optionals are fairly widely used, too.</p>
+
+<p>In general, it’s best to investigate the client you’re working on and focus on
+consistency of choice. Ideally, all clients would be consistent with each other, too.</p>
+
+<h2 id="a-note-on--experimental">A Note On // Experimental</h2>
+
+<p>Note that if a part of the API surface is marked experimental, the above notes
+on backwards compatibility don’t apply. Therefore, if you’re adding to an API
+surface and not sure how it’ll evolve over time, opt to add the
+<code class="highlighter-rouge">// Experimental</code> tag:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// It is EXPERIMENTAL and subject to change or removal without notice.
+</code></pre></div></div>
+:ET
