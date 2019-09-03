@@ -141,7 +141,7 @@ rather than the disappointment I was subconsiously bracing myself for.
 The outcome is a much healthier, happier day-to-day, week-to-week. I once
 again find self-value in things outside of work; I have a robust and healthy
 support system of friends and family; I progress myself in sports and hobbies
-so that stalls or failures are work at diminished in impact by successes
+so that stalls or failures at_site/feed.xml work at diminished in impact by successes
 elsewhere.
 
 # Shit's cool
