@@ -14,7 +14,15 @@ the future, both systems have improved. (but especially GitHub)
 # Goals
 
 To start, I've bucketed the types of things I want out of a code review system
-in different buckets:
+in different buckets, and rathed them based on a 5 point scale:
+
+- Very bad: ❌❌
+- Bad: ❌
+- Meh: 🤷
+- Good: ✅
+- Very good: ✅✅
+
+TODO: create table for the remainder
 
 **As devops**
 
