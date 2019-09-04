@@ -34,7 +34,7 @@ kind of work that hardly any other job seemed to offer; certainly not my
 internships up to that point, which all centered around writing websites in some
 form or another.
 
-I was got my first interview at Google during my senior year of university and
+I got my first interview at Google during my senior year of university and
 promptly failed it.
 
 # Interviews and exams
