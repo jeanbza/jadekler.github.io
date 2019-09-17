@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="jadekler.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="jadekler.github.io/" rel="alternate" type="text/html" /><updated>2019-09-16T21:21:19-06:00</updated><id>jadekler.github.io/feed.xml</id><title type="html">Jean de Klerk</title><subtitle>This is my personal website. The views represented here are my own, and do not represent my employer.</subtitle><entry><title type="html">Reflecting on interviewing at Google</title><link href="jadekler.github.io/2019/09/01/reflecting-on-interviewing-at-google.html" rel="alternate" type="text/html" title="Reflecting on interviewing at Google" /><published>2019-09-01T15:55:23-06:00</published><updated>2019-09-01T15:55:23-06:00</updated><id>jadekler.github.io/2019/09/01/reflecting-on-interviewing-at-google</id><content type="html" xml:base="jadekler.github.io/2019/09/01/reflecting-on-interviewing-at-google.html">&lt;p&gt;Disclaimer: This document makes statements and gives advice about interviewing
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="jadekler.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="jadekler.github.io/" rel="alternate" type="text/html" /><updated>2019-09-16T21:31:08-06:00</updated><id>jadekler.github.io/feed.xml</id><title type="html">Jean de Klerk</title><subtitle>This is my personal website. The views represented here are my own, and do not represent my employer.</subtitle><entry><title type="html">Reflecting on interviewing at Google</title><link href="jadekler.github.io/2019/09/01/reflecting-on-interviewing-at-google.html" rel="alternate" type="text/html" title="Reflecting on interviewing at Google" /><published>2019-09-01T15:55:23-06:00</published><updated>2019-09-01T15:55:23-06:00</updated><id>jadekler.github.io/2019/09/01/reflecting-on-interviewing-at-google</id><content type="html" xml:base="jadekler.github.io/2019/09/01/reflecting-on-interviewing-at-google.html">&lt;p&gt;Disclaimer: This document makes statements and gives advice about interviewing
 at Google. This is &lt;em&gt;not at all&lt;/em&gt; an official accounting of what it’s like to
 interview at Google. This is entirely my own interpration, likely riddled with
 inaccuracies to the extent that a Googler in recruitment would probably develop
@@ -101,8 +101,8 @@ preparing for the interview.&lt;/p&gt;
 
 &lt;p&gt;I believe two things changed in ways that helped me get through the interview.&lt;/p&gt;
 
-&lt;p&gt;The first is that I failed the SWE interview in 2016, and then was suggested by
-the recruiter to try a Developer Programs Engineer (DPE) role. The DPE role was
+&lt;p&gt;The first is that after failing the SWE interview in 2016 the recruiter
+suggested I try interviewing for a Developer Programs Engineer (DPE) role. The DPE role was
 described as a more open-source and developers focused role, as opposed to the
 only-software-all-the-time focused SWE role. It was still in engineering, and
 still involved programming, but the interview was slightly different.&lt;/p&gt;
@@ -111,8 +111,8 @@ still involved programming, but the interview was slightly different.&lt;/p&gt;
 that point might give me an edge, and that if I didn’t like it I could probably
 switch to a SWE role internally.&lt;/p&gt;
 
-&lt;p&gt;So, after accepting the ideas, I was immediately fast-tracked into an
-onsite DPE interview a few weeks after that failed. I promptly failed the DPE
+&lt;p&gt;So, after accepting the idea, I was immediately fast-tracked into an
+onsite DPE interview a few weeks after that failure. I promptly failed the DPE
 interview, too. But! The interviewer said “You were close!”. So, that was nice.&lt;/p&gt;
 
 &lt;p&gt;The interview didn’t differ much, except that one or two of the onsite questions

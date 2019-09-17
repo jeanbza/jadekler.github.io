@@ -104,8 +104,8 @@ preparing for the interview.
 
 I believe two things changed in ways that helped me get through the interview.
 
-The first is that I failed the SWE interview in 2016, and then was suggested by
-the recruiter to try a Developer Programs Engineer (DPE) role. The DPE role was
+The first is that after failing the SWE interview in 2016 the recruiter
+suggested I try interviewing for a Developer Programs Engineer (DPE) role. The DPE role was
 described as a more open-source and developers focused role, as opposed to the
 only-software-all-the-time focused SWE role. It was still in engineering, and
 still involved programming, but the interview was slightly different.
@@ -114,8 +114,8 @@ I was all for it, figuring that my several years of open source contribution at
 that point might give me an edge, and that if I didn't like it I could probably
 switch to a SWE role internally.
 
-So, after accepting the ideas, I was immediately fast-tracked into an
-onsite DPE interview a few weeks after that failed. I promptly failed the DPE
+So, after accepting the idea, I was immediately fast-tracked into an
+onsite DPE interview a few weeks after that failure. I promptly failed the DPE
 interview, too. But! The interviewer said "You were close!". So, that was nice.
 
 The interview didn't differ much, except that one or two of the onsite questions
