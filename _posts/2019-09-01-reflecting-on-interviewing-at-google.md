@@ -225,6 +225,6 @@ colleagues swear by working on practice problems, whilst I strongly prefer the
 approach of taking courses and completing homework / projects.
 
 Consider the list of interview prepation techniques above and do some
-introspection about how you learn best. And, if you can, try to orient you
-job around interesting problems that push your to learn, rather than staying
+introspection about how you learn best. And, if you can, try to orient your
+job around interesting problems that push you to learn, rather than staying
 in your comfort zone.
