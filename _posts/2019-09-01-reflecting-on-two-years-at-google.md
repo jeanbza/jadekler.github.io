@@ -162,10 +162,10 @@ weight; that I was supported in whatever I decided was best for myself, even if
 that meant leaving the company or my team.
 
 I work on things that I find really, really cool: building a performance
-benchmarking pipeline and improving client library performance; defining the
+benchmarking pipelines and improving client library performance; defining the
 client-side retry strategy for all of Google Cloud; improving Google Cloud
 reliability with throttling and load shedding; building important and complex
-features into the libraries; working on the HTTP/2 transport in gRPC; and loads
+features into libraries; working on the HTTP/2 transport in gRPC; and loads
 more. Moreover, I've been given a lot of freedom in choosing the kinds of things
 I work on, and being encouraged to go find new problems that we're not aware of
 yet.
