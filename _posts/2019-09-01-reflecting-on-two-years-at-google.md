@@ -21,7 +21,7 @@ Background note: I started at Google in late 2017. I moved from Colorado to
 California (San Francisco bay area) for the job, and moved back to Colorado
 in early 2018 (keeping the job, but working from Boulder, Colorado).
 
-# Shit's slow, yo
+# Small steps
 
 Starting at Google was unlike any other job. Most jobs I've had, and heard
 about, followed a pattern of a 2-week break-in period followed by a few
@@ -49,7 +49,7 @@ So, it takes _6 weeks after you start_ before you're actually ready to look at
 real code. And, beyond that, most teams will only expect you to be a
 fully independent, contributing team member somewhere around month 6 to 9.
 
-# Shit's hard, yo
+# Inch by inch
 
 My first actually-useful piece of code I submitted, if I recall correctly, was
 a code sample that showed developers how to use the Pub/Sub client library in
@@ -87,7 +87,7 @@ is wrong to fairly-subtle suggestions. I was slowly transitioning from a student
 that needed hand-holding, and didn't provide much in return, to a colleague that
 accepted and gave equally (or, closer to equal).
 
-# Shit's unhealthy, yo
+# Metre by unhealthy metre
 
 My intense passion for interesting problems and self-improvement finally had an
 outlet, and that outlet was unbounded in scope. Worse: it rewarded the effort
@@ -113,7 +113,7 @@ offered me my job at the Colorado campus with a standard cost-of-living pay redu
 
 I moved back to Colorado in early 2018 with the same job.
 
-# Shit's not shit anymore
+# On to the other side
 
 The year taught me a lot about my limits to an extent that's hard to put into
 words. I've learned how to spot signs of too much stress, healthy coping
@@ -146,7 +146,7 @@ support system of friends and family; I progress myself in sports and hobbies
 so that stalls or failures at work at diminished in impact by successes
 elsewhere.
 
-# Shit's cool
+# Keeping perspective
 
 I've had the privilege and honour of working with incredible minds, who have
 universally been kind and willing to teach. I've sat in rooms with people that
