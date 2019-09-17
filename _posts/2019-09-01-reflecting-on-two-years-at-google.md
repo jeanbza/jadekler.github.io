@@ -73,7 +73,8 @@ comments were statements of fact, or impartial queries, rather than jabs and
 one-ups. They were, "This can be more performant like so: |example|. And,
 here's why: |reason|.", not "This is terrible. Do it this way: |example|.".
 
-I was learning again, from people with a deep wealth of knowledge and
+After years of stagnation in my career at that point it was so wonderful to
+be learning again, from people with a deep wealth of knowledge and
 experience. I was hooked.
 
 The next year was a lot of this. I got better by inches: by treating each code
