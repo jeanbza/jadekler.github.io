@@ -8,7 +8,7 @@ categories:
 Disclaimer: This document makes statements and gives advice about interviewing
 at Google. This is _not at all_ an official accounting of what it's like to
 interview at Google. This is entirely my own interpration, likely riddled with
-inaccuracies to the extend that a Googler in recruitment would probably develop
+inaccuracies to the extent that a Googler in recruitment would probably develop
 a migraine reading this. If you'd like the official word, check out
 careers.google.com or talk to a recruiter.
 
