@@ -46,7 +46,7 @@ CONTAINER ID        IMAGE               COMMAND             CREATED             
 
 So, yeah, `unset DOCKER_HOST`. What's happening here is that `DOCKER_HOST` is
 being set to `tcp://docker:2375`, but we want to unset that to make it use the
-unix socket. See more explanation at https://github.com/docker-library/docker/issues/200.
+unix socket. See more explanation at [https://github.com/docker-library/docker/issues/200](https://github.com/docker-library/docker/issues/200).
 
 # Petty citations
 
