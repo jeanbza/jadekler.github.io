@@ -135,3 +135,25 @@ _balanced_ BSTs do. Hopefully the above provides the intuition for that.
 In a future article we'll look at [Heap](https://en.wikipedia.org/wiki/Heap_(data_structure))
 runtime complexity, and how memoization affects that. In some other future
 article we'll look at backtracking and permutation runtime complexities.
+
+<script type="text/javascript" async
+  src="/assets/mathjax-2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: [
+        "MathMenu.js",
+        "MathZoom.js",
+        "AssistiveMML.js"
+      ],
+      jax: ["input/TeX", "output/CommonHTML"],
+      TeX: {
+        extensions: [
+          "AMSmath.js",
+          "AMSsymbols.js",
+          "noErrors.js",
+          "noUndefined.js",
+        ]
+      }
+    });
+  </script>
