@@ -1,4 +1,142 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-11-06T14:41:31-07:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jean de Klerk</title><subtitle>This is my personal website. The views represented here are my own, and do not represent my employer.</subtitle><entry><title type="html">Docker in Docker</title><link href="http://localhost:4000/2019/11/05/docker-in-docker.html" rel="alternate" type="text/html" title="Docker in Docker" /><published>2019-11-05T14:55:23-07:00</published><updated>2019-11-05T14:55:23-07:00</updated><id>http://localhost:4000/2019/11/05/docker-in-docker</id><content type="html" xml:base="http://localhost:4000/2019/11/05/docker-in-docker.html">&lt;h1 id=&quot;i-got-beef-with-all-yalls-articles&quot;&gt;I got beef with all y’alls articles&lt;/h1&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-11-23T21:23:06-07:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jean de Klerk</title><subtitle>This is my personal website. The views represented here are my own, and do not represent my employer.</subtitle><entry><title type="html">Binary Search Tree Runtime Complexities</title><link href="http://localhost:4000/2019/11/23/binary-search-tree-runtime-complexity.html" rel="alternate" type="text/html" title="Binary Search Tree Runtime Complexities" /><published>2019-11-23T14:55:23-07:00</published><updated>2019-11-23T14:55:23-07:00</updated><id>http://localhost:4000/2019/11/23/binary-search-tree-runtime-complexity</id><content type="html" xml:base="http://localhost:4000/2019/11/23/binary-search-tree-runtime-complexity.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
+
+&lt;p&gt;I’ve recently inundated myself with interview preparation. Along the way, I
+thought a lot about how to intuit runtime complexities for various algorithms.
+I thought that it might be nice to cement it all with an article - both for the
+sake of others, as well as for my sake. This is the first article in that vein,
+strictly dealing with binary search trees.&lt;/p&gt;
+
+&lt;h1 id=&quot;terminology&quot;&gt;Terminology&lt;/h1&gt;
+
+&lt;p&gt;Note: This article frequently uses the abbreviation BST to describe binary
+search trees.&lt;/p&gt;
+
+&lt;p&gt;Here are properties of trees that this article deals with:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Number of nodes in a tree is typically denoted &lt;code class=&quot;highlighter-rouge&quot;&gt;n&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;Height of a tree is typically denoted &lt;code class=&quot;highlighter-rouge&quot;&gt;k&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Binary_tree&quot;&gt;Complete&lt;/a&gt;: every level except
+possibly the last is completely filled.&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Binary_tree&quot;&gt;Full&lt;/a&gt;: every node has 0 or 2
+children. This is a subset of complete: every full tree is a complete tree.&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Binary_tree&quot;&gt;Balanced&lt;/a&gt;: the height of the left
+and right subtrees of every node differ by at most 1. Using the root node as
+our focus, we can intuit that any balanced tree has fairly uniform height.&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Binary_search_tree&quot;&gt;Binary Search Tree&lt;/a&gt;:
+A tree in which each element to the left of a node is guaranteed to be less,
+and to the right guaranteed to be greater. &lt;em&gt;BSTs may not be balanced&lt;/em&gt;.&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Red%E2%80%93black_tree&quot;&gt;Red-black Tree&lt;/a&gt;: A BST
+that is balanced.&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/AVL_tree&quot;&gt;AVL Tree&lt;/a&gt;: A BST that is balanced (in
+a different way than red-black trees).&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Branching_factor&quot;&gt;Branching factor&lt;/a&gt;: The number
+of children at each node.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;searching-a-bst&quot;&gt;Searching a BST&lt;/h1&gt;
+
+&lt;p&gt;Everyone knows that searching a binary search tree has runtime complexity
+&lt;code class=&quot;highlighter-rouge&quot;&gt;O(logn)&lt;/code&gt;, right? …right? Let’s take a second to tease apart some questions
+from that assertion to see if we really understand what we mean when we say that:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Q: What is the &lt;a href=&quot;https://en.wikipedia.org/wiki/Logarithm&quot;&gt;base&lt;/a&gt; of the log?&lt;/p&gt;
+
+    &lt;p&gt;A: Typically when we talk about the base of a log, we’re talking about 2 or&lt;/p&gt;
+    &lt;ol&gt;
+      &lt;li&gt;In the case of a BST case it’s 2 (we’ll dive into why that is shortly).&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Q: What does &lt;code class=&quot;highlighter-rouge&quot;&gt;n&lt;/code&gt; represent?&lt;/p&gt;
+
+    &lt;p&gt;A: &lt;code class=&quot;highlighter-rouge&quot;&gt;n&lt;/code&gt; &lt;em&gt;usually&lt;/em&gt; means “number of elements”. In this case, &lt;code class=&quot;highlighter-rouge&quot;&gt;n&lt;/code&gt; does mean that:
+or, another way to put that is “number of nodes in the tree”.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;So, expanding &lt;code class=&quot;highlighter-rouge&quot;&gt;O(logn)&lt;/code&gt;, we have: &lt;code class=&quot;highlighter-rouge&quot;&gt;O(log2(&amp;lt;# nodes in tree&amp;gt;))&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Well, searching a binary tree is not strictly &lt;code class=&quot;highlighter-rouge&quot;&gt;O(log2(n))&lt;/code&gt;: it can also be
+&lt;code class=&quot;highlighter-rouge&quot;&gt;O(n)&lt;/code&gt;. Let’s discover why by exploring how the &lt;code class=&quot;highlighter-rouge&quot;&gt;log2&lt;/code&gt; comes about.&lt;/p&gt;
+
+&lt;h1 id=&quot;logarithms-and-exponents&quot;&gt;Logarithms and exponents&lt;/h1&gt;
+
+&lt;p&gt;Let’s look at the following &lt;em&gt;full&lt;/em&gt; binary tree:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/simple_complete.png&quot; alt=&quot;Full Binary Tree&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;We can tell the following about this tree:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;It has height &lt;code class=&quot;highlighter-rouge&quot;&gt;k=4&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;It has nodes &lt;code class=&quot;highlighter-rouge&quot;&gt;n=15&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The number of nodes &lt;code class=&quot;highlighter-rouge&quot;&gt;n&lt;/code&gt; can also be expressed as,&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;n=2^k-1&lt;/script&gt;
+
+&lt;p&gt;This is easily observable: each level has 2 times the number of nodes as the
+last, since each node has 2 children (except the leaf nodes, which have 0).&lt;/p&gt;
+
+&lt;p&gt;What if we knew the amount of nodes, but not the height? We can get the height
+with,&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{align*}
+n=2^k-1 \\
+n+1=2^k \\
+log2(n+1)=log2(2^k) \\
+log2(n+1)=k*log2(2) \\
+log2(n+1)=k \\
+k=log2(n+1)
+\end{align*}&lt;/script&gt;
+
+&lt;h1 id=&quot;back-to-binary-search-trees&quot;&gt;Back to binary search trees&lt;/h1&gt;
+
+&lt;p&gt;How can we apply this knowledge? Consider again our original topic of a binary
+search tree: one property of a BST is that a search operation requires no
+backtracking. That is: the path to a node always going to go at most to a leaf
+node - it never reaches a leaf and then has to backtrack and try a different
+choice at a former node, for example.&lt;/p&gt;
+
+&lt;p&gt;So, if the BST is unbalanced, the worst case time complexity to search for a value
+is &lt;code class=&quot;highlighter-rouge&quot;&gt;O(n)&lt;/code&gt;: we can easily show that this is the case with the following tree:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/left_bst.png&quot; alt=&quot;Left BST&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This BST is heavily weighted to the right. To search for the value 109, we’d have to
+look at each of the &lt;code class=&quot;highlighter-rouge&quot;&gt;n=15&lt;/code&gt; elements. That is: the worst case time complexity is
+&lt;code class=&quot;highlighter-rouge&quot;&gt;O(n)&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;What if this BST were balanced, instead?&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/balanced_bst.png&quot; alt=&quot;Balanced BST&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Now, to search for &lt;em&gt;any&lt;/em&gt; value in the BST, the maximum depth we’d need to traverse is
+&lt;code class=&quot;highlighter-rouge&quot;&gt;k&lt;/code&gt;. Or, to put that in terms of &lt;code class=&quot;highlighter-rouge&quot;&gt;n&lt;/code&gt; and big-O: &lt;code class=&quot;highlighter-rouge&quot;&gt;O(log2(n))&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h1 id=&quot;an-aside-on-branching-factor&quot;&gt;An aside on branching factor&lt;/h1&gt;
+
+&lt;p&gt;All of our details above deal with a binary tree - a tree in which each node has
+at most 2 children. What if each node had 9 children? The maximum number of
+children a node has in a tree is called the &lt;a href=&quot;https://en.wikipedia.org/wiki/Branching_factor&quot;&gt;branching factor&lt;/a&gt;,
+and it determines the bases of the logarithms and exponents in all the
+calculations above.&lt;/p&gt;
+
+&lt;p&gt;So, if the branching factor for a tree is 9, and it is complete, then it has
+&lt;code class=&quot;highlighter-rouge&quot;&gt;9^k-1&lt;/code&gt; nodes (and so on).&lt;/p&gt;
+
+&lt;h1 id=&quot;in-conclusion&quot;&gt;In conclusion&lt;/h1&gt;
+
+&lt;p&gt;In conclusion: binary search trees don’t guarantee &lt;code class=&quot;highlighter-rouge&quot;&gt;O(log2(n))&lt;/code&gt; search:
+&lt;em&gt;balanced&lt;/em&gt; BSTs do. Hopefully the above provides the intuition for that.&lt;/p&gt;
+
+&lt;p&gt;In a future article we’ll look at &lt;a href=&quot;https://en.wikipedia.org/wiki/Heap_(data_structure)&quot;&gt;Heap&lt;/a&gt;
+runtime complexity, and how memoization affects that. In some other future
+article we’ll look at backtracking and permutation runtime complexities.&lt;/p&gt;</content><author><name></name></author><summary type="html">Introduction</summary></entry><entry><title type="html">Docker in Docker</title><link href="http://localhost:4000/2019/11/05/docker-in-docker.html" rel="alternate" type="text/html" title="Docker in Docker" /><published>2019-11-05T14:55:23-07:00</published><updated>2019-11-05T14:55:23-07:00</updated><id>http://localhost:4000/2019/11/05/docker-in-docker</id><content type="html" xml:base="http://localhost:4000/2019/11/05/docker-in-docker.html">&lt;h1 id=&quot;i-got-beef-with-all-yalls-articles&quot;&gt;I got beef with all y’alls articles&lt;/h1&gt;
 
 &lt;p&gt;Oh look, another docker-in-docker post. How original. Ok, I get it, there are
 many of these out there. Here’s my beef with all the ones I could find at 1am
@@ -737,4 +875,4 @@ surface and not sure how it’ll evolve over time, opt to add the
 &lt;code class=&quot;highlighter-rouge&quot;&gt;// Experimental&lt;/code&gt; tag:&lt;/p&gt;
 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// It is EXPERIMENTAL and subject to change or removal without notice.
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name></name></author><summary type="html">This post is intended to provide some insight into the considerations that go into adding CRUD operations in a Go client library.</summary></entry><entry><title type="html">Resolving Problems From Modified Module Path</title><link href="http://localhost:4000/2019/04/23/resolving-problems-from-modified-module-path.html" rel="alternate" type="text/html" title="Resolving Problems From Modified Module Path" /><published>2019-04-23T15:55:23-06:00</published><updated>2019-04-23T15:55:23-06:00</updated><id>http://localhost:4000/2019/04/23/resolving-problems-from-modified-module-path</id><content type="html" xml:base="http://localhost:4000/2019/04/23/resolving-problems-from-modified-module-path.html">&lt;p&gt;Posted at &lt;a href=&quot;https://github.com/golang/go/wiki/Resolving-Problems-From-Modified-Module-Path&quot;&gt;github.com/golang/go/wiki&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">Posted at github.com/golang/go/wiki.</summary></entry><entry><title type="html">Multi-Module Repositories</title><link href="http://localhost:4000/2019/02/25/multi-module-repositories.html" rel="alternate" type="text/html" title="Multi-Module Repositories" /><published>2019-02-25T14:55:23-07:00</published><updated>2019-02-25T14:55:23-07:00</updated><id>http://localhost:4000/2019/02/25/multi-module-repositories</id><content type="html" xml:base="http://localhost:4000/2019/02/25/multi-module-repositories.html">&lt;p&gt;Posted at &lt;a href=&quot;https://github.com/golang/go/wiki/Modules#faqs--multi-module-repositories&quot;&gt;github.com/golang/go/wiki&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">Posted at github.com/golang/go/wiki.</summary></entry><entry><title type="html">gRPC on HTTP/2: Engineering a Robust, High Performance Protocol</title><link href="http://localhost:4000/2018/08/20/grpc-on-http.html" rel="alternate" type="text/html" title="gRPC on HTTP/2: Engineering a Robust, High Performance Protocol" /><published>2018-08-20T15:55:23-06:00</published><updated>2018-08-20T15:55:23-06:00</updated><id>http://localhost:4000/2018/08/20/grpc-on-http</id><content type="html" xml:base="http://localhost:4000/2018/08/20/grpc-on-http.html">&lt;p&gt;Posted on &lt;a href=&quot;https://grpc.io/blog/grpc_on_http2/&quot;&gt;grpc.io&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">Posted on grpc.io.</summary></entry><entry><title type="html">HTTP/2: Smarter At Scale</title><link href="http://localhost:4000/2018/07/21/http2-smarter-at-scale.html" rel="alternate" type="text/html" title="HTTP/2: Smarter At Scale" /><published>2018-07-21T15:55:23-06:00</published><updated>2018-07-21T15:55:23-06:00</updated><id>http://localhost:4000/2018/07/21/http2-smarter-at-scale</id><content type="html" xml:base="http://localhost:4000/2018/07/21/http2-smarter-at-scale.html">&lt;p&gt;Posted at &lt;a href=&quot;https://www.cncf.io/blog/2018/07/03/http-2-smarter-at-scale/&quot;&gt;cncf.io&lt;/a&gt; and &lt;a href=&quot;https://grpc.io/blog/http2_smarter_at_scale/&quot;&gt;grpc.io&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">Posted at cncf.io and grpc.io.</summary></entry></feed>
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name></name></author><summary type="html">This post is intended to provide some insight into the considerations that go into adding CRUD operations in a Go client library.</summary></entry><entry><title type="html">Resolving Problems From Modified Module Path</title><link href="http://localhost:4000/2019/04/23/resolving-problems-from-modified-module-path.html" rel="alternate" type="text/html" title="Resolving Problems From Modified Module Path" /><published>2019-04-23T15:55:23-06:00</published><updated>2019-04-23T15:55:23-06:00</updated><id>http://localhost:4000/2019/04/23/resolving-problems-from-modified-module-path</id><content type="html" xml:base="http://localhost:4000/2019/04/23/resolving-problems-from-modified-module-path.html">&lt;p&gt;Posted at &lt;a href=&quot;https://github.com/golang/go/wiki/Resolving-Problems-From-Modified-Module-Path&quot;&gt;github.com/golang/go/wiki&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">Posted at github.com/golang/go/wiki.</summary></entry><entry><title type="html">Multi-Module Repositories</title><link href="http://localhost:4000/2019/02/25/multi-module-repositories.html" rel="alternate" type="text/html" title="Multi-Module Repositories" /><published>2019-02-25T14:55:23-07:00</published><updated>2019-02-25T14:55:23-07:00</updated><id>http://localhost:4000/2019/02/25/multi-module-repositories</id><content type="html" xml:base="http://localhost:4000/2019/02/25/multi-module-repositories.html">&lt;p&gt;Posted at &lt;a href=&quot;https://github.com/golang/go/wiki/Modules#faqs--multi-module-repositories&quot;&gt;github.com/golang/go/wiki&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">Posted at github.com/golang/go/wiki.</summary></entry><entry><title type="html">gRPC on HTTP/2: Engineering a Robust, High Performance Protocol</title><link href="http://localhost:4000/2018/08/20/grpc-on-http.html" rel="alternate" type="text/html" title="gRPC on HTTP/2: Engineering a Robust, High Performance Protocol" /><published>2018-08-20T15:55:23-06:00</published><updated>2018-08-20T15:55:23-06:00</updated><id>http://localhost:4000/2018/08/20/grpc-on-http</id><content type="html" xml:base="http://localhost:4000/2018/08/20/grpc-on-http.html">&lt;p&gt;Posted on &lt;a href=&quot;https://grpc.io/blog/grpc_on_http2/&quot;&gt;grpc.io&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">Posted on grpc.io.</summary></entry></feed>

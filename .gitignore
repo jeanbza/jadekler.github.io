@@ -1,3 +1,10 @@
 *.iml
 .idea
 .jekyll-cache
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.pdf
+*.synctex.gz
+assets/__latexindent_temp.tex

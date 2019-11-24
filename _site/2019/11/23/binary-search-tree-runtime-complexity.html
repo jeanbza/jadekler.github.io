@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Binary Search Tree Runtime Complexities | Jean de Klerk</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Binary Search Tree Runtime Complexities" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Introduction" />
+<meta property="og:description" content="Introduction" />
+<link rel="canonical" href="http://localhost:4000/2019/11/23/binary-search-tree-runtime-complexity.html" />
+<meta property="og:url" content="http://localhost:4000/2019/11/23/binary-search-tree-runtime-complexity.html" />
+<meta property="og:site_name" content="Jean de Klerk" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-11-23T14:55:23-07:00" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/11/23/binary-search-tree-runtime-complexity.html"},"url":"http://localhost:4000/2019/11/23/binary-search-tree-runtime-complexity.html","headline":"Binary Search Tree Runtime Complexities","dateModified":"2019-11-23T14:55:23-07:00","datePublished":"2019-11-23T14:55:23-07:00","description":"Introduction","@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Jean de Klerk" /></head>
+<body><script type="text/javascript" async
+  src="/assets/mathjax-2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: [
+        "MathMenu.js",
+        "MathZoom.js",
+        "AssistiveMML.js"
+      ],
+      jax: ["input/TeX", "output/CommonHTML"],
+      TeX: {
+        extensions: [
+          "AMSmath.js",
+          "AMSsymbols.js",
+          "noErrors.js",
+          "noUndefined.js",
+        ]
+      }
+    });
+  </script><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Binary Search Tree Runtime Complexities</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-11-23T14:55:23-07:00" itemprop="datePublished">Nov 23, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="introduction">Introduction</h1>
+
+<p>I’ve recently inundated myself with interview preparation. Along the way, I
+thought a lot about how to intuit runtime complexities for various algorithms.
+I thought that it might be nice to cement it all with an article - both for the
+sake of others, as well as for my sake. This is the first article in that vein,
+strictly dealing with binary search trees.</p>
+
+<h1 id="terminology">Terminology</h1>
+
+<p>Note: This article frequently uses the abbreviation BST to describe binary
+search trees.</p>
+
+<p>Here are properties of trees that this article deals with:</p>
+
+<ul>
+  <li>Number of nodes in a tree is typically denoted <code class="highlighter-rouge">n</code>.</li>
+  <li>Height of a tree is typically denoted <code class="highlighter-rouge">k</code>.</li>
+  <li><a href="https://en.wikipedia.org/wiki/Binary_tree">Complete</a>: every level except
+possibly the last is completely filled.</li>
+  <li><a href="https://en.wikipedia.org/wiki/Binary_tree">Full</a>: every node has 0 or 2
+children. This is a subset of complete: every full tree is a complete tree.</li>
+  <li><a href="https://en.wikipedia.org/wiki/Binary_tree">Balanced</a>: the height of the left
+and right subtrees of every node differ by at most 1. Using the root node as
+our focus, we can intuit that any balanced tree has fairly uniform height.</li>
+  <li><a href="https://en.wikipedia.org/wiki/Binary_search_tree">Binary Search Tree</a>:
+A tree in which each element to the left of a node is guaranteed to be less,
+and to the right guaranteed to be greater. <em>BSTs may not be balanced</em>.</li>
+  <li><a href="https://en.wikipedia.org/wiki/Red%E2%80%93black_tree">Red-black Tree</a>: A BST
+that is balanced.</li>
+  <li><a href="https://en.wikipedia.org/wiki/AVL_tree">AVL Tree</a>: A BST that is balanced (in
+a different way than red-black trees).</li>
+  <li><a href="https://en.wikipedia.org/wiki/Branching_factor">Branching factor</a>: The number
+of children at each node.</li>
+</ul>
+
+<h1 id="searching-a-bst">Searching a BST</h1>
+
+<p>Everyone knows that searching a binary search tree has runtime complexity
+<code class="highlighter-rouge">O(logn)</code>, right? …right? Let’s take a second to tease apart some questions
+from that assertion to see if we really understand what we mean when we say that:</p>
+
+<ul>
+  <li>
+    <p>Q: What is the <a href="https://en.wikipedia.org/wiki/Logarithm">base</a> of the log?</p>
+
+    <p>A: Typically when we talk about the base of a log, we’re talking about 2 or</p>
+    <ol>
+      <li>In the case of a BST case it’s 2 (we’ll dive into why that is shortly).</li>
+    </ol>
+  </li>
+  <li>
+    <p>Q: What does <code class="highlighter-rouge">n</code> represent?</p>
+
+    <p>A: <code class="highlighter-rouge">n</code> <em>usually</em> means “number of elements”. In this case, <code class="highlighter-rouge">n</code> does mean that:
+or, another way to put that is “number of nodes in the tree”.</p>
+  </li>
+</ul>
+
+<p>So, expanding <code class="highlighter-rouge">O(logn)</code>, we have: <code class="highlighter-rouge">O(log2(&lt;# nodes in tree&gt;))</code>.</p>
+
+<p>Well, searching a binary tree is not strictly <code class="highlighter-rouge">O(log2(n))</code>: it can also be
+<code class="highlighter-rouge">O(n)</code>. Let’s discover why by exploring how the <code class="highlighter-rouge">log2</code> comes about.</p>
+
+<h1 id="logarithms-and-exponents">Logarithms and exponents</h1>
+
+<p>Let’s look at the following <em>full</em> binary tree:</p>
+
+<p><img src="/assets/simple_complete.png" alt="Full Binary Tree" /></p>
+
+<p>We can tell the following about this tree:</p>
+
+<ul>
+  <li>It has height <code class="highlighter-rouge">k=4</code>.</li>
+  <li>It has nodes <code class="highlighter-rouge">n=15</code>.</li>
+</ul>
+
+<p>The number of nodes <code class="highlighter-rouge">n</code> can also be expressed as,</p>
+
+<script type="math/tex; mode=display">n=2^k-1</script>
+
+<p>This is easily observable: each level has 2 times the number of nodes as the
+last, since each node has 2 children (except the leaf nodes, which have 0).</p>
+
+<p>What if we knew the amount of nodes, but not the height? We can get the height
+with,</p>
+
+<script type="math/tex; mode=display">\begin{align*}
+n=2^k-1 \\
+n+1=2^k \\
+log2(n+1)=log2(2^k) \\
+log2(n+1)=k*log2(2) \\
+log2(n+1)=k \\
+k=log2(n+1)
+\end{align*}</script>
+
+<h1 id="back-to-binary-search-trees">Back to binary search trees</h1>
+
+<p>How can we apply this knowledge? Consider again our original topic of a binary
+search tree: one property of a BST is that a search operation requires no
+backtracking. That is: the path to a node always going to go at most to a leaf
+node - it never reaches a leaf and then has to backtrack and try a different
+choice at a former node, for example.</p>
+
+<p>So, if the BST is unbalanced, the worst case time complexity to search for a value
+is <code class="highlighter-rouge">O(n)</code>: we can easily show that this is the case with the following tree:</p>
+
+<p><img src="/assets/left_bst.png" alt="Left BST" /></p>
+
+<p>This BST is heavily weighted to the right. To search for the value 109, we’d have to
+look at each of the <code class="highlighter-rouge">n=15</code> elements. That is: the worst case time complexity is
+<code class="highlighter-rouge">O(n)</code>.</p>
+
+<p>What if this BST were balanced, instead?</p>
+
+<p><img src="/assets/balanced_bst.png" alt="Balanced BST" /></p>
+
+<p>Now, to search for <em>any</em> value in the BST, the maximum depth we’d need to traverse is
+<code class="highlighter-rouge">k</code>. Or, to put that in terms of <code class="highlighter-rouge">n</code> and big-O: <code class="highlighter-rouge">O(log2(n))</code>.</p>
+
+<h1 id="an-aside-on-branching-factor">An aside on branching factor</h1>
+
+<p>All of our details above deal with a binary tree - a tree in which each node has
+at most 2 children. What if each node had 9 children? The maximum number of
+children a node has in a tree is called the <a href="https://en.wikipedia.org/wiki/Branching_factor">branching factor</a>,
+and it determines the bases of the logarithms and exponents in all the
+calculations above.</p>
+
+<p>So, if the branching factor for a tree is 9, and it is complete, then it has
+<code class="highlighter-rouge">9^k-1</code> nodes (and so on).</p>
+
+<h1 id="in-conclusion">In conclusion</h1>
+
+<p>In conclusion: binary search trees don’t guarantee <code class="highlighter-rouge">O(log2(n))</code> search:
+<em>balanced</em> BSTs do. Hopefully the above provides the intuition for that.</p>
+
+<p>In a future article we’ll look at <a href="https://en.wikipedia.org/wiki/Heap_(data_structure)">Heap</a>
+runtime complexity, and how memoization affects that. In some other future
+article we’ll look at backtracking and permutation runtime complexities.</p>
+
+  </div><a class="u-url" href="/2019/11/23/binary-search-tree-runtime-complexity.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Jean de Klerk</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Jean de Klerk</li><li><a class="u-email" href="mailto:deklerk@google.com">deklerk@google.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jadekler"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jadekler</span></a></li><li><a href="https://www.twitter.com/jadekler"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jadekler</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>This is my personal website. The views represented here are my own, and do not represent my employer.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
