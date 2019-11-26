@@ -47,7 +47,7 @@ from that assertion to see if we really understand what we mean when we say that
 
 - Q: What is the [base](https://en.wikipedia.org/wiki/Logarithm) of the log?
 
-  A: Typically when we talk about the base of a log, we're talking about 2 or 1.  In the case of a BST case it's 2 (we'll dive into why that is shortly).
+  A: Typically when we talk about the base of a log, we're talking about 2 or 10.  In the case of a BST case it's 2 (we'll dive into why that is shortly).
 
 - Q: What does `n` represent?
 
