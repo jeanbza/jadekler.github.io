@@ -136,8 +136,8 @@ So, if the branching factor for a tree is 9, and it is complete, then it has
 
 # In conclusion
 
-In conclusion: binary search trees don't guarantee `O(log2(n))` search:
-_balanced_ BSTs do. Hopefully the above provides the intuition for that.
+Binary search trees don't guarantee `O(log2(n))` search: _balanced_ BSTs do.
+Hopefully the above provides the intuition for that.
 
 In a future article we'll look at [Heap](https://en.wikipedia.org/wiki/Heap_(data_structure))
 runtime complexity, and how memoization affects that. In some other future
