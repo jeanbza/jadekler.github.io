@@ -75,9 +75,9 @@ The number of nodes `n` can also be expressed as,
 $$
 \begin{align*}
 n=2^k-1 \\
-n=2^4-1
-n=16-1
-n=15 \\
+n=2^4-1 \\
+n=16-1 \\
+n=15
 \end{align*}
 $$
 
