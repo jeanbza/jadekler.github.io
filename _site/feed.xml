@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-11-26T14:29:09+11:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jean de Klerk</title><subtitle>This is my personal website. The views represented here are my own, and do not represent my employer.</subtitle><entry><title type="html">Binary Search Tree Runtime Complexities</title><link href="http://localhost:4000/2019/11/24/binary-search-tree-runtime-complexity.html" rel="alternate" type="text/html" title="Binary Search Tree Runtime Complexities" /><published>2019-11-24T08:55:23+11:00</published><updated>2019-11-24T08:55:23+11:00</updated><id>http://localhost:4000/2019/11/24/binary-search-tree-runtime-complexity</id><content type="html" xml:base="http://localhost:4000/2019/11/24/binary-search-tree-runtime-complexity.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-11-26T14:31:43+11:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jean de Klerk</title><subtitle>This is my personal website. The views represented here are my own, and do not represent my employer.</subtitle><entry><title type="html">Binary Search Tree Runtime Complexities</title><link href="http://localhost:4000/2019/11/24/binary-search-tree-runtime-complexity.html" rel="alternate" type="text/html" title="Binary Search Tree Runtime Complexities" /><published>2019-11-24T08:55:23+11:00</published><updated>2019-11-24T08:55:23+11:00</updated><id>http://localhost:4000/2019/11/24/binary-search-tree-runtime-complexity</id><content type="html" xml:base="http://localhost:4000/2019/11/24/binary-search-tree-runtime-complexity.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
 
 &lt;p&gt;I’ve recently inundated myself with interview preparation. Along the way, I
 thought a lot about how to intuit runtime complexities for various algorithms.
@@ -102,10 +102,10 @@ k=log2(n+1)
 search tree: one property of a BST is that a search operation requires no
 backtracking. That is: the path to a node always going to go at most to a leaf
 node - it never reaches a leaf and then has to backtrack and try a different
-choice at a former node, for example.&lt;/p&gt;
+choice at a former node.&lt;/p&gt;
 
-&lt;p&gt;So, if the BST is unbalanced, the worst case time complexity to search for a value
-is &lt;code class=&quot;highlighter-rouge&quot;&gt;O(n)&lt;/code&gt;: we can easily show that this is the case with the following tree:&lt;/p&gt;
+&lt;p&gt;If the BST is unbalanced, the worst case time complexity to search for a value
+is &lt;code class=&quot;highlighter-rouge&quot;&gt;O(n)&lt;/code&gt;. We can easily show that this is the case with the following tree:&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/left_bst.png&quot; alt=&quot;Left BST&quot; /&gt;&lt;/p&gt;
 
@@ -117,8 +117,9 @@ look at each of the &lt;code class=&quot;highlighter-rouge&quot;&gt;n=15&lt;/cod
 
 &lt;p&gt;&lt;img src=&quot;/assets/balanced_bst.png&quot; alt=&quot;Balanced BST&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Now, to search for &lt;em&gt;any&lt;/em&gt; value in the BST, the maximum depth we’d need to traverse is
-&lt;code class=&quot;highlighter-rouge&quot;&gt;k&lt;/code&gt;. Or, to put that in terms of &lt;code class=&quot;highlighter-rouge&quot;&gt;n&lt;/code&gt; and big-O: &lt;code class=&quot;highlighter-rouge&quot;&gt;O(log2(n))&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Now, to search for &lt;em&gt;any&lt;/em&gt; value in the BST, the maximum depth we’d need to
+traverse is &lt;code class=&quot;highlighter-rouge&quot;&gt;k&lt;/code&gt;. We know that &lt;code class=&quot;highlighter-rouge&quot;&gt;k=log2(n)&lt;/code&gt;, so we can say that the big-O runtime
+complexity in terms of &lt;code class=&quot;highlighter-rouge&quot;&gt;n&lt;/code&gt; is &lt;code class=&quot;highlighter-rouge&quot;&gt;O(log2(n))&lt;/code&gt;.&lt;/p&gt;
 
 &lt;h1 id=&quot;an-aside-on-branching-factor&quot;&gt;An aside on branching factor&lt;/h1&gt;
 

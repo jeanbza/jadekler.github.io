@@ -104,10 +104,10 @@ How can we apply this knowledge? Consider again our original topic of a binary
 search tree: one property of a BST is that a search operation requires no
 backtracking. That is: the path to a node always going to go at most to a leaf
 node - it never reaches a leaf and then has to backtrack and try a different
-choice at a former node, for example.
+choice at a former node.
 
-So, if the BST is unbalanced, the worst case time complexity to search for a value
-is `O(n)`: we can easily show that this is the case with the following tree:
+If the BST is unbalanced, the worst case time complexity to search for a value
+is `O(n)`. We can easily show that this is the case with the following tree:
 
 ![Left BST](/assets/left_bst.png)
 
@@ -119,8 +119,9 @@ What if this BST were balanced, instead?
 
 ![Balanced BST](/assets/balanced_bst.png)
 
-Now, to search for _any_ value in the BST, the maximum depth we'd need to traverse is
-`k`. Or, to put that in terms of `n` and big-O: `O(log2(n))`.
+Now, to search for _any_ value in the BST, the maximum depth we'd need to
+traverse is `k`. We know that `k=log2(n)`, so we can say that the big-O runtime
+complexity in terms of `n` is `O(log2(n))`.
 
 # An aside on branching factor
 

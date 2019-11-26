@@ -149,10 +149,10 @@ k=log2(n+1)
 search tree: one property of a BST is that a search operation requires no
 backtracking. That is: the path to a node always going to go at most to a leaf
 node - it never reaches a leaf and then has to backtrack and try a different
-choice at a former node, for example.</p>
+choice at a former node.</p>
 
-<p>So, if the BST is unbalanced, the worst case time complexity to search for a value
-is <code class="highlighter-rouge">O(n)</code>: we can easily show that this is the case with the following tree:</p>
+<p>If the BST is unbalanced, the worst case time complexity to search for a value
+is <code class="highlighter-rouge">O(n)</code>. We can easily show that this is the case with the following tree:</p>
 
 <p><img src="/assets/left_bst.png" alt="Left BST" /></p>
 
@@ -164,8 +164,9 @@ look at each of the <code class="highlighter-rouge">n=15</code> elements. That i
 
 <p><img src="/assets/balanced_bst.png" alt="Balanced BST" /></p>
 
-<p>Now, to search for <em>any</em> value in the BST, the maximum depth we’d need to traverse is
-<code class="highlighter-rouge">k</code>. Or, to put that in terms of <code class="highlighter-rouge">n</code> and big-O: <code class="highlighter-rouge">O(log2(n))</code>.</p>
+<p>Now, to search for <em>any</em> value in the BST, the maximum depth we’d need to
+traverse is <code class="highlighter-rouge">k</code>. We know that <code class="highlighter-rouge">k=log2(n)</code>, so we can say that the big-O runtime
+complexity in terms of <code class="highlighter-rouge">n</code> is <code class="highlighter-rouge">O(log2(n))</code>.</p>
 
 <h1 id="an-aside-on-branching-factor">An aside on branching factor</h1>
 
