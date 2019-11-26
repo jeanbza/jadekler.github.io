@@ -84,8 +84,8 @@ $$
 This is easily observable: each level has 2 times the number of nodes as the
 last, since each node has 2 children (except the leaf nodes, which have 0).
 
-What if we knew the amount of nodes, but not the height? We can get the height
-with,
+What if we knew the amount of nodes, but not the height? We can rework the
+formula we just came up with to give us height using number of nodes,
 
 $$
 \begin{align*}
