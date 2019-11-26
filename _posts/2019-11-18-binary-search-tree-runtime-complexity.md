@@ -72,7 +72,14 @@ We can tell the following about this tree:
 
 The number of nodes `n` can also be expressed as,
 
-$$n=2^k-1$$
+$$
+\begin{align*}
+n=2^k-1 \\
+n=2^4-1
+n=16-1
+n=15 \\
+\end{align*}
+$$
 
 This is easily observable: each level has 2 times the number of nodes as the
 last, since each node has 2 children (except the leaf nodes, which have 0).
