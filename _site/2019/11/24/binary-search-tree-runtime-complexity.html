@@ -102,8 +102,9 @@ from that assertion to see if we really understand what we mean when we say that
 
 <p>So, expanding <code class="highlighter-rouge">O(logn)</code>, we have: <code class="highlighter-rouge">O(log2(&lt;# nodes in tree&gt;))</code>.</p>
 
-<p>Well, searching a binary tree is not strictly <code class="highlighter-rouge">O(log2(n))</code>: it can also be
-<code class="highlighter-rouge">O(n)</code>. Let’s discover why by exploring how the <code class="highlighter-rouge">log2</code> comes about.</p>
+<p>Well, searching a BST is not strictly <code class="highlighter-rouge">O(log2(n))</code>: it depends on whether the
+BST is balanced or not. An unbalanced BST may be <code class="highlighter-rouge">O(n)</code>. Let’s discover why by
+exploring how the <code class="highlighter-rouge">log2</code> comes about.</p>
 
 <h1 id="logarithms-and-exponents">Logarithms and exponents</h1>
 

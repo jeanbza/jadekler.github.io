@@ -55,8 +55,9 @@ from that assertion to see if we really understand what we mean when we say that
 
 So, expanding `O(logn)`, we have: `O(log2(<# nodes in tree>))`.
 
-Well, searching a binary tree is not strictly `O(log2(n))`: it can also be
-`O(n)`. Let's discover why by exploring how the `log2` comes about.
+Well, searching a BST is not strictly `O(log2(n))`: it depends on whether the
+BST is balanced or not. An unbalanced BST may be `O(n)`. Let's discover why by
+exploring how the `log2` comes about.
 
 # Logarithms and exponents
 
