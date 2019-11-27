@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-11-28T10:15:44+11:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jean de Klerk</title><subtitle>This is my personal website. The views represented here are my own, and do not represent my employer.</subtitle><entry><title type="html">Binary Search Tree Runtime Complexities</title><link href="http://localhost:4000/2019/11/24/binary-search-tree-runtime-complexity.html" rel="alternate" type="text/html" title="Binary Search Tree Runtime Complexities" /><published>2019-11-24T08:55:23+11:00</published><updated>2019-11-24T08:55:23+11:00</updated><id>http://localhost:4000/2019/11/24/binary-search-tree-runtime-complexity</id><content type="html" xml:base="http://localhost:4000/2019/11/24/binary-search-tree-runtime-complexity.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-11-28T10:20:39+11:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jean de Klerk</title><subtitle>This is my personal website. The views represented here are my own, and do not represent my employer.</subtitle><entry><title type="html">Binary Search Tree Runtime Complexities</title><link href="http://localhost:4000/2019/11/24/binary-search-tree-runtime-complexity.html" rel="alternate" type="text/html" title="Binary Search Tree Runtime Complexities" /><published>2019-11-24T08:55:23+11:00</published><updated>2019-11-24T08:55:23+11:00</updated><id>http://localhost:4000/2019/11/24/binary-search-tree-runtime-complexity</id><content type="html" xml:base="http://localhost:4000/2019/11/24/binary-search-tree-runtime-complexity.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
 
 &lt;p&gt;I’ve recently inundated myself with interview preparation. Along the way, I
 thought a lot about how to intuit runtime complexities for various algorithms.
@@ -155,8 +155,12 @@ complexity in terms of &lt;code class=&quot;highlighter-rouge&quot;&gt;n&lt;/cod
 
 &lt;h1 id=&quot;in-conclusion&quot;&gt;In conclusion&lt;/h1&gt;
 
-&lt;p&gt;Binary search trees don’t guarantee &lt;code class=&quot;highlighter-rouge&quot;&gt;O(log2(n))&lt;/code&gt; search: &lt;em&gt;balanced&lt;/em&gt; BSTs do.
-Hopefully the above provides the intuition for that.&lt;/p&gt;
+&lt;p&gt;There are at most &lt;code class=&quot;highlighter-rouge&quot;&gt;n=(b^k - 1)/(b - 1)&lt;/code&gt; nodes in any tree with height &lt;code class=&quot;highlighter-rouge&quot;&gt;k&lt;/code&gt; and
+branching factor &lt;code class=&quot;highlighter-rouge&quot;&gt;b&lt;/code&gt;. In a binary tree, that simplifies to &lt;code class=&quot;highlighter-rouge&quot;&gt;n=2^k-1&lt;/code&gt;, and can
+be re-written in terms of height as &lt;code class=&quot;highlighter-rouge&quot;&gt;k=log2(n+1)&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;To conclude our original question: binary search trees don’t guarantee
+&lt;code class=&quot;highlighter-rouge&quot;&gt;O(log2(n))&lt;/code&gt; search: &lt;em&gt;balanced&lt;/em&gt; BSTs do.&lt;/p&gt;
 
 &lt;p&gt;In a future article we’ll look at &lt;a href=&quot;https://en.wikipedia.org/wiki/Heap_(data_structure)&quot;&gt;Heap&lt;/a&gt;
 runtime complexity, and how memoization affects that. In some other future

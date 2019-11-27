@@ -160,8 +160,12 @@ complexity in terms of `n` is `O(log2(n))`.
 
 # In conclusion
 
-Binary search trees don't guarantee `O(log2(n))` search: _balanced_ BSTs do.
-Hopefully the above provides the intuition for that.
+There are at most `n=(b^k - 1)/(b - 1)` nodes in any tree with height `k` and
+branching factor `b`. In a binary tree, that simplifies to `n=2^k-1`, and can
+be re-written in terms of height as `k=log2(n+1)`.
+
+To conclude our original question: binary search trees don't guarantee
+`O(log2(n))` search: _balanced_ BSTs do.
 
 In a future article we'll look at [Heap](https://en.wikipedia.org/wiki/Heap_(data_structure))
 runtime complexity, and how memoization affects that. In some other future
