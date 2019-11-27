@@ -75,7 +75,7 @@ at each level are powers of 2. So, at `k=4` there are,
 
 $$
 \begin{align*}
-n=1+2+4+8 && \text{The sum of each level's size.} \\
+n=1+2+4+8 && \text{The sum of the nodes at each level.} \\
 n=2^0+2^1+2^2+2^3 && \text{Represented in powers of 2.} \\
 n=\sum\limits_{j=0}^{k-1} 2^j && \text{Represented as a summation.} \\
 \end{align*}
