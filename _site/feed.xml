@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-11-28T10:25:59+11:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jean de Klerk</title><subtitle>This is my personal website. The views represented here are my own, and do not represent my employer.</subtitle><entry><title type="html">Binary Search Tree Runtime Complexities</title><link href="http://localhost:4000/2019/11/24/binary-search-tree-runtime-complexity.html" rel="alternate" type="text/html" title="Binary Search Tree Runtime Complexities" /><published>2019-11-24T08:55:23+11:00</published><updated>2019-11-24T08:55:23+11:00</updated><id>http://localhost:4000/2019/11/24/binary-search-tree-runtime-complexity</id><content type="html" xml:base="http://localhost:4000/2019/11/24/binary-search-tree-runtime-complexity.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-11-28T10:29:34+11:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jean de Klerk</title><subtitle>This is my personal website. The views represented here are my own, and do not represent my employer.</subtitle><entry><title type="html">Binary Search Tree Runtime Complexities</title><link href="http://localhost:4000/2019/11/24/binary-search-tree-runtime-complexity.html" rel="alternate" type="text/html" title="Binary Search Tree Runtime Complexities" /><published>2019-11-24T08:55:23+11:00</published><updated>2019-11-24T08:55:23+11:00</updated><id>http://localhost:4000/2019/11/24/binary-search-tree-runtime-complexity</id><content type="html" xml:base="http://localhost:4000/2019/11/24/binary-search-tree-runtime-complexity.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
 
 &lt;p&gt;I’ve recently inundated myself with interview preparation. Along the way, I
 thought a lot about how to intuit runtime complexities for various algorithms.
@@ -122,10 +122,10 @@ formula we just came up with to give us height using number of nodes,&lt;/p&gt;
 \begin{align*}
 n=2^k-1 \\
 n+1=2^k &amp;&amp; \text{Move 1 to the left.} \\
-log2(n+1)=log2(2^k) &amp;&amp; \text{log2 both sides.} \\
-log2(n+1)=k \cdot log2(2) &amp;&amp; \text{Power rule.} \\
-log2(n+1)=k &amp;&amp; \text{Identity rule.} \\
-k=log2(n+1)
+\log_2 {(n+1)}=\log_2 {(2^k)} &amp;&amp; \text{log2 both sides.} \\
+\log_2 {(n+1)}=k \cdot \log_2 2 &amp;&amp; \text{Power rule.} \\
+\log_2 {(n+1)}=k &amp;&amp; \text{Identity rule.} \\
+k=\log_2 {(n+1)}
 \end{align*} %]]&gt;&lt;/script&gt;
 
 &lt;h1 id=&quot;back-to-binary-search-trees&quot;&gt;Back to binary search trees&lt;/h1&gt;

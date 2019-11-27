@@ -126,10 +126,10 @@ $$
 \begin{align*}
 n=2^k-1 \\
 n+1=2^k && \text{Move 1 to the left.} \\
-log2(n+1)=log2(2^k) && \text{log2 both sides.} \\
-log2(n+1)=k \cdot log2(2) && \text{Power rule.} \\
-log2(n+1)=k && \text{Identity rule.} \\
-k=log2(n+1)
+\log_2 {(n+1)}=\log_2 {(2^k)} && \text{log2 both sides.} \\
+\log_2 {(n+1)}=k \cdot \log_2 2 && \text{Power rule.} \\
+\log_2 {(n+1)}=k && \text{Identity rule.} \\
+k=\log_2 {(n+1)}
 \end{align*}
 $$
 
