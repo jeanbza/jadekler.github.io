@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-11-26T14:32:34+11:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jean de Klerk</title><subtitle>This is my personal website. The views represented here are my own, and do not represent my employer.</subtitle><entry><title type="html">Binary Search Tree Runtime Complexities</title><link href="http://localhost:4000/2019/11/24/binary-search-tree-runtime-complexity.html" rel="alternate" type="text/html" title="Binary Search Tree Runtime Complexities" /><published>2019-11-24T08:55:23+11:00</published><updated>2019-11-24T08:55:23+11:00</updated><id>http://localhost:4000/2019/11/24/binary-search-tree-runtime-complexity</id><content type="html" xml:base="http://localhost:4000/2019/11/24/binary-search-tree-runtime-complexity.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2019-11-28T10:15:44+11:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jean de Klerk</title><subtitle>This is my personal website. The views represented here are my own, and do not represent my employer.</subtitle><entry><title type="html">Binary Search Tree Runtime Complexities</title><link href="http://localhost:4000/2019/11/24/binary-search-tree-runtime-complexity.html" rel="alternate" type="text/html" title="Binary Search Tree Runtime Complexities" /><published>2019-11-24T08:55:23+11:00</published><updated>2019-11-24T08:55:23+11:00</updated><id>http://localhost:4000/2019/11/24/binary-search-tree-runtime-complexity</id><content type="html" xml:base="http://localhost:4000/2019/11/24/binary-search-tree-runtime-complexity.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
 
 &lt;p&gt;I’ve recently inundated myself with interview preparation. Along the way, I
 thought a lot about how to intuit runtime complexities for various algorithms.
@@ -72,29 +72,61 @@ exploring how the &lt;code class=&quot;highlighter-rouge&quot;&gt;log2&lt;/code&
   &lt;li&gt;It has nodes &lt;code class=&quot;highlighter-rouge&quot;&gt;n=15&lt;/code&gt;.&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;The number of nodes &lt;code class=&quot;highlighter-rouge&quot;&gt;n&lt;/code&gt; can also be expressed as,&lt;/p&gt;
+&lt;p&gt;The number of nodes is the sum of the nodes at each level. The number of nodes
+at each level are powers of 2. So, at &lt;code class=&quot;highlighter-rouge&quot;&gt;k=4&lt;/code&gt; there are,&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{align*}
+n=1+2+4+8 &amp;&amp; \text{The sum of each level's size.} \\
+n=2^0+2^1+2^2+2^3 &amp;&amp; \text{Represented in powers of 2.} \\
+n=\sum\limits_{j=0}^{k-1} 2^j &amp;&amp; \text{Represented as a summation.} \\
+\end{align*} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;The branching factor here is 2 - each node has 2 children. What if each child
+had 7 children, or 9, or 21? Let’s re-write the summation with a generic
+branching factor &lt;code class=&quot;highlighter-rouge&quot;&gt;b&lt;/code&gt;:&lt;/p&gt;
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{align*}
-n=2^k-1 \\
-n=2^4-1 \\
-n=16-1 \\
-n=15
+n=\sum\limits_{j=0}^{k-1} 2^j \\
+n=\sum\limits_{j=0}^{k-1} b^j \\
 \end{align*}&lt;/script&gt;
 
-&lt;p&gt;This is easily observable: each level has 2 times the number of nodes as the
-last, since each node has 2 children (except the leaf nodes, which have 0).&lt;/p&gt;
+&lt;p&gt;Sums are a bit of nuisance. Let’s convert this sum into a discrete formula:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{align*}
+n=\sum\limits_{j=0}^{k-1} b^j \\
+n=b^{k-1}+b^{k-2}+...+1 &amp;&amp; \text{Expanding the sum.} \\
+n \cdot b=(b^{k-1}+b^{k-2}+...+1) \cdot b &amp;&amp; \text{Multiply by b.} \\
+n \cdot b=b^k+b^{k-1}+...+b &amp;&amp; \text{All the exponents rise by 1.} \\
+n \cdot b + 1=b^k+b^{k-1}+...+b+1 &amp;&amp; \text{Add 1 to each side.} \\
+n \cdot b + 1=b^k + n &amp;&amp; \text{Note that we can use n for the right side.} \\
+n \cdot b - n=b^k - 1 &amp;&amp; \text{Move n left; 1 right.} \\
+n \cdot (b - 1)=b^k - 1 &amp;&amp; \text{Factor out n.} \\
+n = \frac{b^k - 1}{b - 1} &amp;&amp; \text{Divide by n-1.} \\
+\end{align*} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;Let’s test the formula by using &lt;code class=&quot;highlighter-rouge&quot;&gt;k=4&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;b=2&lt;/code&gt; again, which we think should
+equal &lt;code class=&quot;highlighter-rouge&quot;&gt;n=15&lt;/code&gt;:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{align*}
+n=\frac{2^4-1}{2-1} \\
+n=\frac{16-1}{1} \\
+n=15 \\
+\end{align*}&lt;/script&gt;
 
 &lt;p&gt;What if we knew the amount of nodes, but not the height? We can rework the
 formula we just came up with to give us height using number of nodes,&lt;/p&gt;
 
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{align*}
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{align*}
 n=2^k-1 \\
-n+1=2^k \\
-log2(n+1)=log2(2^k) \\
-log2(n+1)=k*log2(2) \\
-log2(n+1)=k \\
+n+1=2^k &amp;&amp; \text{Move 1 to the left.} \\
+log2(n+1)=log2(2^k) &amp;&amp; \text{log2 both sides.} \\
+log2(n+1)=k \cdot log2(2) &amp;&amp; \text{Power rule.} \\
+log2(n+1)=k &amp;&amp; \text{Identity rule.} \\
 k=log2(n+1)
-\end{align*}&lt;/script&gt;
+\end{align*} %]]&gt;&lt;/script&gt;
 
 &lt;h1 id=&quot;back-to-binary-search-trees&quot;&gt;Back to binary search trees&lt;/h1&gt;
 
@@ -120,17 +152,6 @@ look at each of the &lt;code class=&quot;highlighter-rouge&quot;&gt;n=15&lt;/cod
 &lt;p&gt;Now, to search for &lt;em&gt;any&lt;/em&gt; value in the BST, the maximum depth we’d need to
 traverse is &lt;code class=&quot;highlighter-rouge&quot;&gt;k&lt;/code&gt;. We know that &lt;code class=&quot;highlighter-rouge&quot;&gt;k=log2(n)&lt;/code&gt;, so we can say that the big-O runtime
 complexity in terms of &lt;code class=&quot;highlighter-rouge&quot;&gt;n&lt;/code&gt; is &lt;code class=&quot;highlighter-rouge&quot;&gt;O(log2(n))&lt;/code&gt;.&lt;/p&gt;
-
-&lt;h1 id=&quot;an-aside-on-branching-factor&quot;&gt;An aside on branching factor&lt;/h1&gt;
-
-&lt;p&gt;All of our details above deal with a binary tree - a tree in which each node has
-at most 2 children. What if each node had 9 children? The maximum number of
-children a node has in a tree is called the &lt;a href=&quot;https://en.wikipedia.org/wiki/Branching_factor&quot;&gt;branching factor&lt;/a&gt;,
-and it determines the bases of the logarithms and exponents in all the
-calculations above.&lt;/p&gt;
-
-&lt;p&gt;So, if the branching factor for a tree is 9, and it is complete, then it has
-&lt;code class=&quot;highlighter-rouge&quot;&gt;9^k-1&lt;/code&gt; nodes (and so on).&lt;/p&gt;
 
 &lt;h1 id=&quot;in-conclusion&quot;&gt;In conclusion&lt;/h1&gt;
 

@@ -70,19 +70,54 @@ We can tell the following about this tree:
 - It has height `k=4`.
 - It has nodes `n=15`.
 
-The number of nodes `n` can also be expressed as,
+The number of nodes is the sum of the nodes at each level. The number of nodes
+at each level are powers of 2. So, at `k=4` there are,
 
 $$
 \begin{align*}
-n=2^k-1 \\
-n=2^4-1 \\
-n=16-1 \\
-n=15
+n=1+2+4+8 && \text{The sum of each level's size.} \\
+n=2^0+2^1+2^2+2^3 && \text{Represented in powers of 2.} \\
+n=\sum\limits_{j=0}^{k-1} 2^j && \text{Represented as a summation.} \\
 \end{align*}
 $$
 
-This is easily observable: each level has 2 times the number of nodes as the
-last, since each node has 2 children (except the leaf nodes, which have 0).
+The branching factor here is 2 - each node has 2 children. What if each child
+had 7 children, or 9, or 21? Let's re-write the summation with a generic
+branching factor `b`:
+
+$$
+\begin{align*}
+n=\sum\limits_{j=0}^{k-1} 2^j \\
+n=\sum\limits_{j=0}^{k-1} b^j \\
+\end{align*}
+$$
+
+Sums are a bit of nuisance. Let's convert this sum into a discrete formula:
+
+$$
+\begin{align*}
+n=\sum\limits_{j=0}^{k-1} b^j \\
+n=b^{k-1}+b^{k-2}+...+1 && \text{Expanding the sum.} \\
+n \cdot b=(b^{k-1}+b^{k-2}+...+1) \cdot b && \text{Multiply by b.} \\
+n \cdot b=b^k+b^{k-1}+...+b && \text{All the exponents rise by 1.} \\
+n \cdot b + 1=b^k+b^{k-1}+...+b+1 && \text{Add 1 to each side.} \\
+n \cdot b + 1=b^k + n && \text{Note that we can use n for the right side.} \\
+n \cdot b - n=b^k - 1 && \text{Move n left; 1 right.} \\
+n \cdot (b - 1)=b^k - 1 && \text{Factor out n.} \\
+n = \frac{b^k - 1}{b - 1} && \text{Divide by n-1.} \\
+\end{align*}
+$$
+
+Let's test the formula by using `k=4` and `b=2` again, which we think should
+equal `n=15`:
+
+$$
+\begin{align*}
+n=\frac{2^4-1}{2-1} \\
+n=\frac{16-1}{1} \\
+n=15 \\
+\end{align*}
+$$
 
 What if we knew the amount of nodes, but not the height? We can rework the
 formula we just came up with to give us height using number of nodes,
@@ -90,10 +125,10 @@ formula we just came up with to give us height using number of nodes,
 $$
 \begin{align*}
 n=2^k-1 \\
-n+1=2^k \\
-log2(n+1)=log2(2^k) \\
-log2(n+1)=k*log2(2) \\
-log2(n+1)=k \\
+n+1=2^k && \text{Move 1 to the left.} \\
+log2(n+1)=log2(2^k) && \text{log2 both sides.} \\
+log2(n+1)=k \cdot log2(2) && \text{Power rule.} \\
+log2(n+1)=k && \text{Identity rule.} \\
 k=log2(n+1)
 \end{align*}
 $$
@@ -122,17 +157,6 @@ What if this BST were balanced, instead?
 Now, to search for _any_ value in the BST, the maximum depth we'd need to
 traverse is `k`. We know that `k=log2(n)`, so we can say that the big-O runtime
 complexity in terms of `n` is `O(log2(n))`.
-
-# An aside on branching factor
-
-All of our details above deal with a binary tree - a tree in which each node has
-at most 2 children. What if each node had 9 children? The maximum number of
-children a node has in a tree is called the [branching factor](https://en.wikipedia.org/wiki/Branching_factor),
-and it determines the bases of the logarithms and exponents in all the
-calculations above.
-
-So, if the branching factor for a tree is 9, and it is complete, then it has
-`9^k-1` nodes (and so on).
 
 # In conclusion
 

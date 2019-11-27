@@ -119,29 +119,61 @@ exploring how the <code class="highlighter-rouge">log2</code> comes about.</p>
   <li>It has nodes <code class="highlighter-rouge">n=15</code>.</li>
 </ul>
 
-<p>The number of nodes <code class="highlighter-rouge">n</code> can also be expressed as,</p>
+<p>The number of nodes is the sum of the nodes at each level. The number of nodes
+at each level are powers of 2. So, at <code class="highlighter-rouge">k=4</code> there are,</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{align*}
+n=1+2+4+8 && \text{The sum of each level's size.} \\
+n=2^0+2^1+2^2+2^3 && \text{Represented in powers of 2.} \\
+n=\sum\limits_{j=0}^{k-1} 2^j && \text{Represented as a summation.} \\
+\end{align*} %]]></script>
+
+<p>The branching factor here is 2 - each node has 2 children. What if each child
+had 7 children, or 9, or 21? Let’s re-write the summation with a generic
+branching factor <code class="highlighter-rouge">b</code>:</p>
 
 <script type="math/tex; mode=display">\begin{align*}
-n=2^k-1 \\
-n=2^4-1 \\
-n=16-1 \\
-n=15
+n=\sum\limits_{j=0}^{k-1} 2^j \\
+n=\sum\limits_{j=0}^{k-1} b^j \\
 \end{align*}</script>
 
-<p>This is easily observable: each level has 2 times the number of nodes as the
-last, since each node has 2 children (except the leaf nodes, which have 0).</p>
+<p>Sums are a bit of nuisance. Let’s convert this sum into a discrete formula:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{align*}
+n=\sum\limits_{j=0}^{k-1} b^j \\
+n=b^{k-1}+b^{k-2}+...+1 && \text{Expanding the sum.} \\
+n \cdot b=(b^{k-1}+b^{k-2}+...+1) \cdot b && \text{Multiply by b.} \\
+n \cdot b=b^k+b^{k-1}+...+b && \text{All the exponents rise by 1.} \\
+n \cdot b + 1=b^k+b^{k-1}+...+b+1 && \text{Add 1 to each side.} \\
+n \cdot b + 1=b^k + n && \text{Note that we can use n for the right side.} \\
+n \cdot b - n=b^k - 1 && \text{Move n left; 1 right.} \\
+n \cdot (b - 1)=b^k - 1 && \text{Factor out n.} \\
+n = \frac{b^k - 1}{b - 1} && \text{Divide by n-1.} \\
+\end{align*} %]]></script>
+
+<p>Let’s test the formula by using <code class="highlighter-rouge">k=4</code> and <code class="highlighter-rouge">b=2</code> again, which we think should
+equal <code class="highlighter-rouge">n=15</code>:</p>
+
+<script type="math/tex; mode=display">\begin{align*}
+n=\frac{2^4-1}{2-1} \\
+n=\frac{16-1}{1} \\
+n=15 \\
+\end{align*}</script>
 
 <p>What if we knew the amount of nodes, but not the height? We can rework the
 formula we just came up with to give us height using number of nodes,</p>
 
-<script type="math/tex; mode=display">\begin{align*}
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{align*}
 n=2^k-1 \\
-n+1=2^k \\
-log2(n+1)=log2(2^k) \\
-log2(n+1)=k*log2(2) \\
-log2(n+1)=k \\
+n+1=2^k && \text{Move 1 to the left.} \\
+log2(n+1)=log2(2^k) && \text{log2 both sides.} \\
+log2(n+1)=k \cdot log2(2) && \text{Power rule.} \\
+log2(n+1)=k && \text{Identity rule.} \\
 k=log2(n+1)
-\end{align*}</script>
+\end{align*} %]]></script>
 
 <h1 id="back-to-binary-search-trees">Back to binary search trees</h1>
 
@@ -167,17 +199,6 @@ look at each of the <code class="highlighter-rouge">n=15</code> elements. That i
 <p>Now, to search for <em>any</em> value in the BST, the maximum depth we’d need to
 traverse is <code class="highlighter-rouge">k</code>. We know that <code class="highlighter-rouge">k=log2(n)</code>, so we can say that the big-O runtime
 complexity in terms of <code class="highlighter-rouge">n</code> is <code class="highlighter-rouge">O(log2(n))</code>.</p>
-
-<h1 id="an-aside-on-branching-factor">An aside on branching factor</h1>
-
-<p>All of our details above deal with a binary tree - a tree in which each node has
-at most 2 children. What if each node had 9 children? The maximum number of
-children a node has in a tree is called the <a href="https://en.wikipedia.org/wiki/Branching_factor">branching factor</a>,
-and it determines the bases of the logarithms and exponents in all the
-calculations above.</p>
-
-<p>So, if the branching factor for a tree is 9, and it is complete, then it has
-<code class="highlighter-rouge">9^k-1</code> nodes (and so on).</p>
 
 <h1 id="in-conclusion">In conclusion</h1>
 
