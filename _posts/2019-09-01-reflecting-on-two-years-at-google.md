@@ -35,9 +35,8 @@ On one campus. More on other campuses. Mind blown.
 
 The first two weeks are spent in lectures and seminars repeatedly having your
 sense of scale and proportion obliterated, being exposed to various systems and teams
-within the company, being taught taught by senior
-engineers how to use some of these systems, and generally being taught how to
-teach yourself.
+within the company, being taught by senior engineers how to use some of these
+systems, and generally being taught how to teach yourself.
 
 In your third week you're ready to meet your team. Your team introduces you to
 a "starter project": a small project in a well-understood area that you can use
