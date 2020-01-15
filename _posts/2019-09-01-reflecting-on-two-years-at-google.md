@@ -56,11 +56,11 @@ a certain way.
 
 All code at Google goes through a process called "code review", where code
 changes (or additions, deletions) get "proposed" and reviewed by colleagues,
-who either Yea, Nay, or ask for changes. This is a fairly common practice in
-software engineering. It varies a lot by company. At most companies, code review
-usually something like 30 minutes to 2 days per code change. Code reviews at
-most companies are typically fairly high-level, and tend to concern themselves
-with broad design or nit-picky things like code style.
+who either Yea, Nay, or ask for changes. Code review is a fairly common practice
+in software engineering, though the implementation varies a lot by company. At
+most companies, code review usually something like 30 minutes to 2 days per code
+change. Code reviews at most companies are typically fairly high-level, and tend
+to concern themselves with broad design or nit-picky things like code style.
 
 That first change I proposed took something like _two weeks_ to get through
 code review. I learned more about Go and code design during that code review
@@ -142,7 +142,7 @@ rather than the disappointment I was subconsiously bracing myself for.
 The outcome is a much healthier, happier day-to-day, week-to-week. I once
 again find self-value in things outside of work; I have a robust and healthy
 support system of friends and family; I progress myself in sports and hobbies
-so that stalls or failures at work at diminished in impact by successes
+so that stalls or failures at work are diminished in impact by successes
 elsewhere.
 
 # Keeping perspective
