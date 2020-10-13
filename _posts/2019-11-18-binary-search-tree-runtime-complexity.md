@@ -172,7 +172,7 @@ runtime complexity, and how memoization affects that. In some other future
 article we'll look at backtracking and permutation runtime complexities.
 
 <script type="text/javascript" async
-  src="/assets/MathJax-2.7.9/MathJax.js?config=TeX-MML-AM_CHTML">
+  src="/assets/MathJax-2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 </script>
 <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
