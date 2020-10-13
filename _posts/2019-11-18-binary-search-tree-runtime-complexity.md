@@ -87,8 +87,8 @@ branching factor `b`:
 
 $$
 \begin{align*}
-n=\sum\limits_{j=0}^{k-1} 2^j \\
-n=\sum\limits_{j=0}^{k-1} b^j \\
+n=\sum\limits_{j=0}^{k-1} 2^j && \text{Branching factor of 2, as before.} \\
+n=\sum\limits_{j=0}^{k-1} b^j && \text{Branching factor of b.} \\
 \end{align*}
 $$
 
@@ -99,7 +99,7 @@ $$
 n=\sum\limits_{j=0}^{k-1} b^j \\
 n=b^{k-1}+b^{k-2}+...+1 && \text{Expanding the sum.} \\
 n \cdot b=(b^{k-1}+b^{k-2}+...+1) \cdot b && \text{Multiply by b.} \\
-n \cdot b=b^k+b^{k-1}+...+b && \text{All the exponents rise by 1.} \\
+n \cdot b=b^k+b^{k-1}+...+b && \text{Distribute the b into the sum.} \\
 n \cdot b + 1=b^k+b^{k-1}+...+b+1 && \text{Add 1 to each side.} \\
 n \cdot b + 1=b^k + n && \text{Note that we can use n for the right side.} \\
 n \cdot b - n=b^k - 1 && \text{Move n left; 1 right.} \\

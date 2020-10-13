@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-10-12T18:47:56-06:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jean de Klerk</title><subtitle>This is my personal website. The views represented here are my own, and do not represent my employer.</subtitle><entry><title type="html">Stubbing gRPC in Go</title><link href="http://localhost:4000/2020/10/08/stubbing-grpc.html" rel="alternate" type="text/html" title="Stubbing gRPC in Go" /><published>2020-10-08T15:55:23-06:00</published><updated>2020-10-08T15:55:23-06:00</updated><id>http://localhost:4000/2020/10/08/stubbing-grpc</id><content type="html" xml:base="http://localhost:4000/2020/10/08/stubbing-grpc.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-10-12T18:55:54-06:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jean de Klerk</title><subtitle>This is my personal website. The views represented here are my own, and do not represent my employer.</subtitle><entry><title type="html">Stubbing gRPC in Go</title><link href="http://localhost:4000/2020/10/08/stubbing-grpc.html" rel="alternate" type="text/html" title="Stubbing gRPC in Go" /><published>2020-10-08T15:55:23-06:00</published><updated>2020-10-08T15:55:23-06:00</updated><id>http://localhost:4000/2020/10/08/stubbing-grpc</id><content type="html" xml:base="http://localhost:4000/2020/10/08/stubbing-grpc.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
 
 &lt;p&gt;I’ve several times been met with the question, “How do you stub gRPC in Go”?&lt;/p&gt;
 
@@ -415,8 +415,8 @@ had 7 children, or 9, or 21? Let’s re-write the summation with a generic
 branching factor &lt;code class=&quot;highlighter-rouge&quot;&gt;b&lt;/code&gt;:&lt;/p&gt;
 
 \[\begin{align*}
-n=\sum\limits_{j=0}^{k-1} 2^j \\
-n=\sum\limits_{j=0}^{k-1} b^j \\
+n=\sum\limits_{j=0}^{k-1} 2^j &amp;amp;&amp;amp; \text{Branching factor of 2, as before.} \\
+n=\sum\limits_{j=0}^{k-1} b^j &amp;amp;&amp;amp; \text{Branching factor of b.} \\
 \end{align*}\]
 
 &lt;p&gt;Sums are a bit of nuisance. Let’s convert this sum into a discrete formula:&lt;/p&gt;
@@ -425,7 +425,7 @@ n=\sum\limits_{j=0}^{k-1} b^j \\
 n=\sum\limits_{j=0}^{k-1} b^j \\
 n=b^{k-1}+b^{k-2}+...+1 &amp;amp;&amp;amp; \text{Expanding the sum.} \\
 n \cdot b=(b^{k-1}+b^{k-2}+...+1) \cdot b &amp;amp;&amp;amp; \text{Multiply by b.} \\
-n \cdot b=b^k+b^{k-1}+...+b &amp;amp;&amp;amp; \text{All the exponents rise by 1.} \\
+n \cdot b=b^k+b^{k-1}+...+b &amp;amp;&amp;amp; \text{Distribute the b into the sum.} \\
 n \cdot b + 1=b^k+b^{k-1}+...+b+1 &amp;amp;&amp;amp; \text{Add 1 to each side.} \\
 n \cdot b + 1=b^k + n &amp;amp;&amp;amp; \text{Note that we can use n for the right side.} \\
 n \cdot b - n=b^k - 1 &amp;amp;&amp;amp; \text{Move n left; 1 right.} \\
