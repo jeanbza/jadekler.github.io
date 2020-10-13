@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-10-12T18:09:08-06:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jean de Klerk</title><subtitle>This is my personal website. The views represented here are my own, and do not represent my employer.</subtitle><entry><title type="html">Stubbing gRPC in Go</title><link href="http://localhost:4000/2020/10/08/stubbing-grpc.html" rel="alternate" type="text/html" title="Stubbing gRPC in Go" /><published>2020-10-08T15:55:23-06:00</published><updated>2020-10-08T15:55:23-06:00</updated><id>http://localhost:4000/2020/10/08/stubbing-grpc</id><content type="html" xml:base="http://localhost:4000/2020/10/08/stubbing-grpc.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-10-12T18:39:12-06:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jean de Klerk</title><subtitle>This is my personal website. The views represented here are my own, and do not represent my employer.</subtitle><entry><title type="html">Stubbing gRPC in Go</title><link href="http://localhost:4000/2020/10/08/stubbing-grpc.html" rel="alternate" type="text/html" title="Stubbing gRPC in Go" /><published>2020-10-08T15:55:23-06:00</published><updated>2020-10-08T15:55:23-06:00</updated><id>http://localhost:4000/2020/10/08/stubbing-grpc</id><content type="html" xml:base="http://localhost:4000/2020/10/08/stubbing-grpc.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
 
 &lt;p&gt;I’ve several times been met with the question, “How do you stub gRPC in Go”?&lt;/p&gt;
 
@@ -404,58 +404,55 @@ exploring how the &lt;code class=&quot;highlighter-rouge&quot;&gt;log2&lt;/code&
 &lt;p&gt;The number of nodes is the sum of the nodes at each level. The number of nodes
 at each level are powers of 2. So, at &lt;code class=&quot;highlighter-rouge&quot;&gt;k=4&lt;/code&gt; there are,&lt;/p&gt;
 
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-\begin{align*}
-n=1+2+4+8 &amp;&amp; \text{The sum of the nodes at each level.} \\
-n=2^0+2^1+2^2+2^3 &amp;&amp; \text{Represented in powers of 2.} \\
-n=\sum\limits_{j=0}^{k-1} 2^j &amp;&amp; \text{Represented as a summation.} \\
-\end{align*} %]]&gt;&lt;/script&gt;
+\[\begin{align*}
+n=1+2+4+8 &amp;amp;&amp;amp; \text{The sum of the nodes at each level.} \\
+n=2^0+2^1+2^2+2^3 &amp;amp;&amp;amp; \text{Represented in powers of 2.} \\
+n=\sum\limits_{j=0}^{k-1} 2^j &amp;amp;&amp;amp; \text{Represented as a summation.} \\
+\end{align*}\]
 
 &lt;p&gt;The branching factor here is 2 - each node has 2 children. What if each child
 had 7 children, or 9, or 21? Let’s re-write the summation with a generic
 branching factor &lt;code class=&quot;highlighter-rouge&quot;&gt;b&lt;/code&gt;:&lt;/p&gt;
 
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{align*}
+\[\begin{align*}
 n=\sum\limits_{j=0}^{k-1} 2^j \\
 n=\sum\limits_{j=0}^{k-1} b^j \\
-\end{align*}&lt;/script&gt;
+\end{align*}\]
 
 &lt;p&gt;Sums are a bit of nuisance. Let’s convert this sum into a discrete formula:&lt;/p&gt;
 
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-\begin{align*}
+\[\begin{align*}
 n=\sum\limits_{j=0}^{k-1} b^j \\
-n=b^{k-1}+b^{k-2}+...+1 &amp;&amp; \text{Expanding the sum.} \\
-n \cdot b=(b^{k-1}+b^{k-2}+...+1) \cdot b &amp;&amp; \text{Multiply by b.} \\
-n \cdot b=b^k+b^{k-1}+...+b &amp;&amp; \text{All the exponents rise by 1.} \\
-n \cdot b + 1=b^k+b^{k-1}+...+b+1 &amp;&amp; \text{Add 1 to each side.} \\
-n \cdot b + 1=b^k + n &amp;&amp; \text{Note that we can use n for the right side.} \\
-n \cdot b - n=b^k - 1 &amp;&amp; \text{Move n left; 1 right.} \\
-n \cdot (b - 1)=b^k - 1 &amp;&amp; \text{Factor out n.} \\
-n = \frac{b^k - 1}{b - 1} &amp;&amp; \text{Divide by n-1.} \\
-\end{align*} %]]&gt;&lt;/script&gt;
+n=b^{k-1}+b^{k-2}+...+1 &amp;amp;&amp;amp; \text{Expanding the sum.} \\
+n \cdot b=(b^{k-1}+b^{k-2}+...+1) \cdot b &amp;amp;&amp;amp; \text{Multiply by b.} \\
+n \cdot b=b^k+b^{k-1}+...+b &amp;amp;&amp;amp; \text{All the exponents rise by 1.} \\
+n \cdot b + 1=b^k+b^{k-1}+...+b+1 &amp;amp;&amp;amp; \text{Add 1 to each side.} \\
+n \cdot b + 1=b^k + n &amp;amp;&amp;amp; \text{Note that we can use n for the right side.} \\
+n \cdot b - n=b^k - 1 &amp;amp;&amp;amp; \text{Move n left; 1 right.} \\
+n \cdot (b - 1)=b^k - 1 &amp;amp;&amp;amp; \text{Factor out n.} \\
+n = \frac{b^k - 1}{b - 1} &amp;amp;&amp;amp; \text{Divide by n-1.} \\
+\end{align*}\]
 
 &lt;p&gt;Let’s test the formula by using &lt;code class=&quot;highlighter-rouge&quot;&gt;k=4&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;b=2&lt;/code&gt; again, which we think should
 equal &lt;code class=&quot;highlighter-rouge&quot;&gt;n=15&lt;/code&gt;:&lt;/p&gt;
 
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{align*}
+\[\begin{align*}
 n=\frac{2^4-1}{2-1} \\
 n=\frac{16-1}{1} \\
 n=15 \\
-\end{align*}&lt;/script&gt;
+\end{align*}\]
 
 &lt;p&gt;What if we knew the amount of nodes, but not the height? We can rework the
 formula we just came up with to give us height using number of nodes,&lt;/p&gt;
 
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-\begin{align*}
+\[\begin{align*}
 n=2^k-1 \\
-n+1=2^k &amp;&amp; \text{Move 1 to the left.} \\
-\log_2 {(n+1)}=\log_2 {(2^k)} &amp;&amp; \text{log2 both sides.} \\
-\log_2 {(n+1)}=k \cdot \log_2 2 &amp;&amp; \text{Power rule.} \\
-\log_2 {(n+1)}=k &amp;&amp; \text{Identity rule.} \\
+n+1=2^k &amp;amp;&amp;amp; \text{Move 1 to the left.} \\
+\log_2 {(n+1)}=\log_2 {(2^k)} &amp;amp;&amp;amp; \text{log2 both sides.} \\
+\log_2 {(n+1)}=k \cdot \log_2 2 &amp;amp;&amp;amp; \text{Power rule.} \\
+\log_2 {(n+1)}=k &amp;amp;&amp;amp; \text{Identity rule.} \\
 k=\log_2 {(n+1)}
-\end{align*} %]]&gt;&lt;/script&gt;
+\end{align*}\]
 
 &lt;h1 id=&quot;back-to-binary-search-trees&quot;&gt;Back to binary search trees&lt;/h1&gt;
 
@@ -495,7 +492,7 @@ be re-written in terms of height as &lt;code class=&quot;highlighter-rouge&quot;
 runtime complexity, and how memoization affects that. In some other future
 article we’ll look at backtracking and permutation runtime complexities.&lt;/p&gt;
 
-&lt;script type=&quot;text/javascript&quot; async=&quot;&quot; src=&quot;/assets/mathjax-2.7.5/MathJax.js?config=TeX-MML-AM_CHTML&quot;&gt;
+&lt;script type=&quot;text/javascript&quot; async=&quot;&quot; src=&quot;/assets/MathJax-2.7.9/MathJax.js?config=TeX-MML-AM_CHTML&quot;&gt;
 &lt;/script&gt;
 
 &lt;script type=&quot;text/x-mathjax-config&quot;&gt;

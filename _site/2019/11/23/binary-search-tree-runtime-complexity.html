@@ -15,7 +15,7 @@
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2019-11-23T14:55:23-07:00" />
 <script type="application/ld+json">
-{"dateModified":"2019-11-23T14:55:23-07:00","datePublished":"2019-11-23T14:55:23-07:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/11/23/binary-search-tree-runtime-complexity.html"},"description":"Introduction","@type":"BlogPosting","url":"http://localhost:4000/2019/11/23/binary-search-tree-runtime-complexity.html","headline":"Binary Search Tree Runtime Complexities","@context":"https://schema.org"}</script>
+{"headline":"Binary Search Tree Runtime Complexities","dateModified":"2019-11-23T14:55:23-07:00","datePublished":"2019-11-23T14:55:23-07:00","description":"Introduction","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/11/23/binary-search-tree-runtime-complexity.html"},"@type":"BlogPosting","url":"http://localhost:4000/2019/11/23/binary-search-tree-runtime-complexity.html","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Jean de Klerk" /></head>
 <body><header class="site-header" role="banner">
@@ -122,58 +122,55 @@ exploring how the <code class="highlighter-rouge">log2</code> comes about.</p>
 <p>The number of nodes is the sum of the nodes at each level. The number of nodes
 at each level are powers of 2. So, at <code class="highlighter-rouge">k=4</code> there are,</p>
 
-<script type="math/tex; mode=display">% <![CDATA[
-\begin{align*}
-n=1+2+4+8 && \text{The sum of the nodes at each level.} \\
-n=2^0+2^1+2^2+2^3 && \text{Represented in powers of 2.} \\
-n=\sum\limits_{j=0}^{k-1} 2^j && \text{Represented as a summation.} \\
-\end{align*} %]]></script>
+\[\begin{align*}
+n=1+2+4+8 &amp;&amp; \text{The sum of the nodes at each level.} \\
+n=2^0+2^1+2^2+2^3 &amp;&amp; \text{Represented in powers of 2.} \\
+n=\sum\limits_{j=0}^{k-1} 2^j &amp;&amp; \text{Represented as a summation.} \\
+\end{align*}\]
 
 <p>The branching factor here is 2 - each node has 2 children. What if each child
 had 7 children, or 9, or 21? Let’s re-write the summation with a generic
 branching factor <code class="highlighter-rouge">b</code>:</p>
 
-<script type="math/tex; mode=display">\begin{align*}
+\[\begin{align*}
 n=\sum\limits_{j=0}^{k-1} 2^j \\
 n=\sum\limits_{j=0}^{k-1} b^j \\
-\end{align*}</script>
+\end{align*}\]
 
 <p>Sums are a bit of nuisance. Let’s convert this sum into a discrete formula:</p>
 
-<script type="math/tex; mode=display">% <![CDATA[
-\begin{align*}
+\[\begin{align*}
 n=\sum\limits_{j=0}^{k-1} b^j \\
-n=b^{k-1}+b^{k-2}+...+1 && \text{Expanding the sum.} \\
-n \cdot b=(b^{k-1}+b^{k-2}+...+1) \cdot b && \text{Multiply by b.} \\
-n \cdot b=b^k+b^{k-1}+...+b && \text{All the exponents rise by 1.} \\
-n \cdot b + 1=b^k+b^{k-1}+...+b+1 && \text{Add 1 to each side.} \\
-n \cdot b + 1=b^k + n && \text{Note that we can use n for the right side.} \\
-n \cdot b - n=b^k - 1 && \text{Move n left; 1 right.} \\
-n \cdot (b - 1)=b^k - 1 && \text{Factor out n.} \\
-n = \frac{b^k - 1}{b - 1} && \text{Divide by n-1.} \\
-\end{align*} %]]></script>
+n=b^{k-1}+b^{k-2}+...+1 &amp;&amp; \text{Expanding the sum.} \\
+n \cdot b=(b^{k-1}+b^{k-2}+...+1) \cdot b &amp;&amp; \text{Multiply by b.} \\
+n \cdot b=b^k+b^{k-1}+...+b &amp;&amp; \text{All the exponents rise by 1.} \\
+n \cdot b + 1=b^k+b^{k-1}+...+b+1 &amp;&amp; \text{Add 1 to each side.} \\
+n \cdot b + 1=b^k + n &amp;&amp; \text{Note that we can use n for the right side.} \\
+n \cdot b - n=b^k - 1 &amp;&amp; \text{Move n left; 1 right.} \\
+n \cdot (b - 1)=b^k - 1 &amp;&amp; \text{Factor out n.} \\
+n = \frac{b^k - 1}{b - 1} &amp;&amp; \text{Divide by n-1.} \\
+\end{align*}\]
 
 <p>Let’s test the formula by using <code class="highlighter-rouge">k=4</code> and <code class="highlighter-rouge">b=2</code> again, which we think should
 equal <code class="highlighter-rouge">n=15</code>:</p>
 
-<script type="math/tex; mode=display">\begin{align*}
+\[\begin{align*}
 n=\frac{2^4-1}{2-1} \\
 n=\frac{16-1}{1} \\
 n=15 \\
-\end{align*}</script>
+\end{align*}\]
 
 <p>What if we knew the amount of nodes, but not the height? We can rework the
 formula we just came up with to give us height using number of nodes,</p>
 
-<script type="math/tex; mode=display">% <![CDATA[
-\begin{align*}
+\[\begin{align*}
 n=2^k-1 \\
-n+1=2^k && \text{Move 1 to the left.} \\
-\log_2 {(n+1)}=\log_2 {(2^k)} && \text{log2 both sides.} \\
-\log_2 {(n+1)}=k \cdot \log_2 2 && \text{Power rule.} \\
-\log_2 {(n+1)}=k && \text{Identity rule.} \\
+n+1=2^k &amp;&amp; \text{Move 1 to the left.} \\
+\log_2 {(n+1)}=\log_2 {(2^k)} &amp;&amp; \text{log2 both sides.} \\
+\log_2 {(n+1)}=k \cdot \log_2 2 &amp;&amp; \text{Power rule.} \\
+\log_2 {(n+1)}=k &amp;&amp; \text{Identity rule.} \\
 k=\log_2 {(n+1)}
-\end{align*} %]]></script>
+\end{align*}\]
 
 <h1 id="back-to-binary-search-trees">Back to binary search trees</h1>
 
@@ -213,7 +210,7 @@ be re-written in terms of height as <code class="highlighter-rouge">k=log2(n+1)<
 runtime complexity, and how memoization affects that. In some other future
 article we’ll look at backtracking and permutation runtime complexities.</p>
 
-<script type="text/javascript" async="" src="/assets/mathjax-2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+<script type="text/javascript" async="" src="/assets/MathJax-2.7.9/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
 
 <script type="text/x-mathjax-config">
