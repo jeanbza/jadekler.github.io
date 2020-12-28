@@ -1,4 +1,113 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-10-12T19:03:00-06:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jean de Klerk</title><subtitle>This is my personal website. The views represented here are my own, and do not represent my employer.</subtitle><entry><title type="html">Stubbing gRPC in Go</title><link href="http://localhost:4000/2020/10/08/stubbing-grpc.html" rel="alternate" type="text/html" title="Stubbing gRPC in Go" /><published>2020-10-08T15:55:23-06:00</published><updated>2020-10-08T15:55:23-06:00</updated><id>http://localhost:4000/2020/10/08/stubbing-grpc</id><content type="html" xml:base="http://localhost:4000/2020/10/08/stubbing-grpc.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-11-19T12:30:42-10:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jean de Klerk</title><subtitle>This is my personal website. The views represented here are my own, and do not represent my employer.</subtitle><entry><title type="html">Permutations, memoization, and their runtime complexity</title><link href="http://localhost:4000/2020/10/18/memoization.html" rel="alternate" type="text/html" title="Permutations, memoization, and their runtime complexity" /><published>2020-10-18T11:55:23-10:00</published><updated>2020-10-18T11:55:23-10:00</updated><id>http://localhost:4000/2020/10/18/memoization</id><content type="html" xml:base="http://localhost:4000/2020/10/18/memoization.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
+
+&lt;p&gt;I’ve frequently struggled with analysing the runtime complexity of a permutation
+based algorithm. I recently came across a really great interview question that
+involves permutations and memoization (caching the return value of repeated
+calls to a function). It helped make permutation runtime complexity “click” for
+me, and the memoization runtime complexity parts were really cool. 🤓&lt;/p&gt;
+
+&lt;p&gt;So, I thought I’d write about it. Let’s dive in and talk about permutations,
+memoization, and runtime complexity!&lt;/p&gt;
+
+&lt;h1 id=&quot;permutations&quot;&gt;Permutations&lt;/h1&gt;
+
+&lt;p&gt;Let’s start by considering an obvious permutation problem:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Given a set of characters, how many unique strings of length n can be made?
+Repeated characters are not allowed.
+
+Ex: given ABC, we can make,
+
+ABC
+ACB
+BAC
+BCA
+CAB
+CBA
+
+So, Permutations(&quot;ABC&quot;) should return 6.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This is a fairly straightforward permutation problem. Sometimes permutation
+problems are marginally harder to spot, though, like
+&lt;a href=&quot;https://hackernoon.com/google-interview-questions-deconstructed-the-knights-dialer-f780d516f029&quot;&gt;knight dialer&lt;/a&gt;.
+Incidentally, knight dialer inspired this post, and the linked article has a
+great write up! This article will be very similar in spirit to it.&lt;/p&gt;
+
+&lt;p&gt;So, back to our interview question: how many permutations can we make? Well, we
+could generate all the permutations and count them. That’s fairly
+straightforward:&lt;/p&gt;
+
+&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Println&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;permutations&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([]&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;rune&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;ABC&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;permutations&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;rune&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;start&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;combinations&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;start&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)}&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;// swap&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;combinations&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;append&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;combinations&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;permutations&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;// undo the swap&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://play.golang.org/p/XgGprQQA1cf&quot;&gt;This works&lt;/a&gt;! Let’s analyse its runtime
+complexity:&lt;/p&gt;
+
+\[\text{The first, depth 0 call iterates over $n$ items in $s$.} \\
+\text{Each of those $n$ iterations spawns a depth=1 recursive function that loops over $n-1$ items.} \\
+\text{Each of those $n-1$ iterations spawns a depth=2 recursive function that loops over $n-2$ items.} \\
+\text{And so on, giving us a pattern of,} \\
+n \cdot (n-1) \cdot (n-2) \cdot ... \cdot 1 \\
+\sum_{i=1}^{n} i = n! \\\]
+
+&lt;p&gt;So, the runtime complexity is &lt;code class=&quot;highlighter-rouge&quot;&gt;O(n!)&lt;/code&gt;. And, we can infer the space complexity
+(of our stack usage performing recursion) to be &lt;code class=&quot;highlighter-rouge&quot;&gt;O(n)&lt;/code&gt;: it’s not multi-threaded,
+so only one recursion can happen at a time, and the max depth it can descend is
+&lt;code class=&quot;highlighter-rouge&quot;&gt;n&lt;/code&gt;.&lt;/p&gt;
+
+&lt;hr /&gt;
+&lt;p&gt;https://www.cs.sfu.ca/~ggbaker/zju/math/perm-comb-more.html#rep-comb
+https://sites.math.northwestern.edu/~mlerma/courses/cs310-05s/notes/dm-gcomb
+https://en.wikipedia.org/wiki/Binomial_coefficient&lt;/p&gt;
+
+&lt;p&gt;binomial coefficient is combination, order does not matter, no repetition
+exponent is permutation, order matters, repetition allows&lt;/p&gt;
+
+\[\begin{align*}
+n=\sum\limits_{j=0}^{k-1} b^j \\
+n=b^{k-1}+b^{k-2}+...+1 &amp;amp;&amp;amp; \text{Expanding the sum.} \\
+n \cdot b=(b^{k-1}+b^{k-2}+...+1) \cdot b &amp;amp;&amp;amp; \text{Multiply by b.} \\
+n \cdot b=b^k+b^{k-1}+...+b &amp;amp;&amp;amp; \text{Distribute the b into the sum.} \\
+n \cdot b + 1=b^k+b^{k-1}+...+b+1 &amp;amp;&amp;amp; \text{Add 1 to each side.} \\
+n \cdot b + 1=b^k + n &amp;amp;&amp;amp; \text{Note that we can use n for the right side.} \\
+n \cdot b - n=b^k - 1 &amp;amp;&amp;amp; \text{Move n left; 1 right.} \\
+n \cdot (b - 1)=b^k - 1 &amp;amp;&amp;amp; \text{Factor out n.} \\
+n = \frac{b^k - 1}{b - 1} &amp;amp;&amp;amp; \text{Divide by n-1.} \\
+\end{align*}\]
+
+&lt;script type=&quot;text/javascript&quot; async=&quot;&quot; src=&quot;/assets/MathJax-2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot;&gt;
+&lt;/script&gt;
+
+&lt;script type=&quot;text/x-mathjax-config&quot;&gt;
+    MathJax.Hub.Config({
+      extensions: [
+        &quot;MathMenu.js&quot;,
+        &quot;MathZoom.js&quot;,
+        &quot;AssistiveMML.js&quot;
+      ],
+      jax: [&quot;input/TeX&quot;, &quot;output/CommonHTML&quot;],
+      TeX: {
+        extensions: [
+          &quot;AMSmath.js&quot;,
+          &quot;AMSsymbols.js&quot;,
+          &quot;noErrors.js&quot;,
+          &quot;noUndefined.js&quot;,
+        ]
+      }
+    });
+  &lt;/script&gt;</content><author><name></name></author><summary type="html">Introduction</summary></entry><entry><title type="html">Stubbing gRPC in Go</title><link href="http://localhost:4000/2020/10/08/stubbing-grpc.html" rel="alternate" type="text/html" title="Stubbing gRPC in Go" /><published>2020-10-08T11:55:23-10:00</published><updated>2020-10-08T11:55:23-10:00</updated><id>http://localhost:4000/2020/10/08/stubbing-grpc</id><content type="html" xml:base="http://localhost:4000/2020/10/08/stubbing-grpc.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
 
 &lt;p&gt;I’ve several times been met with the question, “How do you stub gRPC in Go”?&lt;/p&gt;
 
@@ -327,7 +436,7 @@ gRPC server would look similar.&lt;/p&gt;
 &lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
 
 &lt;p&gt;Stubbing and mocking gRPC servers in Go is very easy, doesn’t require any
-libraries, and obviates the need for pre-provided fakes/mocks/emulators/etc.&lt;/p&gt;</content><author><name></name></author><summary type="html">Introduction</summary></entry><entry><title type="html">Keeping Your Modules Compatible</title><link href="http://localhost:4000/2020/07/07/keeping-your-modules-compatible.html" rel="alternate" type="text/html" title="Keeping Your Modules Compatible" /><published>2020-07-07T15:55:23-06:00</published><updated>2020-07-07T15:55:23-06:00</updated><id>http://localhost:4000/2020/07/07/keeping-your-modules-compatible</id><content type="html" xml:base="http://localhost:4000/2020/07/07/keeping-your-modules-compatible.html">&lt;p&gt;Posted at &lt;a href=&quot;https://blog.golang.org/module-compatibility&quot;&gt;blog.golang.org/module-compatibility&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">Posted at blog.golang.org/module-compatibility.</summary></entry><entry><title type="html">Binary Search Tree Runtime Complexities</title><link href="http://localhost:4000/2019/11/23/binary-search-tree-runtime-complexity.html" rel="alternate" type="text/html" title="Binary Search Tree Runtime Complexities" /><published>2019-11-23T14:55:23-07:00</published><updated>2019-11-23T14:55:23-07:00</updated><id>http://localhost:4000/2019/11/23/binary-search-tree-runtime-complexity</id><content type="html" xml:base="http://localhost:4000/2019/11/23/binary-search-tree-runtime-complexity.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
+libraries, and obviates the need for pre-provided fakes/mocks/emulators/etc.&lt;/p&gt;</content><author><name></name></author><summary type="html">Introduction</summary></entry><entry><title type="html">Keeping Your Modules Compatible</title><link href="http://localhost:4000/2020/07/07/keeping-your-modules-compatible.html" rel="alternate" type="text/html" title="Keeping Your Modules Compatible" /><published>2020-07-07T11:55:23-10:00</published><updated>2020-07-07T11:55:23-10:00</updated><id>http://localhost:4000/2020/07/07/keeping-your-modules-compatible</id><content type="html" xml:base="http://localhost:4000/2020/07/07/keeping-your-modules-compatible.html">&lt;p&gt;Posted at &lt;a href=&quot;https://blog.golang.org/module-compatibility&quot;&gt;blog.golang.org/module-compatibility&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">Posted at blog.golang.org/module-compatibility.</summary></entry><entry><title type="html">Binary Search Tree Runtime Complexities</title><link href="http://localhost:4000/2019/11/23/binary-search-tree-runtime-complexity.html" rel="alternate" type="text/html" title="Binary Search Tree Runtime Complexities" /><published>2019-11-23T11:55:23-10:00</published><updated>2019-11-23T11:55:23-10:00</updated><id>http://localhost:4000/2019/11/23/binary-search-tree-runtime-complexity</id><content type="html" xml:base="http://localhost:4000/2019/11/23/binary-search-tree-runtime-complexity.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
 
 &lt;p&gt;I’ve recently inundated myself with interview preparation. Along the way, I
 thought a lot about how to intuit runtime complexities for various algorithms.
@@ -512,7 +621,7 @@ article we’ll look at backtracking and permutation runtime complexities.&lt;/p
         ]
       }
     });
-  &lt;/script&gt;</content><author><name></name></author><summary type="html">Introduction</summary></entry><entry><title type="html">Go Modules: v2 and Beyond</title><link href="http://localhost:4000/2019/11/07/v2-modules.html" rel="alternate" type="text/html" title="Go Modules: v2 and Beyond" /><published>2019-11-07T14:55:23-07:00</published><updated>2019-11-07T14:55:23-07:00</updated><id>http://localhost:4000/2019/11/07/v2-modules</id><content type="html" xml:base="http://localhost:4000/2019/11/07/v2-modules.html">&lt;p&gt;Posted at &lt;a href=&quot;https://blog.golang.org/v2-go-modules&quot;&gt;blog.golang.org&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">Posted at blog.golang.org.</summary></entry><entry><title type="html">Docker in Docker</title><link href="http://localhost:4000/2019/11/05/docker-in-docker.html" rel="alternate" type="text/html" title="Docker in Docker" /><published>2019-11-05T14:55:23-07:00</published><updated>2019-11-05T14:55:23-07:00</updated><id>http://localhost:4000/2019/11/05/docker-in-docker</id><content type="html" xml:base="http://localhost:4000/2019/11/05/docker-in-docker.html">&lt;h1 id=&quot;i-got-beef-with-all-yalls-articles&quot;&gt;I got beef with all y’alls articles&lt;/h1&gt;
+  &lt;/script&gt;</content><author><name></name></author><summary type="html">Introduction</summary></entry><entry><title type="html">Go Modules: v2 and Beyond</title><link href="http://localhost:4000/2019/11/07/v2-modules.html" rel="alternate" type="text/html" title="Go Modules: v2 and Beyond" /><published>2019-11-07T11:55:23-10:00</published><updated>2019-11-07T11:55:23-10:00</updated><id>http://localhost:4000/2019/11/07/v2-modules</id><content type="html" xml:base="http://localhost:4000/2019/11/07/v2-modules.html">&lt;p&gt;Posted at &lt;a href=&quot;https://blog.golang.org/v2-go-modules&quot;&gt;blog.golang.org&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">Posted at blog.golang.org.</summary></entry><entry><title type="html">Docker in Docker</title><link href="http://localhost:4000/2019/11/05/docker-in-docker.html" rel="alternate" type="text/html" title="Docker in Docker" /><published>2019-11-05T11:55:23-10:00</published><updated>2019-11-05T11:55:23-10:00</updated><id>http://localhost:4000/2019/11/05/docker-in-docker</id><content type="html" xml:base="http://localhost:4000/2019/11/05/docker-in-docker.html">&lt;h1 id=&quot;i-got-beef-with-all-yalls-articles&quot;&gt;I got beef with all y’alls articles&lt;/h1&gt;
 
 &lt;p&gt;Oh look, another docker-in-docker post. How original. Ok, I get it, there are
 many of these out there. Here’s my beef with all the ones I could find at 1am
@@ -572,7 +681,7 @@ unix socket. See more explanation at &lt;a href=&quot;https://github.com/docker-
 
 &lt;p&gt;8: https://stackoverflow.com/questions/45928958/how-to-run-docker-container-inside-docker-dind&lt;/p&gt;
 
-&lt;p&gt;9: https://discourse.drone.io/t/build-and-test-docker-images-with-dind/1808&lt;/p&gt;</content><author><name></name></author><summary type="html">I got beef with all y’alls articles</summary></entry><entry><title type="html">Bad Times Initializing With Append</title><link href="http://localhost:4000/2019/10/23/init-with-append.html" rel="alternate" type="text/html" title="Bad Times Initializing With Append" /><published>2019-10-23T15:55:23-06:00</published><updated>2019-10-23T15:55:23-06:00</updated><id>http://localhost:4000/2019/10/23/init-with-append</id><content type="html" xml:base="http://localhost:4000/2019/10/23/init-with-append.html">&lt;p&gt;I recently found out as part of &lt;a href=&quot;https://go-review.googlesource.com/c/tools/+/184357&quot;&gt;a code review&lt;/a&gt;
+&lt;p&gt;9: https://discourse.drone.io/t/build-and-test-docker-images-with-dind/1808&lt;/p&gt;</content><author><name></name></author><summary type="html">I got beef with all y’alls articles</summary></entry><entry><title type="html">Bad Times Initializing With Append</title><link href="http://localhost:4000/2019/10/23/init-with-append.html" rel="alternate" type="text/html" title="Bad Times Initializing With Append" /><published>2019-10-23T11:55:23-10:00</published><updated>2019-10-23T11:55:23-10:00</updated><id>http://localhost:4000/2019/10/23/init-with-append</id><content type="html" xml:base="http://localhost:4000/2019/10/23/init-with-append.html">&lt;p&gt;I recently found out as part of &lt;a href=&quot;https://go-review.googlesource.com/c/tools/+/184357&quot;&gt;a code review&lt;/a&gt;
 that initializing variables with append is, under some circumstances, A
 Terrible Idea. This post briefly explores what can happen when you do that,
 the underlying reason these things are happening, and how to avoid it.&lt;/p&gt;
@@ -687,7 +796,7 @@ they both tried to assign a value to index &lt;code class=&quot;highlighter-roug
 &lt;code class=&quot;highlighter-rouge&quot;&gt;a&lt;/code&gt; is only ever going to be appended to itself (a very common use of slices),
 the problem won’t occur, since there will always only ever be one length counter
 to maintain. With only one length counter, there’s no room for two appends
-accidentally assigning to the same index.&lt;/p&gt;</content><author><name></name></author><summary type="html">I recently found out as part of a code review that initializing variables with append is, under some circumstances, A Terrible Idea. This post briefly explores what can happen when you do that, the underlying reason these things are happening, and how to avoid it.</summary></entry><entry><title type="html">Reflecting on two years at Google</title><link href="http://localhost:4000/2019/09/01/reflecting-on-two-years-at-google.html" rel="alternate" type="text/html" title="Reflecting on two years at Google" /><published>2019-09-01T15:55:23-06:00</published><updated>2019-09-01T15:55:23-06:00</updated><id>http://localhost:4000/2019/09/01/reflecting-on-two-years-at-google</id><content type="html" xml:base="http://localhost:4000/2019/09/01/reflecting-on-two-years-at-google.html">&lt;p&gt;I had meant to write a &lt;em&gt;“Reflecting on one year at Google”&lt;/em&gt; post earlier this
+accidentally assigning to the same index.&lt;/p&gt;</content><author><name></name></author><summary type="html">I recently found out as part of a code review that initializing variables with append is, under some circumstances, A Terrible Idea. This post briefly explores what can happen when you do that, the underlying reason these things are happening, and how to avoid it.</summary></entry><entry><title type="html">Reflecting on two years at Google</title><link href="http://localhost:4000/2019/09/01/reflecting-on-two-years-at-google.html" rel="alternate" type="text/html" title="Reflecting on two years at Google" /><published>2019-09-01T11:55:23-10:00</published><updated>2019-09-01T11:55:23-10:00</updated><id>http://localhost:4000/2019/09/01/reflecting-on-two-years-at-google</id><content type="html" xml:base="http://localhost:4000/2019/09/01/reflecting-on-two-years-at-google.html">&lt;p&gt;I had meant to write a &lt;em&gt;“Reflecting on one year at Google”&lt;/em&gt; post earlier this
 year, but it kept getting put off until suddenly I realized that it would be
 better to just cut my losses and skip to the second year post.&lt;/p&gt;
 
@@ -858,7 +967,7 @@ classes about making food (seriously), gyms, fun events, clubs, and more.&lt;/p&
 
 &lt;p&gt;It’s a good place to work. It’s an intense place to work, and you have to be
 very careful not to let it burn you up, but it is a good place to work. I
-don’t see myself working anywhere else for the foreseeable future.&lt;/p&gt;</content><author><name></name></author><summary type="html">I had meant to write a “Reflecting on one year at Google” post earlier this year, but it kept getting put off until suddenly I realized that it would be better to just cut my losses and skip to the second year post.</summary></entry><entry><title type="html">Reflecting on interviewing at Google</title><link href="http://localhost:4000/2019/09/01/reflecting-on-interviewing-at-google.html" rel="alternate" type="text/html" title="Reflecting on interviewing at Google" /><published>2019-09-01T15:55:23-06:00</published><updated>2019-09-01T15:55:23-06:00</updated><id>http://localhost:4000/2019/09/01/reflecting-on-interviewing-at-google</id><content type="html" xml:base="http://localhost:4000/2019/09/01/reflecting-on-interviewing-at-google.html">&lt;p&gt;Disclaimer: This document makes statements and gives advice about interviewing
+don’t see myself working anywhere else for the foreseeable future.&lt;/p&gt;</content><author><name></name></author><summary type="html">I had meant to write a “Reflecting on one year at Google” post earlier this year, but it kept getting put off until suddenly I realized that it would be better to just cut my losses and skip to the second year post.</summary></entry><entry><title type="html">Reflecting on interviewing at Google</title><link href="http://localhost:4000/2019/09/01/reflecting-on-interviewing-at-google.html" rel="alternate" type="text/html" title="Reflecting on interviewing at Google" /><published>2019-09-01T11:55:23-10:00</published><updated>2019-09-01T11:55:23-10:00</updated><id>http://localhost:4000/2019/09/01/reflecting-on-interviewing-at-google</id><content type="html" xml:base="http://localhost:4000/2019/09/01/reflecting-on-interviewing-at-google.html">&lt;p&gt;Disclaimer: This document makes statements and gives advice about interviewing
 at Google. This is &lt;em&gt;not at all&lt;/em&gt; an official accounting of what it’s like to
 interview at Google. This is entirely my own interpration, likely riddled with
 inaccuracies to the extent that a Googler in recruitment would probably develop
@@ -1086,168 +1195,4 @@ approach of taking courses and completing homework / projects.&lt;/p&gt;
 &lt;p&gt;Consider the list of interview prepation techniques above and do some
 introspection about how you learn best. And, if you can, try to orient your
 job around interesting problems that push you to learn, rather than staying
-in your comfort zone.&lt;/p&gt;</content><author><name></name></author><summary type="html">Disclaimer: This document makes statements and gives advice about interviewing at Google. This is not at all an official accounting of what it’s like to interview at Google. This is entirely my own interpration, likely riddled with inaccuracies to the extent that a Googler in recruitment would probably develop a migraine reading this. If you’d like the official word, check out careers.google.com or talk to a recruiter.</summary></entry><entry><title type="html">Migrating to Go Modules</title><link href="http://localhost:4000/2019/08/21/migrating-to-go-modules.html" rel="alternate" type="text/html" title="Migrating to Go Modules" /><published>2019-08-21T15:55:23-06:00</published><updated>2019-08-21T15:55:23-06:00</updated><id>http://localhost:4000/2019/08/21/migrating-to-go-modules</id><content type="html" xml:base="http://localhost:4000/2019/08/21/migrating-to-go-modules.html">&lt;p&gt;Posted at &lt;a href=&quot;https://blog.golang.org/migrating-to-go-modules&quot;&gt;blog.golang.org&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">Posted at blog.golang.org.</summary></entry><entry><title type="html">Designing CRUD operations in Go</title><link href="http://localhost:4000/2019/06/08/designing-crud-operations-in-go.html" rel="alternate" type="text/html" title="Designing CRUD operations in Go" /><published>2019-06-08T15:55:23-06:00</published><updated>2019-06-08T15:55:23-06:00</updated><id>http://localhost:4000/2019/06/08/designing-crud-operations-in-go</id><content type="html" xml:base="http://localhost:4000/2019/06/08/designing-crud-operations-in-go.html">&lt;p&gt;This post is intended to provide some insight into the considerations that
-go into adding CRUD operations in a Go client library.&lt;/p&gt;
-
-&lt;h2 id=&quot;the-problem-ambiguity&quot;&gt;The Problem: Ambiguity&lt;/h2&gt;
-
-&lt;p&gt;Every time we add a new create or update RPC - &lt;code class=&quot;highlighter-rouge&quot;&gt;CreateFoo&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;UpdateFoo&lt;/code&gt; - that
-takes parameters, we have to ask the questions:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Is it possible to perform a delete a parameter when updating Foo?&lt;/li&gt;
-  &lt;li&gt;How should users ignore that parameter when updating Foo?&lt;/li&gt;
-  &lt;li&gt;How should users delete that parameter when updating Foo?&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Consider the following RPC:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;message FooUpdateRequest {
-  google.protobuf.Duration ttl = 1;        // When set to 0, deletes TTL.
-  google.protobuf.Duration expiration = 2; // When set to 0, deletes expiration.
-}
-
-service Foo {
-  rpc UpdateFoo(FooUpdateRequest) returns (SomeResponse)
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Building a manual layer wrapper around this might look very similar:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;type FooConfigToUpdate struct {
-  Ttl        time.Duration
-  Expiration time.Duration
-}
-
-func (f *Foo) Update(ctx context.Context, cfg *FooConfigToUpdate) error {
-  // ...
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;This seems fairly innocuous, but consider those questions again:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Is it possible to perform a delete a parameter when updating Foo?
-A: Yes, both parameters in the .proto definition mention that 0 is used as a delete.&lt;/li&gt;
-  &lt;li&gt;How should users ignore that parameter when updating Foo?
-A: Set it to time.Duration(0).&lt;/li&gt;
-  &lt;li&gt;How should users delete that parameter when updating Foo?
-A: Uhh… also set it to time.Duration(0)?&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;As you can see, there’s currently no way to distinguish between Delete and
-Ignore. That is, if a user passes:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;f.Update(ctx, &amp;amp;foopkg.FooConfigToUpdate{Expiration: 5 * time.Second})
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;It’s clear that we need to update Expiration to 5s, but what do we do with ttl?
-Its default value is &lt;code class=&quot;highlighter-rouge&quot;&gt;time.Duration(0)&lt;/code&gt; - do we delete it, or ignore it?&lt;/p&gt;
-
-&lt;p&gt;We need a way to get around this. Broadly, there are three options we use in client libraries:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Sentinel values.&lt;/li&gt;
-  &lt;li&gt;Pointers.&lt;/li&gt;
-  &lt;li&gt;Optionals.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;sentinel-values&quot;&gt;Sentinel Values&lt;/h2&gt;
-
-&lt;p&gt;Sentinel values are basically special values that signal to the client library
-to perform special logic. For example, consider:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;var NeverExpire time.Duration = -1 * time.Second
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;No user would ever specify -1s as an expiration value, so the library picks that
-value as its sentinel. Then, any time the library sees -1s, it knows this is the
-special value used to indicate “delete”.&lt;/p&gt;
-
-&lt;p&gt;If the empty value is passed, the library ignores the operation. If the user
-passes the sentinel value, the library performs the delete. A user uses the
-sentinel to delete as such:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;f.Update(ctx, &amp;amp;foopkg.FooConfigToUpdate{Expiration: foopkg.NeverExpire})
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;pointers&quot;&gt;Pointers&lt;/h2&gt;
-
-&lt;p&gt;When using pointers, we automatically resolve ambiguity, because beside the
-empty value we now also have the nil value.&lt;/p&gt;
-
-&lt;p&gt;The nil value is taken as “ignore this” (unspecified), and the empty value is
-taken as “delete this”.&lt;/p&gt;
-
-&lt;p&gt;A user uses the empty value to delete as such:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;f.Update(ctx, &amp;amp;foopkg.FooConfigToUpdate{Expiration: &amp;amp;time.Duration(0)})
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;optionals&quot;&gt;Optionals&lt;/h2&gt;
-
-&lt;p&gt;Optionals are a Java concept. Without involving pointers, they add an
-additional “set or unset” parameter to a value in a similar way that pointers
-are set or nil.&lt;/p&gt;
-
-&lt;p&gt;Unlike Java, however, optionals are not part of the stdlib. In
-&lt;code class=&quot;highlighter-rouge&quot;&gt;cloud.google.com/go&lt;/code&gt;, we’ve created a very light wrapper around &lt;code class=&quot;highlighter-rouge&quot;&gt;interface{}&lt;/code&gt;
-to implement optional types. Since they’re light wrappers around &lt;code class=&quot;highlighter-rouge&quot;&gt;interface{}&lt;/code&gt;,
-values are nil-able.&lt;/p&gt;
-
-&lt;p&gt;Like pointers, the nil value is taken as “ignore this” (unspecified), and the
-empty value is taken as “delete this”.&lt;/p&gt;
-
-&lt;p&gt;A user uses the empty value to delete as such:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;f.Update(ctx, &amp;amp;foopkg.FooConfigToUpdate{Expiration: time.Duration(0)})
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h2 id=&quot;choosing-the-right-solution&quot;&gt;Choosing The Right Solution&lt;/h2&gt;
-
-&lt;p&gt;There are downsides to each solution:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Sentinels add to the API surface, and reduce the range of values users can
-use. They are not described by the type system, like pointers: users have to
-read docs to find out how to use them. Finally, they may surprise users using
-the reserved value without knowing that they are.&lt;/li&gt;
-  &lt;li&gt;Pointers only work on types - ints, strings, bools, and other primitives
-become quite burdensome to use. Furthermore, pointers can’t be added in a
-backwards-compatible fashion, since they change the signature of a
-parameter/method.&lt;/li&gt;
-  &lt;li&gt;Optionals are untyped (since they’re wrappers around interface{}), and not
-idiomatic Go.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;On the other hand, the advantages to each solution:&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;Sentinels can be added in a backwards-compatible fashion, since they don’t
-change the signature of a parameter/method.&lt;/li&gt;
-  &lt;li&gt;Pointers are very idiomatic to Go, widely used, and their semantics are
-encoded in the type system, making them very easy and obvious to use.&lt;/li&gt;
-  &lt;li&gt;Optionals can be added (but not removed) in a backwards-compatible fashion,
-since their untyped nature is compatible with an pre-existing inputs supplied
-by the user.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Sentinels should generally be avoided, since we try to minimize API surface
-additions. They are commonly used in “uh oh” moments where we have to go amend
-a stable client’s API surface in which the to-be-fixed portion is already
-released.&lt;/p&gt;
-
-&lt;p&gt;Pointers are generally the preferred choice but fall short on primitive types,
-and aren’t backwards-compatible. Optionals are fairly widely used, too.&lt;/p&gt;
-
-&lt;p&gt;In general, it’s best to investigate the client you’re working on and focus on
-consistency of choice. Ideally, all clients would be consistent with each other, too.&lt;/p&gt;
-
-&lt;h2 id=&quot;a-note-on--experimental&quot;&gt;A Note On // Experimental&lt;/h2&gt;
-
-&lt;p&gt;Note that if a part of the API surface is marked experimental, the above notes
-on backwards compatibility don’t apply. Therefore, if you’re adding to an API
-surface and not sure how it’ll evolve over time, opt to add the
-&lt;code class=&quot;highlighter-rouge&quot;&gt;// Experimental&lt;/code&gt; tag:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// It is EXPERIMENTAL and subject to change or removal without notice.
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name></name></author><summary type="html">This post is intended to provide some insight into the considerations that go into adding CRUD operations in a Go client library.</summary></entry></feed>
+in your comfort zone.&lt;/p&gt;</content><author><name></name></author><summary type="html">Disclaimer: This document makes statements and gives advice about interviewing at Google. This is not at all an official accounting of what it’s like to interview at Google. This is entirely my own interpration, likely riddled with inaccuracies to the extent that a Googler in recruitment would probably develop a migraine reading this. If you’d like the official word, check out careers.google.com or talk to a recruiter.</summary></entry><entry><title type="html">Migrating to Go Modules</title><link href="http://localhost:4000/2019/08/21/migrating-to-go-modules.html" rel="alternate" type="text/html" title="Migrating to Go Modules" /><published>2019-08-21T11:55:23-10:00</published><updated>2019-08-21T11:55:23-10:00</updated><id>http://localhost:4000/2019/08/21/migrating-to-go-modules</id><content type="html" xml:base="http://localhost:4000/2019/08/21/migrating-to-go-modules.html">&lt;p&gt;Posted at &lt;a href=&quot;https://blog.golang.org/migrating-to-go-modules&quot;&gt;blog.golang.org&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">Posted at blog.golang.org.</summary></entry></feed>

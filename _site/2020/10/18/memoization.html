@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Permutations, memoization, and their runtime complexity | Jean de Klerk</title>
+<meta name="generator" content="Jekyll v4.0.1" />
+<meta property="og:title" content="Permutations, memoization, and their runtime complexity" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Introduction" />
+<meta property="og:description" content="Introduction" />
+<link rel="canonical" href="http://localhost:4000/2020/10/18/memoization.html" />
+<meta property="og:url" content="http://localhost:4000/2020/10/18/memoization.html" />
+<meta property="og:site_name" content="Jean de Klerk" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-10-18T11:55:23-10:00" />
+<script type="application/ld+json">
+{"headline":"Permutations, memoization, and their runtime complexity","dateModified":"2020-10-18T11:55:23-10:00","datePublished":"2020-10-18T11:55:23-10:00","description":"Introduction","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2020/10/18/memoization.html"},"@type":"BlogPosting","url":"http://localhost:4000/2020/10/18/memoization.html","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Jean de Klerk" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Jean de Klerk</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Permutations, memoization, and their runtime complexity</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2020-10-18T11:55:23-10:00" itemprop="datePublished">Oct 18, 2020
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h1 id="introduction">Introduction</h1>
+
+<p>I’ve frequently struggled with analysing the runtime complexity of a permutation
+based algorithm. I recently came across a really great interview question that
+involves permutations and memoization (caching the return value of repeated
+calls to a function). It helped make permutation runtime complexity “click” for
+me, and the memoization runtime complexity parts were really cool. 🤓</p>
+
+<p>So, I thought I’d write about it. Let’s dive in and talk about permutations,
+memoization, and runtime complexity!</p>
+
+<h1 id="permutations">Permutations</h1>
+
+<p>Let’s start by considering an obvious permutation problem:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Given a set of characters, how many unique strings of length n can be made?
+Repeated characters are not allowed.
+
+Ex: given ABC, we can make,
+
+ABC
+ACB
+BAC
+BCA
+CAB
+CBA
+
+So, Permutations("ABC") should return 6.
+</code></pre></div></div>
+
+<p>This is a fairly straightforward permutation problem. Sometimes permutation
+problems are marginally harder to spot, though, like
+<a href="https://hackernoon.com/google-interview-questions-deconstructed-the-knights-dialer-f780d516f029">knight dialer</a>.
+Incidentally, knight dialer inspired this post, and the linked article has a
+great write up! This article will be very similar in spirit to it.</p>
+
+<p>So, back to our interview question: how many permutations can we make? Well, we
+could generate all the permutations and count them. That’s fairly
+straightforward:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">permutations</span><span class="p">([]</span><span class="kt">rune</span><span class="p">(</span><span class="s">"ABC"</span><span class="p">),</span> <span class="m">0</span><span class="p">)))</span> <span class="p">}</span>
+<span class="k">func</span> <span class="n">permutations</span><span class="p">(</span><span class="n">s</span> <span class="p">[]</span><span class="kt">rune</span><span class="p">,</span> <span class="n">start</span> <span class="kt">int</span><span class="p">)</span> <span class="p">(</span><span class="n">combinations</span> <span class="p">[]</span><span class="kt">string</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="n">start</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{</span><span class="kt">string</span><span class="p">(</span><span class="n">s</span><span class="p">)}</span>
+  <span class="p">}</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="o">:=</span> <span class="n">start</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span> <span class="p">{</span>
+    <span class="n">s</span><span class="p">[</span><span class="n">start</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="n">start</span><span class="p">]</span> <span class="c">// swap</span>
+    <span class="n">combinations</span> <span class="o">=</span> <span class="nb">append</span><span class="p">(</span><span class="n">combinations</span><span class="p">,</span> <span class="n">permutations</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">start</span><span class="o">+</span><span class="m">1</span><span class="p">)</span><span class="o">...</span><span class="p">)</span>
+    <span class="n">s</span><span class="p">[</span><span class="n">start</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="n">start</span><span class="p">]</span> <span class="c">// undo the swap</span>
+  <span class="p">}</span>
+  <span class="k">return</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><a href="https://play.golang.org/p/XgGprQQA1cf">This works</a>! Let’s analyse its runtime
+complexity:</p>
+
+\[\text{The first, depth 0 call iterates over $n$ items in $s$.} \\
+\text{Each of those $n$ iterations spawns a depth=1 recursive function that loops over $n-1$ items.} \\
+\text{Each of those $n-1$ iterations spawns a depth=2 recursive function that loops over $n-2$ items.} \\
+\text{And so on, giving us a pattern of,} \\
+n \cdot (n-1) \cdot (n-2) \cdot ... \cdot 1 \\
+\sum_{i=1}^{n} i = n! \\\]
+
+<p>So, the runtime complexity is <code class="highlighter-rouge">O(n!)</code>. And, we can infer the space complexity
+(of our stack usage performing recursion) to be <code class="highlighter-rouge">O(n)</code>: it’s not multi-threaded,
+so only one recursion can happen at a time, and the max depth it can descend is
+<code class="highlighter-rouge">n</code>.</p>
+
+<hr />
+<p>https://www.cs.sfu.ca/~ggbaker/zju/math/perm-comb-more.html#rep-comb
+https://sites.math.northwestern.edu/~mlerma/courses/cs310-05s/notes/dm-gcomb
+https://en.wikipedia.org/wiki/Binomial_coefficient</p>
+
+<p>binomial coefficient is combination, order does not matter, no repetition
+exponent is permutation, order matters, repetition allows</p>
+
+\[\begin{align*}
+n=\sum\limits_{j=0}^{k-1} b^j \\
+n=b^{k-1}+b^{k-2}+...+1 &amp;&amp; \text{Expanding the sum.} \\
+n \cdot b=(b^{k-1}+b^{k-2}+...+1) \cdot b &amp;&amp; \text{Multiply by b.} \\
+n \cdot b=b^k+b^{k-1}+...+b &amp;&amp; \text{Distribute the b into the sum.} \\
+n \cdot b + 1=b^k+b^{k-1}+...+b+1 &amp;&amp; \text{Add 1 to each side.} \\
+n \cdot b + 1=b^k + n &amp;&amp; \text{Note that we can use n for the right side.} \\
+n \cdot b - n=b^k - 1 &amp;&amp; \text{Move n left; 1 right.} \\
+n \cdot (b - 1)=b^k - 1 &amp;&amp; \text{Factor out n.} \\
+n = \frac{b^k - 1}{b - 1} &amp;&amp; \text{Divide by n-1.} \\
+\end{align*}\]
+
+<script type="text/javascript" async="" src="/assets/MathJax-2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: [
+        "MathMenu.js",
+        "MathZoom.js",
+        "AssistiveMML.js"
+      ],
+      jax: ["input/TeX", "output/CommonHTML"],
+      TeX: {
+        extensions: [
+          "AMSmath.js",
+          "AMSsymbols.js",
+          "noErrors.js",
+          "noUndefined.js",
+        ]
+      }
+    });
+  </script>
+
+
+  </div><a class="u-url" href="/2020/10/18/memoization.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Jean de Klerk</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Jean de Klerk</li><li><a class="u-email" href="mailto:deklerk@google.com">deklerk@google.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jadekler"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jadekler</span></a></li><li><a href="https://www.twitter.com/jadekler"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jadekler</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>This is my personal website. The views represented here are my own, and do not represent my employer.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
