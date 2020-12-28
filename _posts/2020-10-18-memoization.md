@@ -21,8 +21,8 @@ memoization, and runtime complexity!
 Let's start by considering an obvious permutation problem:
 
 ```
-Given a set of characters, how many unique strings of length n can be made?
-Repeated characters are not allowed.
+Given an input set of unique characters, how many unique strings of length n can
+be made? Each character in the input can only be used once.
 
 Ex: given ABC, we can make,
 
@@ -64,14 +64,18 @@ func permutations(s []rune, start int) (combinations []string) {
 [This works](https://play.golang.org/p/XgGprQQA1cf)! Let's analyse its runtime
 complexity:
 
+<div class="leftie">
 $$
+\begin{align}
 \text{The first, depth 0 call iterates over $n$ items in $s$.} \\
 \text{Each of those $n$ iterations spawns a depth=1 recursive function that loops over $n-1$ items.} \\
 \text{Each of those $n-1$ iterations spawns a depth=2 recursive function that loops over $n-2$ items.} \\
 \text{And so on, giving us a pattern of,} \\
 n \cdot (n-1) \cdot (n-2) \cdot ... \cdot 1 \\
 \sum_{i=1}^{n} i = n! \\
+\end{align}
 $$
+</div>
 
 So, the runtime complexity is `O(n!)`. And, we can infer the space complexity
 (of our stack usage performing recursion) to be `O(n)`: it's not multi-threaded,
@@ -87,7 +91,7 @@ binomial coefficient is combination, order does not matter, no repetition
 exponent is permutation, order matters, repetition allows
 
 $$
-\begin{align*}
+\begin{align}
 n=\sum\limits_{j=0}^{k-1} b^j \\
 n=b^{k-1}+b^{k-2}+...+1 && \text{Expanding the sum.} \\
 n \cdot b=(b^{k-1}+b^{k-2}+...+1) \cdot b && \text{Multiply by b.} \\
@@ -97,27 +101,24 @@ n \cdot b + 1=b^k + n && \text{Note that we can use n for the right side.} \\
 n \cdot b - n=b^k - 1 && \text{Move n left; 1 right.} \\
 n \cdot (b - 1)=b^k - 1 && \text{Factor out n.} \\
 n = \frac{b^k - 1}{b - 1} && \text{Divide by n-1.} \\
-\end{align*}
+\end{align}
 $$
 
-<script type="text/javascript" async
-  src="/assets/MathJax-2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+<script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script type="text/javascript">
+window.MathJax = {
+  tex: {
+    packages: ['base', 'ams', 'textmacros']
+  },
+  loader: {
+    load: ['ui/menu', '[tex]/ams', '[tex]/textmacros']
+  },
+  tex: {packages: {'[+]': ['textmacros']}},
+};
 </script>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      extensions: [
-        "MathMenu.js",
-        "MathZoom.js",
-        "AssistiveMML.js"
-      ],
-      jax: ["input/TeX", "output/CommonHTML"],
-      TeX: {
-        extensions: [
-          "AMSmath.js",
-          "AMSsymbols.js",
-          "noErrors.js",
-          "noUndefined.js",
-        ]
-      }
-    });
-  </script>
+
+<style>
+.leftie .MathJax * {
+  text-align: left !important;
+}
+</style>

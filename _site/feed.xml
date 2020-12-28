@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-11-19T12:30:42-10:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jean de Klerk</title><subtitle>This is my personal website. The views represented here are my own, and do not represent my employer.</subtitle><entry><title type="html">Permutations, memoization, and their runtime complexity</title><link href="http://localhost:4000/2020/10/18/memoization.html" rel="alternate" type="text/html" title="Permutations, memoization, and their runtime complexity" /><published>2020-10-18T11:55:23-10:00</published><updated>2020-10-18T11:55:23-10:00</updated><id>http://localhost:4000/2020/10/18/memoization</id><content type="html" xml:base="http://localhost:4000/2020/10/18/memoization.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-12-28T15:12:23-07:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jean de Klerk</title><subtitle>This is my personal website. The views represented here are my own, and do not represent my employer.</subtitle><entry><title type="html">Permutations, memoization, and their runtime complexity</title><link href="http://localhost:4000/2020/10/18/memoization.html" rel="alternate" type="text/html" title="Permutations, memoization, and their runtime complexity" /><published>2020-10-18T15:55:23-06:00</published><updated>2020-10-18T15:55:23-06:00</updated><id>http://localhost:4000/2020/10/18/memoization</id><content type="html" xml:base="http://localhost:4000/2020/10/18/memoization.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
 
 &lt;p&gt;I’ve frequently struggled with analysing the runtime complexity of a permutation
 based algorithm. I recently came across a really great interview question that
@@ -13,8 +13,8 @@ memoization, and runtime complexity!&lt;/p&gt;
 
 &lt;p&gt;Let’s start by considering an obvious permutation problem:&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Given a set of characters, how many unique strings of length n can be made?
-Repeated characters are not allowed.
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Given an input set of unique characters, how many unique strings of length n can
+be made? Each character in the input can only be used once.
 
 Ex: given ABC, we can make,
 
@@ -55,12 +55,18 @@ straightforward:&lt;/p&gt;
 &lt;p&gt;&lt;a href=&quot;https://play.golang.org/p/XgGprQQA1cf&quot;&gt;This works&lt;/a&gt;! Let’s analyse its runtime
 complexity:&lt;/p&gt;
 
-\[\text{The first, depth 0 call iterates over $n$ items in $s$.} \\
+&lt;div class=&quot;leftie&quot;&gt;
+$$
+\begin{align}
+\text{The first, depth 0 call iterates over $n$ items in $s$.} \\
 \text{Each of those $n$ iterations spawns a depth=1 recursive function that loops over $n-1$ items.} \\
 \text{Each of those $n-1$ iterations spawns a depth=2 recursive function that loops over $n-2$ items.} \\
 \text{And so on, giving us a pattern of,} \\
 n \cdot (n-1) \cdot (n-2) \cdot ... \cdot 1 \\
-\sum_{i=1}^{n} i = n! \\\]
+\sum_{i=1}^{n} i = n! \\
+\end{align}
+$$
+&lt;/div&gt;
 
 &lt;p&gt;So, the runtime complexity is &lt;code class=&quot;highlighter-rouge&quot;&gt;O(n!)&lt;/code&gt;. And, we can infer the space complexity
 (of our stack usage performing recursion) to be &lt;code class=&quot;highlighter-rouge&quot;&gt;O(n)&lt;/code&gt;: it’s not multi-threaded,
@@ -75,7 +81,7 @@ https://en.wikipedia.org/wiki/Binomial_coefficient&lt;/p&gt;
 &lt;p&gt;binomial coefficient is combination, order does not matter, no repetition
 exponent is permutation, order matters, repetition allows&lt;/p&gt;
 
-\[\begin{align*}
+\[\begin{align}
 n=\sum\limits_{j=0}^{k-1} b^j \\
 n=b^{k-1}+b^{k-2}+...+1 &amp;amp;&amp;amp; \text{Expanding the sum.} \\
 n \cdot b=(b^{k-1}+b^{k-2}+...+1) \cdot b &amp;amp;&amp;amp; \text{Multiply by b.} \\
@@ -85,29 +91,27 @@ n \cdot b + 1=b^k + n &amp;amp;&amp;amp; \text{Note that we can use n for the ri
 n \cdot b - n=b^k - 1 &amp;amp;&amp;amp; \text{Move n left; 1 right.} \\
 n \cdot (b - 1)=b^k - 1 &amp;amp;&amp;amp; \text{Factor out n.} \\
 n = \frac{b^k - 1}{b - 1} &amp;amp;&amp;amp; \text{Divide by n-1.} \\
-\end{align*}\]
+\end{align}\]
 
-&lt;script type=&quot;text/javascript&quot; async=&quot;&quot; src=&quot;/assets/MathJax-2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot;&gt;
+&lt;script type=&quot;text/javascript&quot; id=&quot;MathJax-script&quot; async=&quot;&quot; src=&quot;https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js&quot;&gt;&lt;/script&gt;
+
+&lt;script type=&quot;text/javascript&quot;&gt;
+window.MathJax = {
+  tex: {
+    packages: ['base', 'ams', 'textmacros']
+  },
+  loader: {
+    load: ['ui/menu', '[tex]/ams', '[tex]/textmacros']
+  },
+  tex: {packages: {'[+]': ['textmacros']}},
+};
 &lt;/script&gt;
 
-&lt;script type=&quot;text/x-mathjax-config&quot;&gt;
-    MathJax.Hub.Config({
-      extensions: [
-        &quot;MathMenu.js&quot;,
-        &quot;MathZoom.js&quot;,
-        &quot;AssistiveMML.js&quot;
-      ],
-      jax: [&quot;input/TeX&quot;, &quot;output/CommonHTML&quot;],
-      TeX: {
-        extensions: [
-          &quot;AMSmath.js&quot;,
-          &quot;AMSsymbols.js&quot;,
-          &quot;noErrors.js&quot;,
-          &quot;noUndefined.js&quot;,
-        ]
-      }
-    });
-  &lt;/script&gt;</content><author><name></name></author><summary type="html">Introduction</summary></entry><entry><title type="html">Stubbing gRPC in Go</title><link href="http://localhost:4000/2020/10/08/stubbing-grpc.html" rel="alternate" type="text/html" title="Stubbing gRPC in Go" /><published>2020-10-08T11:55:23-10:00</published><updated>2020-10-08T11:55:23-10:00</updated><id>http://localhost:4000/2020/10/08/stubbing-grpc</id><content type="html" xml:base="http://localhost:4000/2020/10/08/stubbing-grpc.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
+&lt;style&gt;
+.leftie .MathJax * {
+  text-align: left !important;
+}
+&lt;/style&gt;</content><author><name></name></author><summary type="html">Introduction</summary></entry><entry><title type="html">Stubbing gRPC in Go</title><link href="http://localhost:4000/2020/10/08/stubbing-grpc.html" rel="alternate" type="text/html" title="Stubbing gRPC in Go" /><published>2020-10-08T15:55:23-06:00</published><updated>2020-10-08T15:55:23-06:00</updated><id>http://localhost:4000/2020/10/08/stubbing-grpc</id><content type="html" xml:base="http://localhost:4000/2020/10/08/stubbing-grpc.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
 
 &lt;p&gt;I’ve several times been met with the question, “How do you stub gRPC in Go”?&lt;/p&gt;
 
@@ -436,7 +440,7 @@ gRPC server would look similar.&lt;/p&gt;
 &lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
 
 &lt;p&gt;Stubbing and mocking gRPC servers in Go is very easy, doesn’t require any
-libraries, and obviates the need for pre-provided fakes/mocks/emulators/etc.&lt;/p&gt;</content><author><name></name></author><summary type="html">Introduction</summary></entry><entry><title type="html">Keeping Your Modules Compatible</title><link href="http://localhost:4000/2020/07/07/keeping-your-modules-compatible.html" rel="alternate" type="text/html" title="Keeping Your Modules Compatible" /><published>2020-07-07T11:55:23-10:00</published><updated>2020-07-07T11:55:23-10:00</updated><id>http://localhost:4000/2020/07/07/keeping-your-modules-compatible</id><content type="html" xml:base="http://localhost:4000/2020/07/07/keeping-your-modules-compatible.html">&lt;p&gt;Posted at &lt;a href=&quot;https://blog.golang.org/module-compatibility&quot;&gt;blog.golang.org/module-compatibility&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">Posted at blog.golang.org/module-compatibility.</summary></entry><entry><title type="html">Binary Search Tree Runtime Complexities</title><link href="http://localhost:4000/2019/11/23/binary-search-tree-runtime-complexity.html" rel="alternate" type="text/html" title="Binary Search Tree Runtime Complexities" /><published>2019-11-23T11:55:23-10:00</published><updated>2019-11-23T11:55:23-10:00</updated><id>http://localhost:4000/2019/11/23/binary-search-tree-runtime-complexity</id><content type="html" xml:base="http://localhost:4000/2019/11/23/binary-search-tree-runtime-complexity.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
+libraries, and obviates the need for pre-provided fakes/mocks/emulators/etc.&lt;/p&gt;</content><author><name></name></author><summary type="html">Introduction</summary></entry><entry><title type="html">Keeping Your Modules Compatible</title><link href="http://localhost:4000/2020/07/07/keeping-your-modules-compatible.html" rel="alternate" type="text/html" title="Keeping Your Modules Compatible" /><published>2020-07-07T15:55:23-06:00</published><updated>2020-07-07T15:55:23-06:00</updated><id>http://localhost:4000/2020/07/07/keeping-your-modules-compatible</id><content type="html" xml:base="http://localhost:4000/2020/07/07/keeping-your-modules-compatible.html">&lt;p&gt;Posted at &lt;a href=&quot;https://blog.golang.org/module-compatibility&quot;&gt;blog.golang.org/module-compatibility&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">Posted at blog.golang.org/module-compatibility.</summary></entry><entry><title type="html">Binary Search Tree Runtime Complexities</title><link href="http://localhost:4000/2019/11/23/binary-search-tree-runtime-complexity.html" rel="alternate" type="text/html" title="Binary Search Tree Runtime Complexities" /><published>2019-11-23T14:55:23-07:00</published><updated>2019-11-23T14:55:23-07:00</updated><id>http://localhost:4000/2019/11/23/binary-search-tree-runtime-complexity</id><content type="html" xml:base="http://localhost:4000/2019/11/23/binary-search-tree-runtime-complexity.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
 
 &lt;p&gt;I’ve recently inundated myself with interview preparation. Along the way, I
 thought a lot about how to intuit runtime complexities for various algorithms.
@@ -621,7 +625,7 @@ article we’ll look at backtracking and permutation runtime complexities.&lt;/p
         ]
       }
     });
-  &lt;/script&gt;</content><author><name></name></author><summary type="html">Introduction</summary></entry><entry><title type="html">Go Modules: v2 and Beyond</title><link href="http://localhost:4000/2019/11/07/v2-modules.html" rel="alternate" type="text/html" title="Go Modules: v2 and Beyond" /><published>2019-11-07T11:55:23-10:00</published><updated>2019-11-07T11:55:23-10:00</updated><id>http://localhost:4000/2019/11/07/v2-modules</id><content type="html" xml:base="http://localhost:4000/2019/11/07/v2-modules.html">&lt;p&gt;Posted at &lt;a href=&quot;https://blog.golang.org/v2-go-modules&quot;&gt;blog.golang.org&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">Posted at blog.golang.org.</summary></entry><entry><title type="html">Docker in Docker</title><link href="http://localhost:4000/2019/11/05/docker-in-docker.html" rel="alternate" type="text/html" title="Docker in Docker" /><published>2019-11-05T11:55:23-10:00</published><updated>2019-11-05T11:55:23-10:00</updated><id>http://localhost:4000/2019/11/05/docker-in-docker</id><content type="html" xml:base="http://localhost:4000/2019/11/05/docker-in-docker.html">&lt;h1 id=&quot;i-got-beef-with-all-yalls-articles&quot;&gt;I got beef with all y’alls articles&lt;/h1&gt;
+  &lt;/script&gt;</content><author><name></name></author><summary type="html">Introduction</summary></entry><entry><title type="html">Go Modules: v2 and Beyond</title><link href="http://localhost:4000/2019/11/07/v2-modules.html" rel="alternate" type="text/html" title="Go Modules: v2 and Beyond" /><published>2019-11-07T14:55:23-07:00</published><updated>2019-11-07T14:55:23-07:00</updated><id>http://localhost:4000/2019/11/07/v2-modules</id><content type="html" xml:base="http://localhost:4000/2019/11/07/v2-modules.html">&lt;p&gt;Posted at &lt;a href=&quot;https://blog.golang.org/v2-go-modules&quot;&gt;blog.golang.org&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">Posted at blog.golang.org.</summary></entry><entry><title type="html">Docker in Docker</title><link href="http://localhost:4000/2019/11/05/docker-in-docker.html" rel="alternate" type="text/html" title="Docker in Docker" /><published>2019-11-05T14:55:23-07:00</published><updated>2019-11-05T14:55:23-07:00</updated><id>http://localhost:4000/2019/11/05/docker-in-docker</id><content type="html" xml:base="http://localhost:4000/2019/11/05/docker-in-docker.html">&lt;h1 id=&quot;i-got-beef-with-all-yalls-articles&quot;&gt;I got beef with all y’alls articles&lt;/h1&gt;
 
 &lt;p&gt;Oh look, another docker-in-docker post. How original. Ok, I get it, there are
 many of these out there. Here’s my beef with all the ones I could find at 1am
@@ -681,7 +685,7 @@ unix socket. See more explanation at &lt;a href=&quot;https://github.com/docker-
 
 &lt;p&gt;8: https://stackoverflow.com/questions/45928958/how-to-run-docker-container-inside-docker-dind&lt;/p&gt;
 
-&lt;p&gt;9: https://discourse.drone.io/t/build-and-test-docker-images-with-dind/1808&lt;/p&gt;</content><author><name></name></author><summary type="html">I got beef with all y’alls articles</summary></entry><entry><title type="html">Bad Times Initializing With Append</title><link href="http://localhost:4000/2019/10/23/init-with-append.html" rel="alternate" type="text/html" title="Bad Times Initializing With Append" /><published>2019-10-23T11:55:23-10:00</published><updated>2019-10-23T11:55:23-10:00</updated><id>http://localhost:4000/2019/10/23/init-with-append</id><content type="html" xml:base="http://localhost:4000/2019/10/23/init-with-append.html">&lt;p&gt;I recently found out as part of &lt;a href=&quot;https://go-review.googlesource.com/c/tools/+/184357&quot;&gt;a code review&lt;/a&gt;
+&lt;p&gt;9: https://discourse.drone.io/t/build-and-test-docker-images-with-dind/1808&lt;/p&gt;</content><author><name></name></author><summary type="html">I got beef with all y’alls articles</summary></entry><entry><title type="html">Bad Times Initializing With Append</title><link href="http://localhost:4000/2019/10/23/init-with-append.html" rel="alternate" type="text/html" title="Bad Times Initializing With Append" /><published>2019-10-23T15:55:23-06:00</published><updated>2019-10-23T15:55:23-06:00</updated><id>http://localhost:4000/2019/10/23/init-with-append</id><content type="html" xml:base="http://localhost:4000/2019/10/23/init-with-append.html">&lt;p&gt;I recently found out as part of &lt;a href=&quot;https://go-review.googlesource.com/c/tools/+/184357&quot;&gt;a code review&lt;/a&gt;
 that initializing variables with append is, under some circumstances, A
 Terrible Idea. This post briefly explores what can happen when you do that,
 the underlying reason these things are happening, and how to avoid it.&lt;/p&gt;
@@ -796,178 +800,7 @@ they both tried to assign a value to index &lt;code class=&quot;highlighter-roug
 &lt;code class=&quot;highlighter-rouge&quot;&gt;a&lt;/code&gt; is only ever going to be appended to itself (a very common use of slices),
 the problem won’t occur, since there will always only ever be one length counter
 to maintain. With only one length counter, there’s no room for two appends
-accidentally assigning to the same index.&lt;/p&gt;</content><author><name></name></author><summary type="html">I recently found out as part of a code review that initializing variables with append is, under some circumstances, A Terrible Idea. This post briefly explores what can happen when you do that, the underlying reason these things are happening, and how to avoid it.</summary></entry><entry><title type="html">Reflecting on two years at Google</title><link href="http://localhost:4000/2019/09/01/reflecting-on-two-years-at-google.html" rel="alternate" type="text/html" title="Reflecting on two years at Google" /><published>2019-09-01T11:55:23-10:00</published><updated>2019-09-01T11:55:23-10:00</updated><id>http://localhost:4000/2019/09/01/reflecting-on-two-years-at-google</id><content type="html" xml:base="http://localhost:4000/2019/09/01/reflecting-on-two-years-at-google.html">&lt;p&gt;I had meant to write a &lt;em&gt;“Reflecting on one year at Google”&lt;/em&gt; post earlier this
-year, but it kept getting put off until suddenly I realized that it would be
-better to just cut my losses and skip to the second year post.&lt;/p&gt;
-
-&lt;p&gt;Then, when I got into it, I realized that a lot of my experience with Google
-was from the outside: failing repeatedly trying to get in. So, after writing a
-bunch about that, I decided to create two posts: &lt;em&gt;&lt;a href=&quot;/2019/09/01/reflecting-on-interviewing-at-google&quot;&gt;“Reflecting on interviewing
-at Google”&lt;/a&gt;&lt;/em&gt; and this post.&lt;/p&gt;
-
-&lt;p&gt;Now, with all that out the way, I’m finally read to really dig in and start some
-serious reflection and introspection.&lt;/p&gt;
-
-&lt;p&gt;Background note: I started at Google in late 2017. I moved from Colorado to
-California (San Francisco bay area) for the job, and moved back to Colorado
-in early 2018 (keeping the job, but working from Boulder, Colorado).&lt;/p&gt;
-
-&lt;h1 id=&quot;small-steps&quot;&gt;Small steps&lt;/h1&gt;
-
-&lt;p&gt;Starting at Google was unlike any other job. Most jobs I’ve had, and heard
-about, followed a pattern of a 2-week break-in period followed by a few
-months contributing but still kind-of trying to get caught up, followed by
-proficiency, and at some point later you might lead a team.&lt;/p&gt;
-
-&lt;p&gt;Google was very much not like that. You start by attending at 2 week
-orientation with the other ~400-700 people in your “Noogler” class. Yes,
-&lt;em&gt;hundreds&lt;/em&gt; of people - mostly engineers - start at Google every two weeks.
-On one campus. More on other campuses. Mind blown.&lt;/p&gt;
-
-&lt;p&gt;The first two weeks are spent in lectures and seminars repeatedly having your
-sense of scale and proportion obliterated, being exposed to various systems and teams
-within the company, being taught by senior engineers how to use some of these
-systems, and generally being taught how to teach yourself.&lt;/p&gt;
-
-&lt;p&gt;In your third week you’re ready to meet your team. Your team introduces you to
-a “starter project”: a small project in a well-understood area that you can use
-to feel good about yourself, and hopefully along the way learn how to actually
-start writing and releasing code. You’re given something like a month to finish
-this.&lt;/p&gt;
-
-&lt;p&gt;So, it takes &lt;em&gt;6 weeks after you start&lt;/em&gt; before you’re actually ready to look at
-real code. And, beyond that, most teams will only expect you to be a
-fully independent, contributing team member somewhere around month 6 to 9.&lt;/p&gt;
-
-&lt;h1 id=&quot;inch-by-inch&quot;&gt;Inch by inch&lt;/h1&gt;
-
-&lt;p&gt;My first actually-useful piece of code I submitted, if I recall correctly, was
-a code sample that showed developers how to use the Pub/Sub client library in
-a certain way.&lt;/p&gt;
-
-&lt;p&gt;All code at Google goes through a process called “code review”, where code
-changes (or additions, deletions) get “proposed” and reviewed by colleagues,
-who either Yea, Nay, or ask for changes. Code review is a fairly common practice
-in software engineering, though the implementation varies a lot by company. At
-most companies, code review usually something like 30 minutes to 2 days per code
-change. Code reviews at most companies are typically fairly high-level, and tend
-to concern themselves with broad design or nit-picky things like code style.&lt;/p&gt;
-
-&lt;p&gt;That first change I proposed took something like &lt;em&gt;two weeks&lt;/em&gt; to get through
-code review. I learned more about Go and code design during that code review
-than I’d experienced the entire past year leading up to that point (which is
-not that high of a bar, if you know my prior experiences, but still). It was
-brutal. My code was picked apart; it was analyzed line-by-line, and then
-block-by-block, and then file-by-file. It wasn’t malicious, though: code review
-comments were statements of fact, or impartial queries, rather than jabs and
-one-ups. They were, “This can be more performant like so: |example|. And,
-here’s why: |reason|.”, not “This is terrible. Do it this way: |example|.”.&lt;/p&gt;
-
-&lt;p&gt;After years of stagnation in my career at that point it was so wonderful to
-be learning again, from people with a deep wealth of knowledge and
-experience. I was hooked.&lt;/p&gt;
-
-&lt;p&gt;The next year was a lot of this. I got better by inches: by treating each code
-review as a learning opportunity; by diving into problems I had no business
-being in; by pushing myself, over, and over, and over, to become better.&lt;/p&gt;
-
-&lt;p&gt;Looking back, I was getting better: the scope of problems continually increased;
-the code reviews went from weeks to hours or days, from everything-under-the-sun
-is wrong to fairly-subtle suggestions. I was slowly transitioning from a student
-that needed hand-holding, and didn’t provide much in return, to a colleague that
-accepted and gave equally (or, closer to equal).&lt;/p&gt;
-
-&lt;h1 id=&quot;metre-by-unhealthy-metre&quot;&gt;Metre by unhealthy metre&lt;/h1&gt;
-
-&lt;p&gt;My intense passion for interesting problems and self-improvement finally had an
-outlet, and that outlet was unbounded in scope. Worse: it rewarded the effort
-I put in: despite my increasing weariness, the scope of my work constantly
-increased (by my own volition); my personal reviews were stellar; and my
-projects were almost universally a success.&lt;/p&gt;
-
-&lt;p&gt;I didn’t realize until fairly late that I was slowly grinding myself down to the
-bone. I was working 10, 12, or 14 hour days, and often would work on weekends.
-I took my frustrations and problems home rather than leaving them at work; they
-were compounded with my increasing dislike of California.&lt;/p&gt;
-
-&lt;p&gt;I ended up getting most of the way through that first year before realizing some
-things were very bad. For the first time in my life, I recognized signs of
-depression. Some combination of a too-intense work schedule, longing for my
-old friends and outdoor-focused lifestyle in Colorado, and relationship problems
-were causing me to be deeply unhappy.&lt;/p&gt;
-
-&lt;p&gt;I won’t get into that part too much. The long story short is that I had a bit of
-a break down and decided I needed to move back to Colorado, Google or no Google.
-Thankfully, my department was and is fantastic and thoroughly supported me, and
-offered me my job at the Colorado campus with a standard cost-of-living pay reduction.&lt;/p&gt;
-
-&lt;p&gt;I moved back to Colorado in early 2018 with the same job.&lt;/p&gt;
-
-&lt;h1 id=&quot;on-to-the-other-side&quot;&gt;On to the other side&lt;/h1&gt;
-
-&lt;p&gt;The year taught me a lot about my limits to an extent that’s hard to put into
-words. I’ve learned how to spot signs of too much stress, healthy coping
-mechanisms, and how to set boundaries. I’ve learned a lot about what I value,
-and the type of life I want for myself. And, it’s helped me refine the kind of
-person I want to be: hard-working and respected in my career, yes, but also a kind
-friend with space in my life to help others; a well-rounded individual with lots
-of time spent outdoors; a good partner. It’s hard not to wish I had had these
-skills going into the job. It would have saved a lot of hardship for myself and
-my relationship at the time. I suppose the best you can do is try to learn from
-hardship, though, and try to become better for it.&lt;/p&gt;
-
-&lt;p&gt;In the last year I’ve committed myself to a healthy balance of passion for my
-job and all the rest that matter to me: loving relationships with friends and
-family; spending time in nature; sports and exercise; hobbies like reading and
-taking french lessons; and progressing my “adult” life with things like buying
-a house and building a local community.&lt;/p&gt;
-
-&lt;p&gt;My work hasn’t suffered hardly as much as I thought it would. Working 7 to
-8 hours a day has made me be a lot more efficient with my time: I cancel or
-decline a lot more meetings; I don’t take hour-long lunches with colleagues;
-I don’t do a lot of after-work events; I delegate a lot more rather than
-“superhero” all the work myself. And, the reprecussions never came: my lessened
-throughput was celebrated by my manager and team as mental health successes,
-rather than the disappointment I was subconsiously bracing myself for.&lt;/p&gt;
-
-&lt;p&gt;The outcome is a much healthier, happier day-to-day, week-to-week. I once
-again find self-value in things outside of work; I have a robust and healthy
-support system of friends and family; I progress myself in sports and hobbies
-so that stalls or failures at work are diminished in impact by successes
-elsewhere.&lt;/p&gt;
-
-&lt;h1 id=&quot;keeping-perspective&quot;&gt;Keeping perspective&lt;/h1&gt;
-
-&lt;p&gt;I’ve had the privilege and honour of working with incredible minds, who have
-universally been kind and willing to teach. I’ve sat in rooms with people that
-have invented entire languages, network protocols, and algorithms for systems
-at scale. I’ve had my opinions heard and sincerely considered by these people,
-and had the opportunity to learn from them. I’ve had the opportunity to lead;
-to design; to mentor; and to teach. I’ve accomplished and learned more (in my
-own eyes) in these two years than my entire career before this.&lt;/p&gt;
-
-&lt;p&gt;I’ve also had the honour of having incredible managers and directors. I have
-felt since day one that I was a valued member of a team; that my opinions held
-weight; that I was supported in whatever I decided was best for myself, even if
-that meant leaving the company or my team.&lt;/p&gt;
-
-&lt;p&gt;I work on things that I find really, really cool: building a performance
-benchmarking pipelines and improving client library performance; defining the
-client-side retry strategy for all of Google Cloud; improving Google Cloud
-reliability with throttling and load shedding; building important and complex
-features into libraries; working on the HTTP/2 transport in gRPC; and loads
-more. Moreover, I’ve been given a lot of freedom in choosing the kinds of things
-I work on, and being encouraged to go find new problems that we’re not aware of
-yet.&lt;/p&gt;
-
-&lt;p&gt;I’ve had opportunities to travel around the world, meeting developers, working
-with amazing engineers, and giving talks on technical topics. And at home, we
-are given a tremendous amount of benefits, too: classes, food,
-classes about making food (seriously), gyms, fun events, clubs, and more.&lt;/p&gt;
-
-&lt;p&gt;It’s a good place to work. It’s an intense place to work, and you have to be
-very careful not to let it burn you up, but it is a good place to work. I
-don’t see myself working anywhere else for the foreseeable future.&lt;/p&gt;</content><author><name></name></author><summary type="html">I had meant to write a “Reflecting on one year at Google” post earlier this year, but it kept getting put off until suddenly I realized that it would be better to just cut my losses and skip to the second year post.</summary></entry><entry><title type="html">Reflecting on interviewing at Google</title><link href="http://localhost:4000/2019/09/01/reflecting-on-interviewing-at-google.html" rel="alternate" type="text/html" title="Reflecting on interviewing at Google" /><published>2019-09-01T11:55:23-10:00</published><updated>2019-09-01T11:55:23-10:00</updated><id>http://localhost:4000/2019/09/01/reflecting-on-interviewing-at-google</id><content type="html" xml:base="http://localhost:4000/2019/09/01/reflecting-on-interviewing-at-google.html">&lt;p&gt;Disclaimer: This document makes statements and gives advice about interviewing
+accidentally assigning to the same index.&lt;/p&gt;</content><author><name></name></author><summary type="html">I recently found out as part of a code review that initializing variables with append is, under some circumstances, A Terrible Idea. This post briefly explores what can happen when you do that, the underlying reason these things are happening, and how to avoid it.</summary></entry><entry><title type="html">Reflecting on interviewing at Google</title><link href="http://localhost:4000/2019/09/01/reflecting-on-interviewing-at-google.html" rel="alternate" type="text/html" title="Reflecting on interviewing at Google" /><published>2019-09-01T15:55:23-06:00</published><updated>2019-09-01T15:55:23-06:00</updated><id>http://localhost:4000/2019/09/01/reflecting-on-interviewing-at-google</id><content type="html" xml:base="http://localhost:4000/2019/09/01/reflecting-on-interviewing-at-google.html">&lt;p&gt;Disclaimer: This document makes statements and gives advice about interviewing
 at Google. This is &lt;em&gt;not at all&lt;/em&gt; an official accounting of what it’s like to
 interview at Google. This is entirely my own interpration, likely riddled with
 inaccuracies to the extent that a Googler in recruitment would probably develop
@@ -1195,4 +1028,175 @@ approach of taking courses and completing homework / projects.&lt;/p&gt;
 &lt;p&gt;Consider the list of interview prepation techniques above and do some
 introspection about how you learn best. And, if you can, try to orient your
 job around interesting problems that push you to learn, rather than staying
-in your comfort zone.&lt;/p&gt;</content><author><name></name></author><summary type="html">Disclaimer: This document makes statements and gives advice about interviewing at Google. This is not at all an official accounting of what it’s like to interview at Google. This is entirely my own interpration, likely riddled with inaccuracies to the extent that a Googler in recruitment would probably develop a migraine reading this. If you’d like the official word, check out careers.google.com or talk to a recruiter.</summary></entry><entry><title type="html">Migrating to Go Modules</title><link href="http://localhost:4000/2019/08/21/migrating-to-go-modules.html" rel="alternate" type="text/html" title="Migrating to Go Modules" /><published>2019-08-21T11:55:23-10:00</published><updated>2019-08-21T11:55:23-10:00</updated><id>http://localhost:4000/2019/08/21/migrating-to-go-modules</id><content type="html" xml:base="http://localhost:4000/2019/08/21/migrating-to-go-modules.html">&lt;p&gt;Posted at &lt;a href=&quot;https://blog.golang.org/migrating-to-go-modules&quot;&gt;blog.golang.org&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">Posted at blog.golang.org.</summary></entry></feed>
+in your comfort zone.&lt;/p&gt;</content><author><name></name></author><summary type="html">Disclaimer: This document makes statements and gives advice about interviewing at Google. This is not at all an official accounting of what it’s like to interview at Google. This is entirely my own interpration, likely riddled with inaccuracies to the extent that a Googler in recruitment would probably develop a migraine reading this. If you’d like the official word, check out careers.google.com or talk to a recruiter.</summary></entry><entry><title type="html">Reflecting on two years at Google</title><link href="http://localhost:4000/2019/09/01/reflecting-on-two-years-at-google.html" rel="alternate" type="text/html" title="Reflecting on two years at Google" /><published>2019-09-01T15:55:23-06:00</published><updated>2019-09-01T15:55:23-06:00</updated><id>http://localhost:4000/2019/09/01/reflecting-on-two-years-at-google</id><content type="html" xml:base="http://localhost:4000/2019/09/01/reflecting-on-two-years-at-google.html">&lt;p&gt;I had meant to write a &lt;em&gt;“Reflecting on one year at Google”&lt;/em&gt; post earlier this
+year, but it kept getting put off until suddenly I realized that it would be
+better to just cut my losses and skip to the second year post.&lt;/p&gt;
+
+&lt;p&gt;Then, when I got into it, I realized that a lot of my experience with Google
+was from the outside: failing repeatedly trying to get in. So, after writing a
+bunch about that, I decided to create two posts: &lt;em&gt;&lt;a href=&quot;/2019/09/01/reflecting-on-interviewing-at-google&quot;&gt;“Reflecting on interviewing
+at Google”&lt;/a&gt;&lt;/em&gt; and this post.&lt;/p&gt;
+
+&lt;p&gt;Now, with all that out the way, I’m finally read to really dig in and start some
+serious reflection and introspection.&lt;/p&gt;
+
+&lt;p&gt;Background note: I started at Google in late 2017. I moved from Colorado to
+California (San Francisco bay area) for the job, and moved back to Colorado
+in early 2018 (keeping the job, but working from Boulder, Colorado).&lt;/p&gt;
+
+&lt;h1 id=&quot;small-steps&quot;&gt;Small steps&lt;/h1&gt;
+
+&lt;p&gt;Starting at Google was unlike any other job. Most jobs I’ve had, and heard
+about, followed a pattern of a 2-week break-in period followed by a few
+months contributing but still kind-of trying to get caught up, followed by
+proficiency, and at some point later you might lead a team.&lt;/p&gt;
+
+&lt;p&gt;Google was very much not like that. You start by attending at 2 week
+orientation with the other ~400-700 people in your “Noogler” class. Yes,
+&lt;em&gt;hundreds&lt;/em&gt; of people - mostly engineers - start at Google every two weeks.
+On one campus. More on other campuses. Mind blown.&lt;/p&gt;
+
+&lt;p&gt;The first two weeks are spent in lectures and seminars repeatedly having your
+sense of scale and proportion obliterated, being exposed to various systems and teams
+within the company, being taught by senior engineers how to use some of these
+systems, and generally being taught how to teach yourself.&lt;/p&gt;
+
+&lt;p&gt;In your third week you’re ready to meet your team. Your team introduces you to
+a “starter project”: a small project in a well-understood area that you can use
+to feel good about yourself, and hopefully along the way learn how to actually
+start writing and releasing code. You’re given something like a month to finish
+this.&lt;/p&gt;
+
+&lt;p&gt;So, it takes &lt;em&gt;6 weeks after you start&lt;/em&gt; before you’re actually ready to look at
+real code. And, beyond that, most teams will only expect you to be a
+fully independent, contributing team member somewhere around month 6 to 9.&lt;/p&gt;
+
+&lt;h1 id=&quot;inch-by-inch&quot;&gt;Inch by inch&lt;/h1&gt;
+
+&lt;p&gt;My first actually-useful piece of code I submitted, if I recall correctly, was
+a code sample that showed developers how to use the Pub/Sub client library in
+a certain way.&lt;/p&gt;
+
+&lt;p&gt;All code at Google goes through a process called “code review”, where code
+changes (or additions, deletions) get “proposed” and reviewed by colleagues,
+who either Yea, Nay, or ask for changes. Code review is a fairly common practice
+in software engineering, though the implementation varies a lot by company. At
+most companies, code review usually something like 30 minutes to 2 days per code
+change. Code reviews at most companies are typically fairly high-level, and tend
+to concern themselves with broad design or nit-picky things like code style.&lt;/p&gt;
+
+&lt;p&gt;That first change I proposed took something like &lt;em&gt;two weeks&lt;/em&gt; to get through
+code review. I learned more about Go and code design during that code review
+than I’d experienced the entire past year leading up to that point (which is
+not that high of a bar, if you know my prior experiences, but still). It was
+brutal. My code was picked apart; it was analyzed line-by-line, and then
+block-by-block, and then file-by-file. It wasn’t malicious, though: code review
+comments were statements of fact, or impartial queries, rather than jabs and
+one-ups. They were, “This can be more performant like so: |example|. And,
+here’s why: |reason|.”, not “This is terrible. Do it this way: |example|.”.&lt;/p&gt;
+
+&lt;p&gt;After years of stagnation in my career at that point it was so wonderful to
+be learning again, from people with a deep wealth of knowledge and
+experience. I was hooked.&lt;/p&gt;
+
+&lt;p&gt;The next year was a lot of this. I got better by inches: by treating each code
+review as a learning opportunity; by diving into problems I had no business
+being in; by pushing myself, over, and over, and over, to become better.&lt;/p&gt;
+
+&lt;p&gt;Looking back, I was getting better: the scope of problems continually increased;
+the code reviews went from weeks to hours or days, from everything-under-the-sun
+is wrong to fairly-subtle suggestions. I was slowly transitioning from a student
+that needed hand-holding, and didn’t provide much in return, to a colleague that
+accepted and gave equally (or, closer to equal).&lt;/p&gt;
+
+&lt;h1 id=&quot;metre-by-unhealthy-metre&quot;&gt;Metre by unhealthy metre&lt;/h1&gt;
+
+&lt;p&gt;My intense passion for interesting problems and self-improvement finally had an
+outlet, and that outlet was unbounded in scope. Worse: it rewarded the effort
+I put in: despite my increasing weariness, the scope of my work constantly
+increased (by my own volition); my personal reviews were stellar; and my
+projects were almost universally a success.&lt;/p&gt;
+
+&lt;p&gt;I didn’t realize until fairly late that I was slowly grinding myself down to the
+bone. I was working 10, 12, or 14 hour days, and often would work on weekends.
+I took my frustrations and problems home rather than leaving them at work; they
+were compounded with my increasing dislike of California.&lt;/p&gt;
+
+&lt;p&gt;I ended up getting most of the way through that first year before realizing some
+things were very bad. For the first time in my life, I recognized signs of
+depression. Some combination of a too-intense work schedule, longing for my
+old friends and outdoor-focused lifestyle in Colorado, and relationship problems
+were causing me to be deeply unhappy.&lt;/p&gt;
+
+&lt;p&gt;I won’t get into that part too much. The long story short is that I had a bit of
+a break down and decided I needed to move back to Colorado, Google or no Google.
+Thankfully, my department was and is fantastic and thoroughly supported me, and
+offered me my job at the Colorado campus with a standard cost-of-living pay reduction.&lt;/p&gt;
+
+&lt;p&gt;I moved back to Colorado in early 2018 with the same job.&lt;/p&gt;
+
+&lt;h1 id=&quot;on-to-the-other-side&quot;&gt;On to the other side&lt;/h1&gt;
+
+&lt;p&gt;The year taught me a lot about my limits to an extent that’s hard to put into
+words. I’ve learned how to spot signs of too much stress, healthy coping
+mechanisms, and how to set boundaries. I’ve learned a lot about what I value,
+and the type of life I want for myself. And, it’s helped me refine the kind of
+person I want to be: hard-working and respected in my career, yes, but also a kind
+friend with space in my life to help others; a well-rounded individual with lots
+of time spent outdoors; a good partner. It’s hard not to wish I had had these
+skills going into the job. It would have saved a lot of hardship for myself and
+my relationship at the time. I suppose the best you can do is try to learn from
+hardship, though, and try to become better for it.&lt;/p&gt;
+
+&lt;p&gt;In the last year I’ve committed myself to a healthy balance of passion for my
+job and all the rest that matter to me: loving relationships with friends and
+family; spending time in nature; sports and exercise; hobbies like reading and
+taking french lessons; and progressing my “adult” life with things like buying
+a house and building a local community.&lt;/p&gt;
+
+&lt;p&gt;My work hasn’t suffered hardly as much as I thought it would. Working 7 to
+8 hours a day has made me be a lot more efficient with my time: I cancel or
+decline a lot more meetings; I don’t take hour-long lunches with colleagues;
+I don’t do a lot of after-work events; I delegate a lot more rather than
+“superhero” all the work myself. And, the reprecussions never came: my lessened
+throughput was celebrated by my manager and team as mental health successes,
+rather than the disappointment I was subconsiously bracing myself for.&lt;/p&gt;
+
+&lt;p&gt;The outcome is a much healthier, happier day-to-day, week-to-week. I once
+again find self-value in things outside of work; I have a robust and healthy
+support system of friends and family; I progress myself in sports and hobbies
+so that stalls or failures at work are diminished in impact by successes
+elsewhere.&lt;/p&gt;
+
+&lt;h1 id=&quot;keeping-perspective&quot;&gt;Keeping perspective&lt;/h1&gt;
+
+&lt;p&gt;I’ve had the privilege and honour of working with incredible minds, who have
+universally been kind and willing to teach. I’ve sat in rooms with people that
+have invented entire languages, network protocols, and algorithms for systems
+at scale. I’ve had my opinions heard and sincerely considered by these people,
+and had the opportunity to learn from them. I’ve had the opportunity to lead;
+to design; to mentor; and to teach. I’ve accomplished and learned more (in my
+own eyes) in these two years than my entire career before this.&lt;/p&gt;
+
+&lt;p&gt;I’ve also had the honour of having incredible managers and directors. I have
+felt since day one that I was a valued member of a team; that my opinions held
+weight; that I was supported in whatever I decided was best for myself, even if
+that meant leaving the company or my team.&lt;/p&gt;
+
+&lt;p&gt;I work on things that I find really, really cool: building a performance
+benchmarking pipelines and improving client library performance; defining the
+client-side retry strategy for all of Google Cloud; improving Google Cloud
+reliability with throttling and load shedding; building important and complex
+features into libraries; working on the HTTP/2 transport in gRPC; and loads
+more. Moreover, I’ve been given a lot of freedom in choosing the kinds of things
+I work on, and being encouraged to go find new problems that we’re not aware of
+yet.&lt;/p&gt;
+
+&lt;p&gt;I’ve had opportunities to travel around the world, meeting developers, working
+with amazing engineers, and giving talks on technical topics. And at home, we
+are given a tremendous amount of benefits, too: classes, food,
+classes about making food (seriously), gyms, fun events, clubs, and more.&lt;/p&gt;
+
+&lt;p&gt;It’s a good place to work. It’s an intense place to work, and you have to be
+very careful not to let it burn you up, but it is a good place to work. I
+don’t see myself working anywhere else for the foreseeable future.&lt;/p&gt;</content><author><name></name></author><summary type="html">I had meant to write a “Reflecting on one year at Google” post earlier this year, but it kept getting put off until suddenly I realized that it would be better to just cut my losses and skip to the second year post.</summary></entry><entry><title type="html">Migrating to Go Modules</title><link href="http://localhost:4000/2019/08/21/migrating-to-go-modules.html" rel="alternate" type="text/html" title="Migrating to Go Modules" /><published>2019-08-21T15:55:23-06:00</published><updated>2019-08-21T15:55:23-06:00</updated><id>http://localhost:4000/2019/08/21/migrating-to-go-modules</id><content type="html" xml:base="http://localhost:4000/2019/08/21/migrating-to-go-modules.html">&lt;p&gt;Posted at &lt;a href=&quot;https://blog.golang.org/migrating-to-go-modules&quot;&gt;blog.golang.org&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">Posted at blog.golang.org.</summary></entry></feed>
