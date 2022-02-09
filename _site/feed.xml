@@ -1,4 +1,45 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2022-02-08T22:12:40-07:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jean de Klerk</title><subtitle>This is my personal website. The views represented here are my own, and do not represent my employer.</subtitle><entry><title type="html">Don’t use assertion libraries</title><link href="http://localhost:4000/2022/02/08/assertion-libraries.html" rel="alternate" type="text/html" title="Don’t use assertion libraries" /><published>2022-02-08T14:55:23-07:00</published><updated>2022-02-08T14:55:23-07:00</updated><id>http://localhost:4000/2022/02/08/assertion-libraries</id><content type="html" xml:base="http://localhost:4000/2022/02/08/assertion-libraries.html">&lt;p&gt;Foreword #1: This is a very sensitive topic for many people. 🙂 I find that many people have never considered writing tests &lt;em&gt;without&lt;/em&gt; assertion libraries. It might come as a shocking surprise to consider such a world. That shock and surprise might be painful. Steel yourself.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2022-02-09T15:33:17-07:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jean de Klerk</title><subtitle>This is my personal website. The views represented here are my own, and do not represent my employer.</subtitle><entry><title type="html">Wrapped errors are stacks</title><link href="http://localhost:4000/2022/02/09/wrapped-errors-are-stacks.html" rel="alternate" type="text/html" title="Wrapped errors are stacks" /><published>2022-02-09T14:55:23-07:00</published><updated>2022-02-09T14:55:23-07:00</updated><id>http://localhost:4000/2022/02/09/wrapped-errors-are-stacks</id><content type="html" xml:base="http://localhost:4000/2022/02/09/wrapped-errors-are-stacks.html">&lt;h1 id=&quot;wrapped-errors-are-stacks&quot;&gt;Wrapped errors are stacks&lt;/h1&gt;
+
+&lt;p&gt;Wrapping an error creates a stack: a linked list of error pointing to the next error, where newly wrapped errors are added to the head, and the stack is traversed from head to tail during As, Is, and with the Unwrap interface.&lt;/p&gt;
+
+&lt;p&gt;It’s important to keep this in mind when you’re designing the internal representation for your unwrappable structured error. The simplest representation is a single error:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;type decompressErr struct {
+  name string
+  err error // Points to the next error down the stack.
+}
+
+func (e *decompressErr) Error() string {
+  return fmt.Sprintf(&quot;decompress %s: %s&quot;, e.name, e.err)  
+}
+
+func (e *decompressErr) Unwrap() error { return e.err }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Most unwrappable structured errors should only contain a single error. They have obvious semantics and are easy to use.&lt;/p&gt;
+
+&lt;p&gt;Unwrappable structured errors that contain multiple errors have much less clear semantics. Consider:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// We recommend against this approach.
+type PathParseErrors struct {
+  // A map of path to parse error for that path.
+  errors map[string]error
+}
+
+func (e *PathParseErrors) Error() string {
+  return fmt.Sprintf(&quot;%v&quot;, e.errors)
+}
+
+func (e *PathParseErrors) Unwrap() error {
+  // Nothing we return here will be obvious.
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;In this example, the stack semantics are broken: we have an unwrappable structured error that contains a map of errors. But, which error will Unwrap return? There’s no right answer: any choice would be non-obvious to the user. A slice has the same issue as a map: there’s no obvious error to return.&lt;/p&gt;
+
+&lt;p&gt;This issue is exacerbated by the fact that it’s impossible for the author of PathParseErrors to document their Unwrap method in a way that will directly help users. Users often don’t interact with the Unwrap method directly: they use tools like As and Is, which themselves call the Unwrap method. And, this error may exist in a library that is several layers deep in a dependency tree: a user may have a very hard time finding the exact library whose documentation to go read when they’ve got an opaque stack of wrapped errors.&lt;/p&gt;
+
+&lt;p&gt;When you need to collect several errors at once, use &lt;code class=&quot;highlighter-rouge&quot;&gt;[]error&lt;/code&gt;, a map of errors, or a structured error that does not support Unwrap.&lt;/p&gt;</content><author><name></name></author><summary type="html">Wrapped errors are stacks</summary></entry><entry><title type="html">Don’t use assertion libraries in Go</title><link href="http://localhost:4000/2022/02/08/assertion-libraries.html" rel="alternate" type="text/html" title="Don’t use assertion libraries in Go" /><published>2022-02-08T14:55:23-07:00</published><updated>2022-02-08T14:55:23-07:00</updated><id>http://localhost:4000/2022/02/08/assertion-libraries</id><content type="html" xml:base="http://localhost:4000/2022/02/08/assertion-libraries.html">&lt;p&gt;Foreword #1: This is a very sensitive topic for many people. 🙂 I find that many people have never considered writing tests &lt;em&gt;without&lt;/em&gt; assertion libraries. It might come as a shocking surprise to consider such a world. That shock and surprise might be painful. Steel yourself.&lt;/p&gt;
 
 &lt;p&gt;Foreword #2: This is inspired by a long conversation the Google Go readability crowd recently, in which we collectively re-affirmed our position to ban assertion libraries in Google. Most of this post is my own responses, tidied up.&lt;/p&gt;
 
@@ -132,7 +173,148 @@ if object != nil &amp;amp;&amp;amp; object.Value != &quot;Something&quot; {
 
 &lt;p&gt;Use “cmp” and other comparison libraries if you need to do more complex comparisons (on structs, for example).&lt;/p&gt;
 
-&lt;p&gt;Don’t use assertion libraries.&lt;/p&gt;</content><author><name></name></author><summary type="html">Foreword #1: This is a very sensitive topic for many people. 🙂 I find that many people have never considered writing tests without assertion libraries. It might come as a shocking surprise to consider such a world. That shock and surprise might be painful. Steel yourself.</summary></entry><entry><title type="html">Contexts and Structs</title><link href="http://localhost:4000/2021/02/24/contexts-structs.html" rel="alternate" type="text/html" title="Contexts and Structs" /><published>2021-02-24T14:55:23-07:00</published><updated>2021-02-24T14:55:23-07:00</updated><id>http://localhost:4000/2021/02/24/contexts-structs</id><content type="html" xml:base="http://localhost:4000/2021/02/24/contexts-structs.html">&lt;p&gt;Posted at &lt;a href=&quot;https://go.dev/blog/context-and-structs&quot;&gt;go.dev/blog/context-and-structs&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">Posted at go.dev/blog/context-and-structs.</summary></entry><entry><title type="html">Stubbing gRPC in Go</title><link href="http://localhost:4000/2020/10/08/stubbing-grpc.html" rel="alternate" type="text/html" title="Stubbing gRPC in Go" /><published>2020-10-08T15:55:23-06:00</published><updated>2020-10-08T15:55:23-06:00</updated><id>http://localhost:4000/2020/10/08/stubbing-grpc</id><content type="html" xml:base="http://localhost:4000/2020/10/08/stubbing-grpc.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
+&lt;p&gt;Don’t use assertion libraries.&lt;/p&gt;</content><author><name></name></author><summary type="html">Foreword #1: This is a very sensitive topic for many people. 🙂 I find that many people have never considered writing tests without assertion libraries. It might come as a shocking surprise to consider such a world. That shock and surprise might be painful. Steel yourself.</summary></entry><entry><title type="html">Error unwrapping for library authors</title><link href="http://localhost:4000/2022/02/08/error-unwrapping.html" rel="alternate" type="text/html" title="Error unwrapping for library authors" /><published>2022-02-08T14:55:23-07:00</published><updated>2022-02-08T14:55:23-07:00</updated><id>http://localhost:4000/2022/02/08/error-unwrapping</id><content type="html" xml:base="http://localhost:4000/2022/02/08/error-unwrapping.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
+
+&lt;p&gt;In https://go.dev/blog/go1.13-errors, Go introduced new language changes that improved how errors are handled in Go programs. These changes include the concept of wrapping errors, as well as tools and semantics for unwrapping errors. They have enabled a rich ecosystem of detailed errors, and given users more ways to examine errors..&lt;/p&gt;
+
+&lt;p&gt;Having had a few years to learn about how these tools can be used, let’s discuss some of the subtleties of wrapping and unwrapping, with an eye towards compatibility of our APIs. Accordingly, this article is particularly relevant to library authors, as we will often view wrapped errors through the lens of API compatibility.&lt;/p&gt;
+
+&lt;h1 id=&quot;wrapped-errors-are-part-of-your-public-api&quot;&gt;Wrapped errors are part of your public API&lt;/h1&gt;
+
+&lt;p&gt;In “Working with Errors in Go 1.13”, the authors wrote that “When adding additional context to an error, either with fmt.Errorf or by implementing a custom type, you need to decide whether the new error should wrap the original.”. There are numerous considerations that factor into whether to wrap an error, but library authors should specifically consider that wrapped errors become part of their public API.&lt;/p&gt;
+
+&lt;p&gt;Let’s re-examine one of the examples from that article:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;func Decompress(name, path string) error {
+  // ...
+  if err != nil {
+    return fmt.Errorf(&quot;decompress %v: %v&quot;, name, err)
+  }
+  // ...
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;When we write error returns like this in our public APIs, users are given textual information but no structured information. They have no way of inspecting more than the string contents of the error handed to them: as the article states, “Creating a new error with fmt.Errorf discards everything from the original error except the text.”. We are therefore able to change any part of the error returned without causing any backwards incompatible changes, assuming users aren’t relying on the string contents of these errors.&lt;/p&gt;
+
+&lt;p&gt;Let’s now alter this example to return a structured, unwrappable error:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;type PathParseError struct {
+  Path string
+}
+func (e *PathParseError) Error() string {
+  return e.Path + &quot;: could not be parsed&quot;
+}
+
+// ...
+
+func Decompress(name, path string) error {
+  err := &amp;amp;PathParseError{Path: path}
+  if err != nil {
+    return fmt.Errorf(&quot;decompress %v: %w&quot;, name, err)
+  }
+  // ...
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;We've now given&lt;/code&gt; users powerful new capabilities for introspecting the returned error. Users now have structured information that they can rely on at runtime, such as the existence of PathParseError, and its fields; whereas before they could only string match the error contents, a practice that is usually discouraged.&lt;/p&gt;
+
+&lt;p&gt;But exposing that information to users comes with responsibility. When we only return unstructured errors, we often can be liberal in changing the string-only contents of our errors. However, when we return structured errors to users, we have to be more careful: removing the %w, or changing its value, will be noticeable behavior changes that affect how user code will interpret the returned error.&lt;/p&gt;
+
+&lt;p&gt;The subtlety here is that though the structure of the returned error changes when we remove %w or change its value, the type information remains the same - we still just return an error, not noticing that its underlying information has changed. Therefore users won’t observe these changes at compile time: they’ll observe them at run time.&lt;/p&gt;
+
+&lt;p&gt;To combat this, here are some tips:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Users should only rely on structured errors from stable libraries that they trust not to change.&lt;/li&gt;
+  &lt;li&gt;Authors of stable libraries should aim to preserve the behavior of their structured error returns. They should write tests that exercise all observable behavior to aid in that goal, and document which structured errors users can expect to interpret the returned error as.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;wrapping-external-library-errors&quot;&gt;Wrapping external library errors&lt;/h1&gt;
+
+&lt;p&gt;Let’s take this example a bit further by wrapping errors from external libraries in our code:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;package&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;externaldep&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PathParseError&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;Path&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;string&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ParsePath&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;path&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;//&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;package&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mycode&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Decompress&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;path&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;error&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;externaldep&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ParsePath&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;!= nil {
+&lt;/span&gt;      &lt;span class=&quot;n&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Errorf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;decompress %v: %w&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;//&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;As before, we have added to our public API by wrapping &lt;code class=&quot;highlighter-rouge&quot;&gt;externaldep.PathParseError&lt;/code&gt; and returning it as our error. And as before, users can introspect the error we return and get an &lt;code class=&quot;highlighter-rouge&quot;&gt;externaldep.PathParseError&lt;/code&gt;. But, &lt;code class=&quot;highlighter-rouge&quot;&gt;externaldep.PathParseError&lt;/code&gt; lives in an external library - we have no control over it! Our users can now be broken by those external authors in the same ways we described above, without any type information changing.&lt;/p&gt;
+
+&lt;p&gt;These behavior changes can cause user breakages. The further that breakage happens from the user code, the harder it will be for the user to understand and debug. Each successive layer of external library error wrapping is an entirely different codebase that the debugger has to understand in the context of all the other codebases. The complexity increases quickly!&lt;/p&gt;
+
+&lt;p&gt;To combat this, here are some tips:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Users should prefer relying on structured errors closer to them than farther from them. A structured error that is 5 levels of libraries’ wrapping below them has a far greater chance of a breaking behavior change occurring than a structured error 1 level below them.&lt;/li&gt;
+  &lt;li&gt;Users should prefer relying on structured errors whose chain never relies on an unstable library.&lt;/li&gt;
+  &lt;li&gt;Authors of libraries should prefer not to wrap external library errors, unless the use case has well understood value and the external library is stable.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;unwrap-is-part-of-your-public-api&quot;&gt;Unwrap is part of your public API&lt;/h1&gt;
+
+&lt;p&gt;We’ve talked about the fact that wrapping errors changes the behavior of your public API. Let’s now discuss Unwrap, and how it can subtly become part of your public API.&lt;/p&gt;
+
+&lt;p&gt;When you return a structured error with an Unwrap method, users can use As, Is, and the Unwrap interface to introspect it and errors below it:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;err := Decompress(name, path)
+if errors.Is(err, PathParseError) {
+    // err, or some error that it wraps, is a path parse problem
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Users may not be aware of new layers being added to the chain of errors:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;type decompressErr struct {
+  name string
+  err error
+}
+
+func (e *decompressErr) Error() string {
+  return fmt.Sprintf(&quot;decompress %s: %s&quot;, e.name, e.err)  
+}
+
+func (e *decompressErr) Unwrap() error { return e.err }
+
+func Decompress(name, path string) error {
+  _, err := externaldep.ParsePath(path)
+  if err != nil {
+      return &amp;amp;decompressErr{name: name, err: err}
+  }
+  // ...
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Here, we’ve added an intermediary decompressErr. This might be useful somewhere else in our code that calls Decompress, but since it’s un-exported, users have no way to use it for introspection.&lt;/p&gt;
+
+&lt;p&gt;But, even though it’s un-exported, the Unwrap method is part of our public API. If we remove the Unwrap method, for example, the errors.Is example breaks: there is no Unwrap link between the returned error and the externaldep.PathParseError. Similarly, if we change Unwrap to behave differently, it will constitute a behavior change in our library.&lt;/p&gt;
+
+&lt;p&gt;To combat this, here is a tip:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;In general, keep Unwrap simple and deterministic. It should just return the underlying error. If you find that your Unwrap logic is non-deterministic, or you need logic in Unwrap, it might be a signal that you shouldn’t be unwrapping.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
+
+&lt;p&gt;Error wrapping is a powerful tool that provides upstream users a much richer set of functionality for understanding returned to them by downstream libraries. But, it’s important to be aware that supporting wrapped errors comes with responsibility for compatibility, like any other part of your API. And it’s important to consider whether your error type makes sense to be unwrapped at all.&lt;/p&gt;
+
+&lt;p&gt;For most code, it’s best to start simple: use %v instead of %w when you annotate errors, and don’t provide Unwrap on your custom error types. Wait until you learn about specific use cases for providing unwrap mechanics, and then carefully consider how to support them. We hope the considerations highlighted in this article help guide that decision.&lt;/p&gt;</content><author><name></name></author><summary type="html">Introduction</summary></entry><entry><title type="html">Contexts and Structs</title><link href="http://localhost:4000/2021/02/24/contexts-structs.html" rel="alternate" type="text/html" title="Contexts and Structs" /><published>2021-02-24T14:55:23-07:00</published><updated>2021-02-24T14:55:23-07:00</updated><id>http://localhost:4000/2021/02/24/contexts-structs</id><content type="html" xml:base="http://localhost:4000/2021/02/24/contexts-structs.html">&lt;p&gt;Posted at &lt;a href=&quot;https://go.dev/blog/context-and-structs&quot;&gt;go.dev/blog/context-and-structs&lt;/a&gt;.&lt;/p&gt;</content><author><name></name></author><summary type="html">Posted at go.dev/blog/context-and-structs.</summary></entry><entry><title type="html">Stubbing gRPC in Go</title><link href="http://localhost:4000/2020/10/08/stubbing-grpc.html" rel="alternate" type="text/html" title="Stubbing gRPC in Go" /><published>2020-10-08T15:55:23-06:00</published><updated>2020-10-08T15:55:23-06:00</updated><id>http://localhost:4000/2020/10/08/stubbing-grpc</id><content type="html" xml:base="http://localhost:4000/2020/10/08/stubbing-grpc.html">&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
 
 &lt;p&gt;I’ve several times been met with the question, “How do you stub gRPC in Go”?&lt;/p&gt;
 
@@ -821,403 +1003,4 @@ they both tried to assign a value to index &lt;code class=&quot;highlighter-roug
 &lt;code class=&quot;highlighter-rouge&quot;&gt;a&lt;/code&gt; is only ever going to be appended to itself (a very common use of slices),
 the problem won’t occur, since there will always only ever be one length counter
 to maintain. With only one length counter, there’s no room for two appends
-accidentally assigning to the same index.&lt;/p&gt;</content><author><name></name></author><summary type="html">I recently found out as part of a code review that initializing variables with append is, under some circumstances, A Terrible Idea. This post briefly explores what can happen when you do that, the underlying reason these things are happening, and how to avoid it.</summary></entry><entry><title type="html">Reflecting on interviewing at Google</title><link href="http://localhost:4000/2019/09/01/reflecting-on-interviewing-at-google.html" rel="alternate" type="text/html" title="Reflecting on interviewing at Google" /><published>2019-09-01T15:55:23-06:00</published><updated>2019-09-01T15:55:23-06:00</updated><id>http://localhost:4000/2019/09/01/reflecting-on-interviewing-at-google</id><content type="html" xml:base="http://localhost:4000/2019/09/01/reflecting-on-interviewing-at-google.html">&lt;p&gt;Disclaimer: This document makes statements and gives advice about interviewing
-at Google. This is &lt;em&gt;not at all&lt;/em&gt; an official accounting of what it’s like to
-interview at Google. This is entirely my own interpration, likely riddled with
-inaccuracies to the extent that a Googler in recruitment would probably develop
-a migraine reading this. If you’d like the official word, check out
-careers.google.com or talk to a recruiter.&lt;/p&gt;
-
-&lt;p&gt;Foreword: SWE is an abbreviation for Software Engineer and is often pronounced
-“swee”.&lt;/p&gt;
-
-&lt;h1 id=&quot;aiming-high&quot;&gt;Aiming high&lt;/h1&gt;
-
-&lt;p&gt;For me, the ultimate goal has always been Google.&lt;/p&gt;
-
-&lt;p&gt;I began programming during Ms. Roszko’s Computer Science I course in my
-sophomore year of high school. I graduated university seven years later with
-degrees in Math and Computer Science. Sometime between then, I had convinced
-myself that the pinnacle of a career in computer science was a job at Google.&lt;/p&gt;
-
-&lt;p&gt;I’m not sure why. Perhaps the infamously hard interview process, which seemed to
-accept only the best of the best. Perhaps the reputably sky-high salaries. Or,
-most likely it was that the work was that special kind of interesting and
-challenging that all engineers yearn for. The kind of work that you are trained
-to do in university - implementing red-black trees; modifying Djikstra’s
-algorithm to suit some arcane need; or coming up with some novel algorithm. The
-kind of work that hardly any other job seemed to offer; certainly not my
-internships up to that point, which all centered around writing websites in some
-form or another.&lt;/p&gt;
-
-&lt;p&gt;I got my first interview at Google during my senior year of university and
-promptly failed it.&lt;/p&gt;
-
-&lt;h1 id=&quot;interviews-and-exams&quot;&gt;Interviews and exams&lt;/h1&gt;
-
-&lt;p&gt;In a traditional company, the programming interview process goes something like
-this:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;You write a compelling one-page resume, trying to condense your work
-experience whilst using all buzz words that might be Ctrl-F’ed by a recruiter.&lt;/li&gt;
-  &lt;li&gt;You apply for a specific job on a specific team.&lt;/li&gt;
-  &lt;li&gt;Recruiting team Yea/Nay depending on whether you have the right mix of
-buzzwords and years experience.&lt;/li&gt;
-  &lt;li&gt;If they Yea, you get a phone call talking about the job and the interview
-process.&lt;/li&gt;
-  &lt;li&gt;Then, you usually do one phone interview with an engineer or manager which
-is designed to vet out the incompetent and clearly poor fits.&lt;/li&gt;
-  &lt;li&gt;If you make it past this, you’re usually invited onsite for something like a
-half or full day. It’s usually comprised of you being asked about things on
-your resume, about how you would tackle imaginary problems, and to
-solve contrived problems - or perhaps even solve a real problem. All the while
-you’re usually evaluated on some fuzzy criteria of “intelligence” and
-“actually knows wtf they are doing” and “would i want to work with this
-person”.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;It’s a very imperfect process, but it seems to work OK-ish for a lot of
-companies.&lt;/p&gt;
-
-&lt;p&gt;Google’s is much more academic, exam-like. It looks something like this:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;You write a resume that will be scanned for minimum qualifications and then
-largely ignored.&lt;/li&gt;
-  &lt;li&gt;You apply for a role (ex SWE) with no idea of which team you might be placed in.&lt;/li&gt;
-  &lt;li&gt;Phone interview with recruiter which lays out the next steps.&lt;/li&gt;
-  &lt;li&gt;45m technical phone interview with a randomly-selected SWE. You’re writing
-code straight into Google Docs. The interview question is usually hard but
-not mind-blowingly hard. The format is exam-like: you’re posed a single
-question and then asked to solve it. If you succeed, the question is altered
-slightly to be harder, and then you’re asked to alter your solution to solve
-the new version of the question.&lt;/li&gt;
-  &lt;li&gt;Next, you may be asked to perform another 45m technical phone interview if
-your last one was borderline.&lt;/li&gt;
-  &lt;li&gt;Next, you make it to the onsite. Huzzah! The onsite is 5 in-person 45m
-technical interviews at a Google campus. Each of the 45m interviews is once
-again exam-like, and usually a bit harder than the phone interview. You’re
-being asked questions you’d expect on a computer science exam: answers usually
-involve things like Minimum Spanning Trees, Heaps, clever bit manipulations,
-and so on. The solution is “coded up” on the whiteboard. Each interviewer is
-selected largely at random from a pool of SWE interviewers.&lt;/li&gt;
-  &lt;li&gt;Finally, all data from interviews is collated and sent to a hiring committee.&lt;/li&gt;
-  &lt;li&gt;If the hiring committee Yeas you, you work with the recruiter to pick a team.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Most people take somewhere between 2 weeks to 3 months to study before
-attempting the interview (exam).&lt;/p&gt;
-
-&lt;p&gt;If you fail anywhere in the process, you must wait one year before being allowed
-to repeat the process.&lt;/p&gt;
-
-&lt;h1 id=&quot;failing-and-failure&quot;&gt;Failing and failure&lt;/h1&gt;
-
-&lt;p&gt;My first failure was in 2013 - my senior year of university.&lt;/p&gt;
-
-&lt;p&gt;After that failure, I became determined to get better - to &lt;em&gt;be&lt;/em&gt; better. I had
-a minimum bar for myself and a singular goal I could focus on. One year later in
-2014 I re-took the exam and failed again. I did so again in 2015, again in 2016,
-and finally in 2017 I made it through. Each year I spent around 2 months
-preparing for the interview.&lt;/p&gt;
-
-&lt;p&gt;I believe two things changed in ways that helped me get through the interview.&lt;/p&gt;
-
-&lt;p&gt;The first is that after failing the SWE interview in 2016 the recruiter
-suggested I try interviewing for a Developer Programs Engineer (DPE) role. The DPE role was
-described as a more open-source and developers focused role, as opposed to the
-only-software-all-the-time focused SWE role. It was still in engineering, and
-still involved programming, but the interview was slightly different.&lt;/p&gt;
-
-&lt;p&gt;I was all for it, figuring that my several years of open source contribution at
-that point might give me an edge, and that if I didn’t like it I could probably
-switch to a SWE role internally.&lt;/p&gt;
-
-&lt;p&gt;So, after accepting the idea, I was immediately fast-tracked into an
-onsite DPE interview a few weeks after that failure. I promptly failed the DPE
-interview, too. But! The interviewer said “You were close!”. So, that was nice.&lt;/p&gt;
-
-&lt;p&gt;The interview didn’t differ much, except that one or two of the onsite questions
-was geared towards open source. A question that I remember, for example, is to
-explain in detail how dockerization works from the kernel up to the user facing
-pieces. The remaining three or four questions were still the usual solve-a-hard-problem
-whiteboard types.&lt;/p&gt;
-
-&lt;p&gt;In 2017, I gave the DPE interview another go and succeeded. The open source parts
-of the interview were focused on Go - a programming language I had been using
-since 2013, and had been active in the community for some time at that point.
-It helped that I was very familiar with the subject at that point.&lt;/p&gt;
-
-&lt;p&gt;The other part that changed is my method to preparing for interviews.&lt;/p&gt;
-
-&lt;h1 id=&quot;interview-preparation&quot;&gt;Interview preparation&lt;/h1&gt;
-
-&lt;p&gt;There’s about 6 ways you can prepare for a technical interview:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Memorize algorithms and data structures.&lt;/li&gt;
-  &lt;li&gt;Solve contrived problems on leetcode.com / hackerrank.com / &lt;em&gt;Cracking The
-Coding Interview&lt;/em&gt;.&lt;/li&gt;
-  &lt;li&gt;Read computer science books (such as Skiena’s &lt;em&gt;Algorithm Design Manual&lt;/em&gt;).&lt;/li&gt;
-  &lt;li&gt;Take a computer science course (or, be a student already taking one).&lt;/li&gt;
-  &lt;li&gt;Perform real or mock interviews.&lt;/li&gt;
-  &lt;li&gt;Do hard, Computer-Science-y things regularly (like, as part of your job).&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;For the majority of my interviews during my career, I had focused on the first
-two: memorization and solving contrived problems. In retrospect, these did
-little for me except make me more anxious. I had trouble retaining the knowledge
-for more than a day or two: without putting any of it into actual practice, it
-seemed to just evaporate.&lt;/p&gt;
-
-&lt;p&gt;I’d also been taking interviews at companies since graduating - even when
-happily employed. I figured the longer you go without interviewing, the more
-nerve-racking it becomes, and the more out of practice you become, so why not
-interview once or twice a year just to keep in the swing of it. This helped
-me be more at-ease during interviews, but ultimately I was lacking mastery of
-the subjects.&lt;/p&gt;
-
-&lt;p&gt;Note: an ideal situation is that your day-to-day job involves the kind of
-hard problems that you’d find in a Google interview. That’s a pipe dream for
-most developers, though: an overwhelming majority of software development is
-pretty banal implementation of web applications, mobile applications, or some
-piping-of-data in the backend applications. Loads of engineering, surely, but
-not really Computer Science.&lt;/p&gt;
-
-&lt;p&gt;In 2017 I started a Computer Science Master’s program through Georgia Institute
-of Technology (Georgia Tech). It was at the time a novel online course, well
-reputed for being extremely rigorous despite being online, and offering an
-actual Master of Science degree. (It has since become very popular, and has
-instigated a wave of similar programs from other top universities.)&lt;/p&gt;
-
-&lt;p&gt;The classes I took were Computer Vision, Building Problem-Solving AIs, and
-Computer Networking. Each class had intensive projects that forced me to learn
-and re-learn large parts of Math and Computer Science. They were also extremely
-well taught, and very, very fun. The AI course, for example, had you build a
-game-playing AI that you could pit against other classmates’ AIs.&lt;/p&gt;
-
-&lt;p&gt;This type of atmosphere allowed for experimentation and competition, and
-rewarded both broad use of many Computer Science topics as well as deep dives.
-It was for me the perfect way to get back in the academic mindset; to master
-Computer Science and math topics; and ultimately to prepare for the interview.&lt;/p&gt;
-
-&lt;p&gt;As the interview process began again that year, I supplemented it with basic
-familiarity with a wide number of algorithms taken from books, as well as a few
-mock interviews.&lt;/p&gt;
-
-&lt;p&gt;It seemed to work: I got an offer sometime around October of 2017.&lt;/p&gt;
-
-&lt;p&gt;Or, maybe they got sick and tired of me interviewing five years running. :)
-There’s something to be said for stubborn will!&lt;/p&gt;
-
-&lt;h1 id=&quot;repeating-the-miracle&quot;&gt;Repeating the miracle&lt;/h1&gt;
-
-&lt;p&gt;If I had to do it all again, or give advice to someone starting the process,
-here’s what I’d suggest:&lt;/p&gt;
-
-&lt;p&gt;First, don’t pin all your hopes on Google. The acceptance rate is less than
-Harvard by an order of magnitude: the numbers aren’t really in your favour.
-Once you make peace with that, the rest comes a lot easier.&lt;/p&gt;
-
-&lt;p&gt;The good news is that if you do convince yourself to study for Google, you will
-&lt;em&gt;crush&lt;/em&gt; every other interview you take. Google requires such an obscenely high
-level of preparation that it makes other interviews look like child play. So,
-apply to Google, but also look for other jobs that would interest you: you will
-never be more prepared to interview for them.&lt;/p&gt;
-
-&lt;p&gt;Another piece of good news is that the difference between a rejection and a
-success is mostly the preparation that goes into the candidate. There is
-certainly some luck involved, and being naturally gifted always helps, but
-mostly practice - smart practice - is what sets good candidates apart from
-the rest.&lt;/p&gt;
-
-&lt;p&gt;One more piece of good news is that Google goes to great lengths to make the
-process as unbiased as possible. That means, you’re not on the hook for trying
-to buddy up to the person interviewing you. It also means that the differences
-between you and the person interviewing you - be it cultural background, or
-viewpoints, or any other differentiating factor - are totally irrelevant. You’re
-only being evaluated on your objective performance.&lt;/p&gt;
-
-&lt;p&gt;So, in conclusion, I think that the real secret sauce is choosing a study
-schedule that fits healthily into your life - rather than obsessing about
-getting &lt;em&gt;this one job&lt;/em&gt; - and choosing a method of study that works for you.
-Every person learns differently, and retains knowledge differently. Some of my
-colleagues swear by working on practice problems, whilst I strongly prefer the
-approach of taking courses and completing homework / projects.&lt;/p&gt;
-
-&lt;p&gt;Consider the list of interview prepation techniques above and do some
-introspection about how you learn best. And, if you can, try to orient your
-job around interesting problems that push you to learn, rather than staying
-in your comfort zone.&lt;/p&gt;</content><author><name></name></author><summary type="html">Disclaimer: This document makes statements and gives advice about interviewing at Google. This is not at all an official accounting of what it’s like to interview at Google. This is entirely my own interpration, likely riddled with inaccuracies to the extent that a Googler in recruitment would probably develop a migraine reading this. If you’d like the official word, check out careers.google.com or talk to a recruiter.</summary></entry><entry><title type="html">Reflecting on two years at Google</title><link href="http://localhost:4000/2019/09/01/reflecting-on-two-years-at-google.html" rel="alternate" type="text/html" title="Reflecting on two years at Google" /><published>2019-09-01T15:55:23-06:00</published><updated>2019-09-01T15:55:23-06:00</updated><id>http://localhost:4000/2019/09/01/reflecting-on-two-years-at-google</id><content type="html" xml:base="http://localhost:4000/2019/09/01/reflecting-on-two-years-at-google.html">&lt;p&gt;I had meant to write a &lt;em&gt;“Reflecting on one year at Google”&lt;/em&gt; post earlier this
-year, but it kept getting put off until suddenly I realized that it would be
-better to just cut my losses and skip to the second year post.&lt;/p&gt;
-
-&lt;p&gt;Then, when I got into it, I realized that a lot of my experience with Google
-was from the outside: failing repeatedly trying to get in. So, after writing a
-bunch about that, I decided to create two posts: &lt;em&gt;&lt;a href=&quot;/2019/09/01/reflecting-on-interviewing-at-google&quot;&gt;“Reflecting on interviewing
-at Google”&lt;/a&gt;&lt;/em&gt; and this post.&lt;/p&gt;
-
-&lt;p&gt;Now, with all that out the way, I’m finally read to really dig in and start some
-serious reflection and introspection.&lt;/p&gt;
-
-&lt;p&gt;Background note: I started at Google in late 2017. I moved from Colorado to
-California (San Francisco bay area) for the job, and moved back to Colorado
-in early 2018 (keeping the job, but working from Boulder, Colorado).&lt;/p&gt;
-
-&lt;h1 id=&quot;small-steps&quot;&gt;Small steps&lt;/h1&gt;
-
-&lt;p&gt;Starting at Google was unlike any other job. Most jobs I’ve had, and heard
-about, followed a pattern of a 2-week break-in period followed by a few
-months contributing but still kind-of trying to get caught up, followed by
-proficiency, and at some point later you might lead a team.&lt;/p&gt;
-
-&lt;p&gt;Google was very much not like that. You start by attending at 2 week
-orientation with the other ~400-700 people in your “Noogler” class. Yes,
-&lt;em&gt;hundreds&lt;/em&gt; of people - mostly engineers - start at Google every two weeks.
-On one campus. More on other campuses. Mind blown.&lt;/p&gt;
-
-&lt;p&gt;The first two weeks are spent in lectures and seminars repeatedly having your
-sense of scale and proportion obliterated, being exposed to various systems and teams
-within the company, being taught by senior engineers how to use some of these
-systems, and generally being taught how to teach yourself.&lt;/p&gt;
-
-&lt;p&gt;In your third week you’re ready to meet your team. Your team introduces you to
-a “starter project”: a small project in a well-understood area that you can use
-to feel good about yourself, and hopefully along the way learn how to actually
-start writing and releasing code. You’re given something like a month to finish
-this.&lt;/p&gt;
-
-&lt;p&gt;So, it takes &lt;em&gt;6 weeks after you start&lt;/em&gt; before you’re actually ready to look at
-real code. And, beyond that, most teams will only expect you to be a
-fully independent, contributing team member somewhere around month 6 to 9.&lt;/p&gt;
-
-&lt;h1 id=&quot;inch-by-inch&quot;&gt;Inch by inch&lt;/h1&gt;
-
-&lt;p&gt;My first actually-useful piece of code I submitted, if I recall correctly, was
-a code sample that showed developers how to use the Pub/Sub client library in
-a certain way.&lt;/p&gt;
-
-&lt;p&gt;All code at Google goes through a process called “code review”, where code
-changes (or additions, deletions) get “proposed” and reviewed by colleagues,
-who either Yea, Nay, or ask for changes. Code review is a fairly common practice
-in software engineering, though the implementation varies a lot by company. At
-most companies, code review usually something like 30 minutes to 2 days per code
-change. Code reviews at most companies are typically fairly high-level, and tend
-to concern themselves with broad design or nit-picky things like code style.&lt;/p&gt;
-
-&lt;p&gt;That first change I proposed took something like &lt;em&gt;two weeks&lt;/em&gt; to get through
-code review. I learned more about Go and code design during that code review
-than I’d experienced the entire past year leading up to that point (which is
-not that high of a bar, if you know my prior experiences, but still). It was
-brutal. My code was picked apart; it was analyzed line-by-line, and then
-block-by-block, and then file-by-file. It wasn’t malicious, though: code review
-comments were statements of fact, or impartial queries, rather than jabs and
-one-ups. They were, “This can be more performant like so: |example|. And,
-here’s why: |reason|.”, not “This is terrible. Do it this way: |example|.”.&lt;/p&gt;
-
-&lt;p&gt;After years of stagnation in my career at that point it was so wonderful to
-be learning again, from people with a deep wealth of knowledge and
-experience. I was hooked.&lt;/p&gt;
-
-&lt;p&gt;The next year was a lot of this. I got better by inches: by treating each code
-review as a learning opportunity; by diving into problems I had no business
-being in; by pushing myself, over, and over, and over, to become better.&lt;/p&gt;
-
-&lt;p&gt;Looking back, I was getting better: the scope of problems continually increased;
-the code reviews went from weeks to hours or days, from everything-under-the-sun
-is wrong to fairly-subtle suggestions. I was slowly transitioning from a student
-that needed hand-holding, and didn’t provide much in return, to a colleague that
-accepted and gave equally (or, closer to equal).&lt;/p&gt;
-
-&lt;h1 id=&quot;metre-by-unhealthy-metre&quot;&gt;Metre by unhealthy metre&lt;/h1&gt;
-
-&lt;p&gt;My intense passion for interesting problems and self-improvement finally had an
-outlet, and that outlet was unbounded in scope. Worse: it rewarded the effort
-I put in: despite my increasing weariness, the scope of my work constantly
-increased (by my own volition); my personal reviews were stellar; and my
-projects were almost universally a success.&lt;/p&gt;
-
-&lt;p&gt;I didn’t realize until fairly late that I was slowly grinding myself down to the
-bone. I was working 10, 12, or 14 hour days, and often would work on weekends.
-I took my frustrations and problems home rather than leaving them at work; they
-were compounded with my increasing dislike of California.&lt;/p&gt;
-
-&lt;p&gt;I ended up getting most of the way through that first year before realizing some
-things were very bad. For the first time in my life, I recognized signs of
-depression. Some combination of a too-intense work schedule, longing for my
-old friends and outdoor-focused lifestyle in Colorado, and relationship problems
-were causing me to be deeply unhappy.&lt;/p&gt;
-
-&lt;p&gt;I won’t get into that part too much. The long story short is that I had a bit of
-a break down and decided I needed to move back to Colorado, Google or no Google.
-Thankfully, my department was and is fantastic and thoroughly supported me, and
-offered me my job at the Colorado campus with a standard cost-of-living pay reduction.&lt;/p&gt;
-
-&lt;p&gt;I moved back to Colorado in early 2018 with the same job.&lt;/p&gt;
-
-&lt;h1 id=&quot;on-to-the-other-side&quot;&gt;On to the other side&lt;/h1&gt;
-
-&lt;p&gt;The year taught me a lot about my limits to an extent that’s hard to put into
-words. I’ve learned how to spot signs of too much stress, healthy coping
-mechanisms, and how to set boundaries. I’ve learned a lot about what I value,
-and the type of life I want for myself. And, it’s helped me refine the kind of
-person I want to be: hard-working and respected in my career, yes, but also a kind
-friend with space in my life to help others; a well-rounded individual with lots
-of time spent outdoors; a good partner. It’s hard not to wish I had had these
-skills going into the job. It would have saved a lot of hardship for myself and
-my relationship at the time. I suppose the best you can do is try to learn from
-hardship, though, and try to become better for it.&lt;/p&gt;
-
-&lt;p&gt;In the last year I’ve committed myself to a healthy balance of passion for my
-job and all the rest that matter to me: loving relationships with friends and
-family; spending time in nature; sports and exercise; hobbies like reading and
-taking french lessons; and progressing my “adult” life with things like buying
-a house and building a local community.&lt;/p&gt;
-
-&lt;p&gt;My work hasn’t suffered hardly as much as I thought it would. Working 7 to
-8 hours a day has made me be a lot more efficient with my time: I cancel or
-decline a lot more meetings; I don’t take hour-long lunches with colleagues;
-I don’t do a lot of after-work events; I delegate a lot more rather than
-“superhero” all the work myself. And, the reprecussions never came: my lessened
-throughput was celebrated by my manager and team as mental health successes,
-rather than the disappointment I was subconsiously bracing myself for.&lt;/p&gt;
-
-&lt;p&gt;The outcome is a much healthier, happier day-to-day, week-to-week. I once
-again find self-value in things outside of work; I have a robust and healthy
-support system of friends and family; I progress myself in sports and hobbies
-so that stalls or failures at work are diminished in impact by successes
-elsewhere.&lt;/p&gt;
-
-&lt;h1 id=&quot;keeping-perspective&quot;&gt;Keeping perspective&lt;/h1&gt;
-
-&lt;p&gt;I’ve had the privilege and honour of working with incredible minds, who have
-universally been kind and willing to teach. I’ve sat in rooms with people that
-have invented entire languages, network protocols, and algorithms for systems
-at scale. I’ve had my opinions heard and sincerely considered by these people,
-and had the opportunity to learn from them. I’ve had the opportunity to lead;
-to design; to mentor; and to teach. I’ve accomplished and learned more (in my
-own eyes) in these two years than my entire career before this.&lt;/p&gt;
-
-&lt;p&gt;I’ve also had the honour of having incredible managers and directors. I have
-felt since day one that I was a valued member of a team; that my opinions held
-weight; that I was supported in whatever I decided was best for myself, even if
-that meant leaving the company or my team.&lt;/p&gt;
-
-&lt;p&gt;I work on things that I find really, really cool: building a performance
-benchmarking pipelines and improving client library performance; defining the
-client-side retry strategy for all of Google Cloud; improving Google Cloud
-reliability with throttling and load shedding; building important and complex
-features into libraries; working on the HTTP/2 transport in gRPC; and loads
-more. Moreover, I’ve been given a lot of freedom in choosing the kinds of things
-I work on, and being encouraged to go find new problems that we’re not aware of
-yet.&lt;/p&gt;
-
-&lt;p&gt;I’ve had opportunities to travel around the world, meeting developers, working
-with amazing engineers, and giving talks on technical topics. And at home, we
-are given a tremendous amount of benefits, too: classes, food,
-classes about making food (seriously), gyms, fun events, clubs, and more.&lt;/p&gt;
-
-&lt;p&gt;It’s a good place to work. It’s an intense place to work, and you have to be
-very careful not to let it burn you up, but it is a good place to work. I
-don’t see myself working anywhere else for the foreseeable future.&lt;/p&gt;</content><author><name></name></author><summary type="html">I had meant to write a “Reflecting on one year at Google” post earlier this year, but it kept getting put off until suddenly I realized that it would be better to just cut my losses and skip to the second year post.</summary></entry></feed>
+accidentally assigning to the same index.&lt;/p&gt;</content><author><name></name></author><summary type="html">I recently found out as part of a code review that initializing variables with append is, under some circumstances, A Terrible Idea. This post briefly explores what can happen when you do that, the underlying reason these things are happening, and how to avoid it.</summary></entry></feed>
