@@ -2,9 +2,9 @@
 <html lang="en"><head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
 <title>Error unwrapping for library authors | Jean de Klerk</title>
-<meta name="generator" content="Jekyll v4.0.1" />
+<meta name="generator" content="Jekyll v4.2.2" />
 <meta property="og:title" content="Error unwrapping for library authors" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Introduction" />
@@ -14,8 +14,10 @@
 <meta property="og:site_name" content="Jean de Klerk" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2022-02-08T14:55:23-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Error unwrapping for library authors" />
 <script type="application/ld+json">
-{"url":"http://localhost:4000/2022/02/08/error-unwrapping.html","headline":"Error unwrapping for library authors","dateModified":"2022-02-08T14:55:23-07:00","datePublished":"2022-02-08T14:55:23-07:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2022/02/08/error-unwrapping.html"},"description":"Introduction","@type":"BlogPosting","@context":"https://schema.org"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-02-08T14:55:23-07:00","datePublished":"2022-02-08T14:55:23-07:00","description":"Introduction","headline":"Error unwrapping for library authors","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2022/02/08/error-unwrapping.html"},"url":"http://localhost:4000/2022/02/08/error-unwrapping.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Jean de Klerk" /></head>
 <body><header class="site-header" role="banner">
@@ -57,7 +59,7 @@
 
 <p>Let’s re-examine one of the examples from that article:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>func Decompress(name, path string) error {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>func Decompress(name, path string) error {
   // ...
   if err != nil {
     return fmt.Errorf("decompress %v: %v", name, err)
@@ -69,7 +71,7 @@
 
 <p>Let’s now alter this example to return a structured, unwrappable error:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>type PathParseError struct {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>type PathParseError struct {
   Path string
 }
 func (e *PathParseError) Error() string {
@@ -87,7 +89,7 @@ func Decompress(name, path string) error {
 }
 </code></pre></div></div>
 
-<p><code class="highlighter-rouge">We've now given</code> users powerful new capabilities for introspecting the returned error. Users now have structured information that they can rely on at runtime, such as the existence of PathParseError, and its fields; whereas before they could only string match the error contents, a practice that is usually discouraged.</p>
+<p><code class="language-plaintext highlighter-rouge">We've now given</code> users powerful new capabilities for introspecting the returned error. Users now have structured information that they can rely on at runtime, such as the existence of PathParseError, and its fields; whereas before they could only string match the error contents, a practice that is usually discouraged.</p>
 
 <p>But exposing that information to users comes with responsibility. When we only return unstructured errors, we often can be liberal in changing the string-only contents of our errors. However, when we return structured errors to users, we have to be more careful: removing the %w, or changing its value, will be noticeable behavior changes that affect how user code will interpret the returned error.</p>
 
@@ -104,29 +106,29 @@ func Decompress(name, path string) error {
 
 <p>Let’s take this example a bit further by wrapping errors from external libraries in our code:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">externaldep</span>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>package externaldep
 
-<span class="n">type</span> <span class="n">PathParseError</span> <span class="n">struct</span> <span class="p">{</span>
-  <span class="n">Path</span> <span class="k">string</span>
-<span class="p">}</span>
+type PathParseError struct {
+  Path string
+}
 
-<span class="n">func</span> <span class="n">ParsePath</span><span class="p">(</span><span class="n">path</span> <span class="k">string</span><span class="p">)</span> <span class="p">(</span><span class="k">string</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span> <span class="p">{</span>
-  <span class="p">//</span> <span class="p">...</span>
-<span class="p">}</span>
+func ParsePath(path string) (string, error) {
+  // ...
+}
 </code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">mycode</span>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>package mycode
 
-<span class="n">func</span> <span class="n">Decompress</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">path</span> <span class="k">string</span><span class="p">)</span> <span class="n">error</span> <span class="p">{</span>
-  <span class="n">_</span><span class="p">,</span> <span class="n">err</span> <span class="p">:=</span> <span class="n">externaldep</span><span class="p">.</span><span class="n">ParsePath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-  <span class="k">if</span> <span class="n">err</span> <span class="c1">!= nil {
-</span>      <span class="n">return</span> <span class="n">fmt</span><span class="p">.</span><span class="n">Errorf</span><span class="p">(</span><span class="s2">"decompress %v: %w"</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
-  <span class="p">}</span>
-  <span class="p">//</span> <span class="p">...</span>
-<span class="p">}</span>
+func Decompress(name, path string) error {
+  _, err := externaldep.ParsePath(path)
+  if err != nil {
+      return fmt.Errorf("decompress %v: %w", name, err)
+  }
+  // ...
+}
 </code></pre></div></div>
 
-<p>As before, we have added to our public API by wrapping <code class="highlighter-rouge">externaldep.PathParseError</code> and returning it as our error. And as before, users can introspect the error we return and get an <code class="highlighter-rouge">externaldep.PathParseError</code>. But, <code class="highlighter-rouge">externaldep.PathParseError</code> lives in an external library - we have no control over it! Our users can now be broken by those external authors in the same ways we described above, without any type information changing.</p>
+<p>As before, we have added to our public API by wrapping <code class="language-plaintext highlighter-rouge">externaldep.PathParseError</code> and returning it as our error. And as before, users can introspect the error we return and get an <code class="language-plaintext highlighter-rouge">externaldep.PathParseError</code>. But, <code class="language-plaintext highlighter-rouge">externaldep.PathParseError</code> lives in an external library - we have no control over it! Our users can now be broken by those external authors in the same ways we described above, without any type information changing.</p>
 
 <p>These behavior changes can cause user breakages. The further that breakage happens from the user code, the harder it will be for the user to understand and debug. Each successive layer of external library error wrapping is an entirely different codebase that the debugger has to understand in the context of all the other codebases. The complexity increases quickly!</p>
 
@@ -144,7 +146,7 @@ func Decompress(name, path string) error {
 
 <p>When you return a structured error with an Unwrap method, users can use As, Is, and the Unwrap interface to introspect it and errors below it:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>err := Decompress(name, path)
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>err := Decompress(name, path)
 if errors.Is(err, PathParseError) {
     // err, or some error that it wraps, is a path parse problem
 }
@@ -152,7 +154,7 @@ if errors.Is(err, PathParseError) {
 
 <p>Users may not be aware of new layers being added to the chain of errors:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>type decompressErr struct {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>type decompressErr struct {
   name string
   err error
 }

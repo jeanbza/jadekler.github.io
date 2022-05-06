@@ -2,9 +2,9 @@
 <html lang="en"><head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
 <title>Wrapped errors are stacks | Jean de Klerk</title>
-<meta name="generator" content="Jekyll v4.0.1" />
+<meta name="generator" content="Jekyll v4.2.2" />
 <meta property="og:title" content="Wrapped errors are stacks" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Wrapped errors are stacks" />
@@ -14,8 +14,10 @@
 <meta property="og:site_name" content="Jean de Klerk" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2022-02-09T14:55:23-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Wrapped errors are stacks" />
 <script type="application/ld+json">
-{"url":"http://localhost:4000/2022/02/09/wrapped-errors-are-stacks.html","headline":"Wrapped errors are stacks","dateModified":"2022-02-09T14:55:23-07:00","datePublished":"2022-02-09T14:55:23-07:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2022/02/09/wrapped-errors-are-stacks.html"},"description":"Wrapped errors are stacks","@type":"BlogPosting","@context":"https://schema.org"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-02-09T14:55:23-07:00","datePublished":"2022-02-09T14:55:23-07:00","description":"Wrapped errors are stacks","headline":"Wrapped errors are stacks","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2022/02/09/wrapped-errors-are-stacks.html"},"url":"http://localhost:4000/2022/02/09/wrapped-errors-are-stacks.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Jean de Klerk" /></head>
 <body><header class="site-header" role="banner">
@@ -51,7 +53,7 @@
 
 <p>It’s important to keep this in mind when you’re designing the internal representation for your unwrappable structured error. The simplest representation is a single error:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>type decompressErr struct {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>type decompressErr struct {
   name string
   err error // Points to the next error down the stack.
 }
@@ -67,7 +69,7 @@ func (e *decompressErr) Unwrap() error { return e.err }
 
 <p>Unwrappable structured errors that contain multiple errors have much less clear semantics. Consider:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// We recommend against this approach.
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// We recommend against this approach.
 type PathParseErrors struct {
   // A map of path to parse error for that path.
   errors map[string]error
@@ -86,7 +88,7 @@ func (e *PathParseErrors) Unwrap() error {
 
 <p>This issue is exacerbated by the fact that it’s impossible for the author of PathParseErrors to document their Unwrap method in a way that will directly help users. Users often don’t interact with the Unwrap method directly: they use tools like As and Is, which themselves call the Unwrap method. And, this error may exist in a library that is several layers deep in a dependency tree: a user may have a very hard time finding the exact library whose documentation to go read when they’ve got an opaque stack of wrapped errors.</p>
 
-<p>When you need to collect several errors at once, use <code class="highlighter-rouge">[]error</code>, a map of errors, or a structured error that does not support Unwrap.</p>
+<p>When you need to collect several errors at once, use <code class="language-plaintext highlighter-rouge">[]error</code>, a map of errors, or a structured error that does not support Unwrap.</p>
 
   </div><a class="u-url" href="/2022/02/09/wrapped-errors-are-stacks.html" hidden></a>
 </article>

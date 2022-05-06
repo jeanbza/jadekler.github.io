@@ -2,9 +2,9 @@
 <html lang="en"><head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
 <title>Designing CRUD operations in Go | Jean de Klerk</title>
-<meta name="generator" content="Jekyll v4.0.1" />
+<meta name="generator" content="Jekyll v4.2.2" />
 <meta property="og:title" content="Designing CRUD operations in Go" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="This post is intended to provide some insight into the considerations that go into adding CRUD operations in a Go client library." />
@@ -14,8 +14,10 @@
 <meta property="og:site_name" content="Jean de Klerk" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2019-06-08T15:55:23-06:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Designing CRUD operations in Go" />
 <script type="application/ld+json">
-{"url":"http://localhost:4000/2019/06/08/designing-crud-operations-in-go.html","headline":"Designing CRUD operations in Go","dateModified":"2019-06-08T15:55:23-06:00","datePublished":"2019-06-08T15:55:23-06:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/06/08/designing-crud-operations-in-go.html"},"description":"This post is intended to provide some insight into the considerations that go into adding CRUD operations in a Go client library.","@type":"BlogPosting","@context":"https://schema.org"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2019-06-08T15:55:23-06:00","datePublished":"2019-06-08T15:55:23-06:00","description":"This post is intended to provide some insight into the considerations that go into adding CRUD operations in a Go client library.","headline":"Designing CRUD operations in Go","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/06/08/designing-crud-operations-in-go.html"},"url":"http://localhost:4000/2019/06/08/designing-crud-operations-in-go.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Jean de Klerk" /></head>
 <body><header class="site-header" role="banner">
@@ -50,7 +52,7 @@ go into adding CRUD operations in a Go client library.</p>
 
 <h2 id="the-problem-ambiguity">The Problem: Ambiguity</h2>
 
-<p>Every time we add a new create or update RPC - <code class="highlighter-rouge">CreateFoo</code> or <code class="highlighter-rouge">UpdateFoo</code> - that
+<p>Every time we add a new create or update RPC - <code class="language-plaintext highlighter-rouge">CreateFoo</code> or <code class="language-plaintext highlighter-rouge">UpdateFoo</code> - that
 takes parameters, we have to ask the questions:</p>
 
 <ul>
@@ -61,7 +63,7 @@ takes parameters, we have to ask the questions:</p>
 
 <p>Consider the following RPC:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>message FooUpdateRequest {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>message FooUpdateRequest {
   google.protobuf.Duration ttl = 1;        // When set to 0, deletes TTL.
   google.protobuf.Duration expiration = 2; // When set to 0, deletes expiration.
 }
@@ -73,7 +75,7 @@ service Foo {
 
 <p>Building a manual layer wrapper around this might look very similar:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>type FooConfigToUpdate struct {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>type FooConfigToUpdate struct {
   Ttl        time.Duration
   Expiration time.Duration
 }
@@ -97,11 +99,11 @@ A: Uhh… also set it to time.Duration(0)?</li>
 <p>As you can see, there’s currently no way to distinguish between Delete and
 Ignore. That is, if a user passes:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f.Update(ctx, &amp;foopkg.FooConfigToUpdate{Expiration: 5 * time.Second})
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f.Update(ctx, &amp;foopkg.FooConfigToUpdate{Expiration: 5 * time.Second})
 </code></pre></div></div>
 
 <p>It’s clear that we need to update Expiration to 5s, but what do we do with ttl?
-Its default value is <code class="highlighter-rouge">time.Duration(0)</code> - do we delete it, or ignore it?</p>
+Its default value is <code class="language-plaintext highlighter-rouge">time.Duration(0)</code> - do we delete it, or ignore it?</p>
 
 <p>We need a way to get around this. Broadly, there are three options we use in client libraries:</p>
 
@@ -116,7 +118,7 @@ Its default value is <code class="highlighter-rouge">time.Duration(0)</code> - d
 <p>Sentinel values are basically special values that signal to the client library
 to perform special logic. For example, consider:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var NeverExpire time.Duration = -1 * time.Second
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var NeverExpire time.Duration = -1 * time.Second
 </code></pre></div></div>
 
 <p>No user would ever specify -1s as an expiration value, so the library picks that
@@ -127,7 +129,7 @@ special value used to indicate “delete”.</p>
 passes the sentinel value, the library performs the delete. A user uses the
 sentinel to delete as such:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f.Update(ctx, &amp;foopkg.FooConfigToUpdate{Expiration: foopkg.NeverExpire})
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f.Update(ctx, &amp;foopkg.FooConfigToUpdate{Expiration: foopkg.NeverExpire})
 </code></pre></div></div>
 
 <h2 id="pointers">Pointers</h2>
@@ -140,7 +142,7 @@ taken as “delete this”.</p>
 
 <p>A user uses the empty value to delete as such:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f.Update(ctx, &amp;foopkg.FooConfigToUpdate{Expiration: &amp;time.Duration(0)})
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f.Update(ctx, &amp;foopkg.FooConfigToUpdate{Expiration: &amp;time.Duration(0)})
 </code></pre></div></div>
 
 <h2 id="optionals">Optionals</h2>
@@ -150,8 +152,8 @@ additional “set or unset” parameter to a value in a similar way that pointer
 are set or nil.</p>
 
 <p>Unlike Java, however, optionals are not part of the stdlib. In
-<code class="highlighter-rouge">cloud.google.com/go</code>, we’ve created a very light wrapper around <code class="highlighter-rouge">interface{}</code>
-to implement optional types. Since they’re light wrappers around <code class="highlighter-rouge">interface{}</code>,
+<code class="language-plaintext highlighter-rouge">cloud.google.com/go</code>, we’ve created a very light wrapper around <code class="language-plaintext highlighter-rouge">interface{}</code>
+to implement optional types. Since they’re light wrappers around <code class="language-plaintext highlighter-rouge">interface{}</code>,
 values are nil-able.</p>
 
 <p>Like pointers, the nil value is taken as “ignore this” (unspecified), and the
@@ -159,7 +161,7 @@ empty value is taken as “delete this”.</p>
 
 <p>A user uses the empty value to delete as such:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f.Update(ctx, &amp;foopkg.FooConfigToUpdate{Expiration: time.Duration(0)})
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>f.Update(ctx, &amp;foopkg.FooConfigToUpdate{Expiration: time.Duration(0)})
 </code></pre></div></div>
 
 <h2 id="choosing-the-right-solution">Choosing The Right Solution</h2>
@@ -206,9 +208,9 @@ consistency of choice. Ideally, all clients would be consistent with each other,
 <p>Note that if a part of the API surface is marked experimental, the above notes
 on backwards compatibility don’t apply. Therefore, if you’re adding to an API
 surface and not sure how it’ll evolve over time, opt to add the
-<code class="highlighter-rouge">// Experimental</code> tag:</p>
+<code class="language-plaintext highlighter-rouge">// Experimental</code> tag:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// It is EXPERIMENTAL and subject to change or removal without notice.
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// It is EXPERIMENTAL and subject to change or removal without notice.
 </code></pre></div></div>
 
   </div><a class="u-url" href="/2019/06/08/designing-crud-operations-in-go.html" hidden></a>

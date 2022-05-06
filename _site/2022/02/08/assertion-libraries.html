@@ -2,9 +2,9 @@
 <html lang="en"><head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
 <title>Don’t use assertion libraries in Go | Jean de Klerk</title>
-<meta name="generator" content="Jekyll v4.0.1" />
+<meta name="generator" content="Jekyll v4.2.2" />
 <meta property="og:title" content="Don’t use assertion libraries in Go" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Foreword #1: This is a very sensitive topic for many people. 🙂 I find that many people have never considered writing tests without assertion libraries. It might come as a shocking surprise to consider such a world. That shock and surprise might be painful. Steel yourself." />
@@ -14,8 +14,10 @@
 <meta property="og:site_name" content="Jean de Klerk" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2022-02-08T14:55:23-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Don’t use assertion libraries in Go" />
 <script type="application/ld+json">
-{"url":"http://localhost:4000/2022/02/08/assertion-libraries.html","headline":"Don’t use assertion libraries in Go","dateModified":"2022-02-08T14:55:23-07:00","datePublished":"2022-02-08T14:55:23-07:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2022/02/08/assertion-libraries.html"},"description":"Foreword #1: This is a very sensitive topic for many people. 🙂 I find that many people have never considered writing tests without assertion libraries. It might come as a shocking surprise to consider such a world. That shock and surprise might be painful. Steel yourself.","@type":"BlogPosting","@context":"https://schema.org"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-02-08T14:55:23-07:00","datePublished":"2022-02-08T14:55:23-07:00","description":"Foreword #1: This is a very sensitive topic for many people. 🙂 I find that many people have never considered writing tests without assertion libraries. It might come as a shocking surprise to consider such a world. That shock and surprise might be painful. Steel yourself.","headline":"Don’t use assertion libraries in Go","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2022/02/08/assertion-libraries.html"},"url":"http://localhost:4000/2022/02/08/assertion-libraries.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Jean de Klerk" /></head>
 <body><header class="site-header" role="banner">
@@ -55,7 +57,7 @@
 
 <p>This post is not about mocking libraries, or comparison libraries. It is about assertion libraries. Examples of assertion libraries include <a href="https://pkg.go.dev/github.com/stretchr/testify">github.com/stretchr/testify</a>, <a href="https://pkg.go.dev/github.com/onsi/ginkgo">github.com/onsi/ginkgo</a>, <a href="https://pkg.go.dev/gopkg.in/check.v1">gopkg.in/check.v1</a>, and <a href="https://pkg.go.dev/github.com/franela/goblin">github.com/franela/goblin</a>.</p>
 
-<p>Don’t use these things. They provide little value over the stdlib, and tend to make your codebase (far) less readable. Use <a href="https://pkg.go.dev/testing">“testing”</a> for assertions, and comparison libraries like <a href="https://pkg.go.dev/github.com/google/go-cmp/cmp">github.com/google/go-cmp/cmp</a> to perform the comparison (but not <em>the assertion</em>) for more complex objects that can’t be compared with basic operators (<code class="highlighter-rouge">==</code>, <code class="highlighter-rouge">&gt;</code>, etc).</p>
+<p>Don’t use these things. They provide little value over the stdlib, and tend to make your codebase (far) less readable. Use <a href="https://pkg.go.dev/testing">“testing”</a> for assertions, and comparison libraries like <a href="https://pkg.go.dev/github.com/google/go-cmp/cmp">github.com/google/go-cmp/cmp</a> to perform the comparison (but not <em>the assertion</em>) for more complex objects that can’t be compared with basic operators (<code class="language-plaintext highlighter-rouge">==</code>, <code class="language-plaintext highlighter-rouge">&gt;</code>, etc).</p>
 
 <p>Sidenote: The <a href="https://pkg.go.dev/testing">testing</a> library is also an assertion library, but for the sake of this article we’ll just call it “the stdlib” or “testing”, and refer to all the non-stdlib assertion libraries as “assertion libraries”.</p>
 
@@ -63,14 +65,14 @@
 
 <p>Consider the following Java code:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>assertParagraphElement(bodyStructuralElements.get(25).getParagraph().getElements().get(0), 311, 312, Person.class);
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>assertParagraphElement(bodyStructuralElements.get(25).getParagraph().getElements().get(0), 311, 312, Person.class);
 </code></pre></div></div>
 
 <p>What the heck is going on here? I have no freaking idea what this line is asserting. This is <em>real code</em> pulled from a <em>real codebase</em> owned by a well respected team. It’s incomprehensible.</p>
 
 <p>Let me show you another one, in C++ this time:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> EXPECT_CALL(
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> EXPECT_CALL(
         *mock_quota_server_client_,
         MultiGetTokens(
             ::testing::AllOf(
@@ -96,13 +98,13 @@
 
 <p>(editorial note: I’m using Java and C++ code because when I wrote my emails, I wanted to compare sister languages in Google - which do allow assertion libraries - with Go in Google, which does not. Confusing examples like these are fairly easy to search for on GitHub)</p>
 
-<p>The thing with assertion libraries is that it’s never just <code class="highlighter-rouge">assert.Equal(a, b)</code>, like the advertisement purports. There is a continual gravity towards complexity. There are <a href="https://pkg.go.dev/github.com/stretchr/testify/assert"><em>277 assertions in the testify library, as of this writing</em></a>. 277!!!! That’s before you even get into <a href="https://pkg.go.dev/github.com/stretchr/testify/assert">making your own assertions</a>. By the way, the likelihood of your developers - and you! - writing custom assertions approaches 100% as your codebase grows over time. In my experience it approaches 100% awfully quickly; we’re talking a few weeks.</p>
+<p>The thing with assertion libraries is that it’s never just <code class="language-plaintext highlighter-rouge">assert.Equal(a, b)</code>, like the advertisement purports. There is a continual gravity towards complexity. There are <a href="https://pkg.go.dev/github.com/stretchr/testify/assert"><em>277 assertions in the testify library, as of this writing</em></a>. 277!!!! That’s before you even get into <a href="https://pkg.go.dev/github.com/stretchr/testify/assert">making your own assertions</a>. By the way, the likelihood of your developers - and you! - writing custom assertions approaches 100% as your codebase grows over time. In my experience it approaches 100% awfully quickly; we’re talking a few weeks.</p>
 
 <h1 id="assertion-libraries-dont-provide-value">Assertion libraries don’t provide value</h1>
 
 <p>Let’s take a look at the examples on the testify front page:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// assert equality
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// assert equality
 assert.Equal(t, 123, 123, "they should be equal")
 
 // assert inequality
@@ -121,7 +123,7 @@ if assert.NotNil(t, object) {
 
 <p>Seems super valuable, right? Well, not really. Let’s see what it’s like to rewrite those with the “testing” package:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// assert equality
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// assert equality
 if 123 != 123 {
     t.Errorf("they should be equal")
 }

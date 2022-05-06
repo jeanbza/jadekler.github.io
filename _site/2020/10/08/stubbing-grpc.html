@@ -2,9 +2,9 @@
 <html lang="en"><head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
 <title>Stubbing gRPC in Go | Jean de Klerk</title>
-<meta name="generator" content="Jekyll v4.0.1" />
+<meta name="generator" content="Jekyll v4.2.2" />
 <meta property="og:title" content="Stubbing gRPC in Go" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Introduction" />
@@ -14,8 +14,10 @@
 <meta property="og:site_name" content="Jean de Klerk" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2020-10-08T15:55:23-06:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Stubbing gRPC in Go" />
 <script type="application/ld+json">
-{"url":"http://localhost:4000/2020/10/08/stubbing-grpc.html","headline":"Stubbing gRPC in Go","dateModified":"2020-10-08T15:55:23-06:00","datePublished":"2020-10-08T15:55:23-06:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2020/10/08/stubbing-grpc.html"},"description":"Introduction","@type":"BlogPosting","@context":"https://schema.org"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2020-10-08T15:55:23-06:00","datePublished":"2020-10-08T15:55:23-06:00","description":"Introduction","headline":"Stubbing gRPC in Go","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2020/10/08/stubbing-grpc.html"},"url":"http://localhost:4000/2020/10/08/stubbing-grpc.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Jean de Klerk" /></head>
 <body><header class="site-header" role="banner">
@@ -61,7 +63,7 @@ library. Given some proto with service,</p>
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>This will generate a <code class="highlighter-rouge">greeter.pb.go</code> with,</p>
+<p>This will generate a <code class="language-plaintext highlighter-rouge">greeter.pb.go</code> with,</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span> <span class="n">GreeterClient</span> <span class="k">interface</span> <span class="p">{</span>
     <span class="n">SayHello</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">in</span> <span class="o">*</span><span class="n">HelloRequest</span><span class="p">,</span> <span class="n">opts</span> <span class="o">...</span><span class="n">grpc</span><span class="o">.</span><span class="n">CallOption</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="n">HelloReply</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
@@ -69,8 +71,8 @@ library. Given some proto with service,</p>
 </code></pre></div></div>
 
 <p>That interface is all we need to mock away. Our code that communicates with
-<code class="highlighter-rouge">Greeter</code> will take the <code class="highlighter-rouge">GreeterClient</code> interface, per usual dependency
-injection. In our real code (<code class="highlighter-rouge">main.go</code>, etc) we’ll give it a real client,
+<code class="language-plaintext highlighter-rouge">Greeter</code> will take the <code class="language-plaintext highlighter-rouge">GreeterClient</code> interface, per usual dependency
+injection. In our real code (<code class="language-plaintext highlighter-rouge">main.go</code>, etc) we’ll give it a real client,
 and our tests we’ll give it a fake client:</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// Code that uses GreeterClient</span>
@@ -128,9 +130,9 @@ and our tests we’ll give it a fake client:</p>
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>Simple! And, of course, <code class="highlighter-rouge">fakeGreeterClient</code> can be more or less complicated:
+<p>Simple! And, of course, <code class="language-plaintext highlighter-rouge">fakeGreeterClient</code> can be more or less complicated:
 perhaps it always returns the same thing (less complicated), or perhaps it tries
-to mimic the behavior of the real <code class="highlighter-rouge">Greeter</code> (more complicated).</p>
+to mimic the behavior of the real <code class="language-plaintext highlighter-rouge">Greeter</code> (more complicated).</p>
 
 <h1 id="stubbing">Stubbing</h1>
 
@@ -142,10 +144,10 @@ not allow passing the underlying <a href="https://pkg.go.dev/google.golang.org/a
 
 <p>Another example where passing a mock is not good enough, and you have to rely
 on some connection, is integration tests! For integration tests, you’d want your
-real binary to talk to a <code class="highlighter-rouge">Greeter</code> running locally, which you can
+real binary to talk to a <code class="language-plaintext highlighter-rouge">Greeter</code> running locally, which you can
 stub/set up/view interactions in the test itself. You’ll want this stub
-<code class="highlighter-rouge">Greeter</code> to have some address like <code class="highlighter-rouge">localhost:12345</code> that you can pass to your
-binary through a flag, like <code class="highlighter-rouge">--greeterAddr=localhost:12345</code>.</p>
+<code class="language-plaintext highlighter-rouge">Greeter</code> to have some address like <code class="language-plaintext highlighter-rouge">localhost:12345</code> that you can pass to your
+binary through a flag, like <code class="language-plaintext highlighter-rouge">--greeterAddr=localhost:12345</code>.</p>
 
 <p>These are just two small examples, but this problem of needing stubbing
 capabilities beyond a simple interface mock comes up enough that it justifies
@@ -183,8 +185,8 @@ test by sticking it in a non-main package:</p>
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>This is one of <em>many</em> ways to start an integration. It allows us to run <code class="highlighter-rouge">main</code>
-from our test, since <code class="highlighter-rouge">main</code> itself is unexported and not run-able from a test.</p>
+<p>This is one of <em>many</em> ways to start an integration. It allows us to run <code class="language-plaintext highlighter-rouge">main</code>
+from our test, since <code class="language-plaintext highlighter-rouge">main</code> itself is unexported and not run-able from a test.</p>
 
 <p>Sidenote: this method may seem hacky, but why? It’s just sticking your main into
 another, callable method. It’s used by large projects <a href="https://github.com/etcd-io/etcd/blob/00e49d0c10bb931f596d801d7368b5e0ae539fbd/main.go">like etcd</a> if you need further assurance. 🙂</p>
@@ -193,10 +195,10 @@ another, callable method. It’s used by large projects <a href="https://github.
 executing shell using os.Cmd and the like. That’s fine! The same principles
 apply.</p>
 
-<p>Anyways, we have a way to run <code class="highlighter-rouge">main</code> - how do we get <code class="highlighter-rouge">main</code> to talk to our stub?
-We clearly can’t pass in a <code class="highlighter-rouge">GreeterClient</code> interface. So, instead, we’ll spin up
-<code class="highlighter-rouge">Greeter</code> as an in-memory server, and pass the in-memory server address to
-<code class="highlighter-rouge">Start</code>.</p>
+<p>Anyways, we have a way to run <code class="language-plaintext highlighter-rouge">main</code> - how do we get <code class="language-plaintext highlighter-rouge">main</code> to talk to our stub?
+We clearly can’t pass in a <code class="language-plaintext highlighter-rouge">GreeterClient</code> interface. So, instead, we’ll spin up
+<code class="language-plaintext highlighter-rouge">Greeter</code> as an in-memory server, and pass the in-memory server address to
+<code class="language-plaintext highlighter-rouge">Start</code>.</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="s">"net"</span>
 <span class="k">import</span> <span class="s">"google.golang.org/grpc"</span>
@@ -246,11 +248,11 @@ actually get your test to talk to <em>your</em> app?</p>
 <p>However you want! But, we’ll walk through one example.</p>
 
 <p>Imagine our app has some HTTP endpoints, and we want to send requests to them
-from our test, and see that our app appropriately talks to <code class="highlighter-rouge">Greeter</code> when those
+from our test, and see that our app appropriately talks to <code class="language-plaintext highlighter-rouge">Greeter</code> when those
 endpoints get hit. Well, in order to do that we need an address that our test
 can send requests to. Let’s make that happen!</p>
 
-<p>Let’s look at <code class="highlighter-rouge">main</code> and <code class="highlighter-rouge">Start</code> again:</p>
+<p>Let’s look at <code class="language-plaintext highlighter-rouge">main</code> and <code class="language-plaintext highlighter-rouge">Start</code> again:</p>
 
 <div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
 

@@ -2,9 +2,9 @@
 <html lang="en"><head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
 <title>Binary Search Tree Runtime Complexities | Jean de Klerk</title>
-<meta name="generator" content="Jekyll v4.0.1" />
+<meta name="generator" content="Jekyll v4.2.2" />
 <meta property="og:title" content="Binary Search Tree Runtime Complexities" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Introduction" />
@@ -14,8 +14,10 @@
 <meta property="og:site_name" content="Jean de Klerk" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2019-11-23T14:55:23-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Binary Search Tree Runtime Complexities" />
 <script type="application/ld+json">
-{"url":"http://localhost:4000/2019/11/23/binary-search-tree-runtime-complexity.html","headline":"Binary Search Tree Runtime Complexities","dateModified":"2019-11-23T14:55:23-07:00","datePublished":"2019-11-23T14:55:23-07:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/11/23/binary-search-tree-runtime-complexity.html"},"description":"Introduction","@type":"BlogPosting","@context":"https://schema.org"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2019-11-23T14:55:23-07:00","datePublished":"2019-11-23T14:55:23-07:00","description":"Introduction","headline":"Binary Search Tree Runtime Complexities","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2019/11/23/binary-search-tree-runtime-complexity.html"},"url":"http://localhost:4000/2019/11/23/binary-search-tree-runtime-complexity.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Jean de Klerk" /></head>
 <body><header class="site-header" role="banner">
@@ -61,8 +63,8 @@ search trees.</p>
 <p>Here are properties of trees that this article deals with:</p>
 
 <ul>
-  <li>Number of nodes in a tree is typically denoted <code class="highlighter-rouge">n</code>.</li>
-  <li>Height of a tree is typically denoted <code class="highlighter-rouge">k</code>.</li>
+  <li>Number of nodes in a tree is typically denoted <code class="language-plaintext highlighter-rouge">n</code>.</li>
+  <li>Height of a tree is typically denoted <code class="language-plaintext highlighter-rouge">k</code>.</li>
   <li><a href="https://en.wikipedia.org/wiki/Binary_tree">Complete</a>: every level except
 possibly the last is completely filled.</li>
   <li><a href="https://en.wikipedia.org/wiki/Binary_tree">Full</a>: every node has 0 or 2
@@ -84,7 +86,7 @@ of children at each node.</li>
 <h1 id="searching-a-bst">Searching a BST</h1>
 
 <p>Everyone knows that searching a binary search tree has runtime complexity
-<code class="highlighter-rouge">O(logn)</code>, right? …right? Let’s take a second to tease apart some questions
+<code class="language-plaintext highlighter-rouge">O(logn)</code>, right? …right? Let’s take a second to tease apart some questions
 from that assertion to see if we really understand what we mean when we say that:</p>
 
 <ul>
@@ -94,17 +96,17 @@ from that assertion to see if we really understand what we mean when we say that
     <p>A: Typically when we talk about the base of a log, we’re talking about 2 or 10.  In the case of a BST case it’s 2 (we’ll dive into why that is shortly).</p>
   </li>
   <li>
-    <p>Q: What does <code class="highlighter-rouge">n</code> represent?</p>
+    <p>Q: What does <code class="language-plaintext highlighter-rouge">n</code> represent?</p>
 
-    <p>A: <code class="highlighter-rouge">n</code> <em>usually</em> means “number of elements”. In this case, <code class="highlighter-rouge">n</code> does mean that: or, another way to put that is “number of nodes in the tree”.</p>
+    <p>A: <code class="language-plaintext highlighter-rouge">n</code> <em>usually</em> means “number of elements”. In this case, <code class="language-plaintext highlighter-rouge">n</code> does mean that: or, another way to put that is “number of nodes in the tree”.</p>
   </li>
 </ul>
 
-<p>So, expanding <code class="highlighter-rouge">O(logn)</code>, we have: <code class="highlighter-rouge">O(log2(&lt;# nodes in tree&gt;))</code>.</p>
+<p>So, expanding <code class="language-plaintext highlighter-rouge">O(logn)</code>, we have: <code class="language-plaintext highlighter-rouge">O(log2(&lt;# nodes in tree&gt;))</code>.</p>
 
-<p>Well, searching a BST is not strictly <code class="highlighter-rouge">O(log2(n))</code>: it depends on whether the
-BST is balanced or not. An unbalanced BST may be <code class="highlighter-rouge">O(n)</code>. Let’s discover why by
-exploring how the <code class="highlighter-rouge">log2</code> comes about.</p>
+<p>Well, searching a BST is not strictly <code class="language-plaintext highlighter-rouge">O(log2(n))</code>: it depends on whether the
+BST is balanced or not. An unbalanced BST may be <code class="language-plaintext highlighter-rouge">O(n)</code>. Let’s discover why by
+exploring how the <code class="language-plaintext highlighter-rouge">log2</code> comes about.</p>
 
 <h1 id="logarithms-and-exponents">Logarithms and exponents</h1>
 
@@ -115,12 +117,12 @@ exploring how the <code class="highlighter-rouge">log2</code> comes about.</p>
 <p>We can tell the following about this tree:</p>
 
 <ul>
-  <li>It has height <code class="highlighter-rouge">k=4</code>.</li>
-  <li>It has nodes <code class="highlighter-rouge">n=15</code>.</li>
+  <li>It has height <code class="language-plaintext highlighter-rouge">k=4</code>.</li>
+  <li>It has nodes <code class="language-plaintext highlighter-rouge">n=15</code>.</li>
 </ul>
 
 <p>The number of nodes is the sum of the nodes at each level. The number of nodes
-at each level are powers of 2. So, at <code class="highlighter-rouge">k=4</code> there are,</p>
+at each level are powers of 2. So, at <code class="language-plaintext highlighter-rouge">k=4</code> there are,</p>
 
 \[\begin{align*}
 n=1+2+4+8 &amp;&amp; \text{The sum of the nodes at each level.} \\
@@ -130,7 +132,7 @@ n=\sum\limits_{j=0}^{k-1} 2^j &amp;&amp; \text{Represented as a summation.} \\
 
 <p>The branching factor here is 2 - each node has 2 children. What if each child
 had 7 children, or 9, or 21? Let’s re-write the summation with a generic
-branching factor <code class="highlighter-rouge">b</code>:</p>
+branching factor <code class="language-plaintext highlighter-rouge">b</code>:</p>
 
 \[\begin{align*}
 n=\sum\limits_{j=0}^{k-1} 2^j &amp;&amp; \text{Branching factor of 2, as before.} \\
@@ -151,8 +153,8 @@ n \cdot (b - 1)=b^k - 1 &amp;&amp; \text{Factor out n.} \\
 n = \frac{b^k - 1}{b - 1} &amp;&amp; \text{Divide by n-1.} \\
 \end{align*}\]
 
-<p>Let’s test the formula by using <code class="highlighter-rouge">k=4</code> and <code class="highlighter-rouge">b=2</code> again, which we think should
-equal <code class="highlighter-rouge">n=15</code>:</p>
+<p>Let’s test the formula by using <code class="language-plaintext highlighter-rouge">k=4</code> and <code class="language-plaintext highlighter-rouge">b=2</code> again, which we think should
+equal <code class="language-plaintext highlighter-rouge">n=15</code>:</p>
 
 \[\begin{align*}
 n=\frac{2^4-1}{2-1} \\
@@ -181,30 +183,30 @@ node - it never reaches a leaf and then has to backtrack and try a different
 choice at a former node.</p>
 
 <p>If the BST is unbalanced, the worst case time complexity to search for a value
-is <code class="highlighter-rouge">O(n)</code>. We can easily show that this is the case with the following tree:</p>
+is <code class="language-plaintext highlighter-rouge">O(n)</code>. We can easily show that this is the case with the following tree:</p>
 
 <p><img src="/assets/left_bst.png" alt="Left BST" /></p>
 
 <p>This BST is heavily weighted to the right. To search for the value 109, we’d have to
-look at each of the <code class="highlighter-rouge">n=15</code> elements. That is: the worst case time complexity is
-<code class="highlighter-rouge">O(n)</code>.</p>
+look at each of the <code class="language-plaintext highlighter-rouge">n=15</code> elements. That is: the worst case time complexity is
+<code class="language-plaintext highlighter-rouge">O(n)</code>.</p>
 
 <p>What if this BST were balanced, instead?</p>
 
 <p><img src="/assets/balanced_bst.png" alt="Balanced BST" /></p>
 
 <p>Now, to search for <em>any</em> value in the BST, the maximum depth we’d need to
-traverse is <code class="highlighter-rouge">k</code>. We know that <code class="highlighter-rouge">k=log2(n)</code>, so we can say that the big-O runtime
-complexity in terms of <code class="highlighter-rouge">n</code> is <code class="highlighter-rouge">O(log2(n))</code>.</p>
+traverse is <code class="language-plaintext highlighter-rouge">k</code>. We know that <code class="language-plaintext highlighter-rouge">k=log2(n)</code>, so we can say that the big-O runtime
+complexity in terms of <code class="language-plaintext highlighter-rouge">n</code> is <code class="language-plaintext highlighter-rouge">O(log2(n))</code>.</p>
 
 <h1 id="in-conclusion">In conclusion</h1>
 
-<p>There are at most <code class="highlighter-rouge">n=(b^k - 1)/(b - 1)</code> nodes in any tree with height <code class="highlighter-rouge">k</code> and
-branching factor <code class="highlighter-rouge">b</code>. In a binary tree, that simplifies to <code class="highlighter-rouge">n=2^k-1</code>, and can
-be re-written in terms of height as <code class="highlighter-rouge">k=log2(n+1)</code>.</p>
+<p>There are at most <code class="language-plaintext highlighter-rouge">n=(b^k - 1)/(b - 1)</code> nodes in any tree with height <code class="language-plaintext highlighter-rouge">k</code> and
+branching factor <code class="language-plaintext highlighter-rouge">b</code>. In a binary tree, that simplifies to <code class="language-plaintext highlighter-rouge">n=2^k-1</code>, and can
+be re-written in terms of height as <code class="language-plaintext highlighter-rouge">k=log2(n+1)</code>.</p>
 
 <p>To conclude our original question: binary search trees don’t guarantee
-<code class="highlighter-rouge">O(log2(n))</code> search: <em>balanced</em> BSTs do.</p>
+<code class="language-plaintext highlighter-rouge">O(log2(n))</code> search: <em>balanced</em> BSTs do.</p>
 
 <p>In a future article we’ll look at <a href="https://en.wikipedia.org/wiki/Heap_(data_structure)">Heap</a>
 runtime complexity, and how memoization affects that. In some other future
