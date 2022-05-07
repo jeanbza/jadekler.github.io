@@ -55,11 +55,9 @@
 
 <p>Eventually replication catches up, and there are enough peers to spread the load. But we’d like to fail more gracefully than just OOM =&gt; death. We’d like to monitor the current and allocated memory, and gradually reject requests (throttle) when current memory exceeds allocated memory.</p>
 
-<p>Technical note: the binary gets deployed to a container that hosts several processes, all of which share the same memory. Each task has some allocated memory, but can exceed their allocation. Doing so chews into other processes’ memory. One process going far above allocation and OOMing means that all processes OOM.</p>
-
 <h1 id="abrupt-degradation">Abrupt degradation</h1>
 
-<p>A simple way to gracefully degrade is to reject requests above the allocated amount. We can model that with a simple step function. For the sake of example, let’s imagine that our allocated memory is <code class="language-plaintext highlighter-rouge">3GiB = 3221225472 bytes</code>. We don’t want to hit 3GiB exactly, since that’s roughly where we’ll OOM, so let’s start throttling a bit before that: at <code class="language-plaintext highlighter-rouge">3000000000 bytes = 3e9 bytes</code>.</p>
+<p>A simple way to abruptly degrade is to reject requests above the allocated amount. We can model that with a simple step function. For the sake of example, let’s imagine that our allocated memory is <code class="language-plaintext highlighter-rouge">3GiB = 3221225472 bytes</code>. We don’t want to hit 3GiB exactly, since that’s roughly where we’ll OOM, so let’s start throttling a bit before that: at <code class="language-plaintext highlighter-rouge">3000000000 bytes = 3e9 bytes</code> (number chosen because it’s conveniently round, and close to 3GiB 🙂).</p>
 
 \[f(x) = \left\{
         \begin{array}{ll}
@@ -70,12 +68,7 @@
 
 <p>Here, 0 means “don’t reject”, and 1 means “reject”.</p>
 
-<p>But, this is inefficient:</p>
-
-<ul>
-  <li>We’re not using all our available memory. In a resource constrained environment, or when we’re highly scaled, we really want to squeeze every bit of memory that we can.</li>
-  <li>With the more flexible memory model mentioned above, in which we can steal some memory from other tasks, we want to allow our process to <em>exceed</em> its allocated memory. The more it exceeds its allocation, the more we should throttle, until we reach an unacceptably high excess, at which point we should throttle all requests.</li>
-</ul>
+<p>But, this is inefficient: we’re not using all our available memory. In a resource constrained environment, or when we’re highly scaled, we really want to squeeze every bit of memory that we can, and leaving a huge buffer untouched is far too wasteful.</p>
 
 <h1 id="gradual-degradation">Gradual degradation</h1>
 
@@ -145,13 +138,21 @@ f(x) = 3221225472/221225472 - 1953125/144027\\
 f(x) = 1
 \end{split}\\\]
 
+<h1 id="linear-function-downsides">Linear function downsides</h1>
+
+<p>This is a lot nicer, but we can do better. If our binary is <em>expected</em> to consistently “run hot” (use most of its allocated memory), the linear function may be too aggressive.</p>
+
+<p>Consider a binary that fairly consistently runs somewhere in the bottom 10-30% of the throttle memory range. A linear function will accordingly throttle 10-30% of requests. That’s expensive! Particularly if the incoming RPCs have a wide range of memory footprints: throttling 10-30% of requests when those requests may have negligible impact on memory is wasteful. And we can’t just make our memory range smaller. Doing so is dangerous: the smaller the range, the easier it is for a request to cause our memory to jump to the end of the range and OOM the process.</p>
+
+<p>And, the second half of the linear function range is a problem too: it ramps up too slowly! When we’re 90% into our range, we’d like to be throttling most all requests, since it may only take a few expensive requests to jump right to the end and OOM the process.</p>
+
+<p>We need to find a function with a better shape.</p>
+
 <h1 id="graceful-degradation">Graceful degradation</h1>
 
-<p>This is a lot nicer, but let’s consider an <em>even more</em> resource constrained environment, in which memory usage consistently hovers near the threshold. Let’s also consider a binary that handles a wide range of requests, whose memory requirements vary significantly.</p>
+<p>The <a href="https://en.wikipedia.org/wiki/Logistic_function">logistic function</a> has a better shape for server throttling.</p>
 
-<p>In such an environment, we’d like to throttle as few requests as possible: especially when we’re on the lower end of our memory throttle range. The reasoning here is that with a varied workload, we’re not sure that a linear increase in requests will result in a linear increase in memory. It may be that for a period of time, we’re running into the excess space, but the incoming requests take dramatically less memory than prior requests: we want to throttle as few of these as possible. This lets us take full advantage of our overflow range. But, if we do start creeping further into that range, we want to quickly start throttling more aggressively.</p>
-
-<p>The <a href="https://en.wikipedia.org/wiki/Logistic_function">logistic function</a> is perfect for that. Here’s the shape of the logistic function:</p>
+<p>Here’s the shape of the logistic function:</p>
 
 <p><img src="/assets/logistic.png" alt="" /></p>
 
@@ -266,6 +267,48 @@ f(x) = 0.98999999158
             0 &amp; \quad x &lt; 3e9
         \end{array}
     \right.\]
+
+<h1 id="implementing-logistic-function-server-throttling">Implementing logistic function server throttling</h1>
+
+<p>Implementing server throttling with the logistic function is fairly straight forward, adding another positive to its list of positives:</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// This example written in Go. It uses RPC semantics, like protobufs and</span>
+<span class="c">// google.golang.org/grpc/status, but the tools don't really matter. http or any</span>
+<span class="c">// other communication protocol works as well.</span>
+
+<span class="k">func</span> <span class="p">(</span><span class="n">c</span> <span class="o">*</span><span class="n">Client</span><span class="p">)</span> <span class="n">HandleSomeRPC</span><span class="p">(</span><span class="n">ctx</span> <span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">req</span> <span class="o">*</span><span class="n">mypb</span><span class="o">.</span><span class="n">Request</span><span class="p">,</span> <span class="n">resp</span> <span class="o">*</span><span class="n">mypb</span><span class="o">.</span><span class="n">Response</span><span class="p">)</span> <span class="kt">error</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="n">shouldThrottle</span><span class="p">(</span><span class="n">currentMemoryBytes</span><span class="p">(),</span> <span class="n">allocatedMemoryBytes</span><span class="p">(),</span> <span class="n">throttleRangeBytes</span><span class="p">())</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">status</span><span class="o">.</span><span class="n">Error</span><span class="p">(</span><span class="n">codes</span><span class="o">.</span><span class="n">ResourceExhausted</span><span class="p">,</span> <span class="s">"out of memory - try again later"</span><span class="p">)</span>
+  <span class="p">}</span>
+  <span class="c">// ...</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">shouldThrottle</span><span class="p">(</span><span class="n">currentMemoryBytes</span><span class="p">,</span> <span class="n">allocatedMemoryBytes</span><span class="p">,</span> <span class="n">throttleRangeBytes</span> <span class="kt">uint64</span><span class="p">)</span> <span class="kt">bool</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="n">currentMemoryBytes</span> <span class="o">&lt;</span> <span class="n">allocatedMemoryBytes</span><span class="o">-</span><span class="n">throttleRangeBytes</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="no">false</span>
+	<span class="p">}</span>
+	<span class="k">if</span> <span class="n">currentMemoryBytes</span> <span class="o">&gt;</span> <span class="n">allocatedMemoryBytes</span><span class="o">+</span><span class="n">throttleRangeBytes</span> <span class="p">{</span>
+		<span class="c">// Relevant if your process is in a scenario where max available memory</span>
+		<span class="c">// is greater than max allocated memory (shared containers etc).</span>
+		<span class="k">return</span> <span class="no">true</span>
+	<span class="p">}</span>
+
+	<span class="n">x</span> <span class="o">:=</span> <span class="n">currentMemoryBytes</span>
+	<span class="n">x0</span> <span class="o">:=</span> <span class="n">allocatedMemoryBytes</span> <span class="o">-</span> <span class="p">(</span><span class="kt">uint64</span><span class="p">)(</span><span class="n">throttleRangeBytes</span><span class="o">/</span><span class="m">2</span><span class="p">)</span>
+	<span class="n">L</span> <span class="o">:=</span> <span class="m">1.0</span>
+	<span class="n">k</span> <span class="o">:=</span> <span class="p">(</span><span class="o">-</span><span class="m">1</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">Log</span><span class="p">((</span><span class="n">L</span><span class="o">/</span><span class="m">.01</span><span class="p">)</span><span class="o">-</span><span class="m">1</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="kt">float64</span><span class="p">)(</span><span class="n">allocatedMemoryBytes</span><span class="o">-</span><span class="n">x0</span><span class="p">)</span>
+
+	<span class="c">// y1 is probability (0.00-1.00) which we roll against to determine whether</span>
+	<span class="c">// to throttle or not. When it is 0, we never throttle (memory below allowed</span>
+	<span class="c">// exceed). When it is 1, we always throttle (memory above allowed exceed).</span>
+	<span class="n">y1</span> <span class="o">:=</span> <span class="n">L</span> <span class="o">/</span> <span class="p">(</span><span class="m">1.0</span> <span class="o">+</span> <span class="n">math</span><span class="o">.</span><span class="n">Exp</span><span class="p">(</span><span class="o">-</span><span class="n">k</span><span class="o">*</span><span class="p">(</span><span class="kt">float64</span><span class="p">)(</span><span class="n">x</span><span class="o">-</span><span class="n">x0</span><span class="p">)))</span>
+
+	<span class="c">// y2 is a number between 0 and 1 to compare against y1.</span>
+	<span class="n">y2</span> <span class="o">:=</span> <span class="n">rand</span><span class="o">.</span><span class="n">Float64</span><span class="p">()</span>
+
+	<span class="k">return</span> <span class="n">y2</span> <span class="o">&lt;=</span> <span class="n">y1</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <h1 id="conclusion">Conclusion</h1>
 

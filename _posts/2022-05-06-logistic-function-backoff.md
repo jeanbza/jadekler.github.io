@@ -13,11 +13,9 @@ Sometimes, one of these tasks gets a large memory spike. The cause for this is t
 
 Eventually replication catches up, and there are enough peers to spread the load. But we'd like to fail more gracefully than just OOM => death. We'd like to monitor the current and allocated memory, and gradually reject requests (throttle) when current memory exceeds allocated memory.
 
-Technical note: the binary gets deployed to a container that hosts several processes, all of which share the same memory. Each task has some allocated memory, but can exceed their allocation. Doing so chews into other processes' memory. One process going far above allocation and OOMing means that all processes OOM.
-
 # Abrupt degradation
 
-A simple way to gracefully degrade is to reject requests above the allocated amount. We can model that with a simple step function. For the sake of example, let's imagine that our allocated memory is `3GiB = 3221225472 bytes`. We don't want to hit 3GiB exactly, since that's roughly where we'll OOM, so let's start throttling a bit before that: at `3000000000 bytes = 3e9 bytes`.
+A simple way to abruptly degrade is to reject requests above the allocated amount. We can model that with a simple step function. For the sake of example, let's imagine that our allocated memory is `3GiB = 3221225472 bytes`. We don't want to hit 3GiB exactly, since that's roughly where we'll OOM, so let's start throttling a bit before that: at `3000000000 bytes = 3e9 bytes` (number chosen because it's conveniently round, and close to 3GiB 🙂).
 
 $$
 f(x) = \left\{
@@ -30,10 +28,7 @@ $$
 
 Here, 0 means "don't reject", and 1 means "reject".
 
-But, this is inefficient:
-
-- We're not using all our available memory. In a resource constrained environment, or when we're highly scaled, we really want to squeeze every bit of memory that we can.
-- With the more flexible memory model mentioned above, in which we can steal some memory from other tasks, we want to allow our process to _exceed_ its allocated memory. The more it exceeds its allocation, the more we should throttle, until we reach an unacceptably high excess, at which point we should throttle all requests.
+But, this is inefficient: we're not using all our available memory. In a resource constrained environment, or when we're highly scaled, we really want to squeeze every bit of memory that we can, and leaving a huge buffer untouched is far too wasteful.
 
 # Gradual degradation
 
@@ -109,13 +104,21 @@ f(x) = 1
 \end{split}\\
 $$
 
+# Linear function downsides
+
+This is a lot nicer, but we can do better. If our binary is _expected_ to consistently "run hot" (use most of its allocated memory), the linear function may be too aggressive.
+
+Consider a binary that fairly consistently runs somewhere in the bottom 10-30% of the throttle memory range. A linear function will accordingly throttle 10-30% of requests. That's expensive! Particularly if the incoming RPCs have a wide range of memory footprints: throttling 10-30% of requests when those requests may have negligible impact on memory is wasteful. And we can't just make our memory range smaller. Doing so is dangerous: the smaller the range, the easier it is for a request to cause our memory to jump to the end of the range and OOM the process.
+
+And, the second half of the linear function range is a problem too: it ramps up too slowly! When we're 90% into our range, we'd like to be throttling most all requests, since it may only take a few expensive requests to jump right to the end and OOM the process.
+
+We need to find a function with a better shape.
+
 # Graceful degradation
 
-This is a lot nicer, but let's consider an _even more_ resource constrained environment, in which memory usage consistently hovers near the threshold. Let's also consider a binary that handles a wide range of requests, whose memory requirements vary significantly.
+The [logistic function](https://en.wikipedia.org/wiki/Logistic_function) has a better shape for server throttling.
 
-In such an environment, we'd like to throttle as few requests as possible: especially when we're on the lower end of our memory throttle range. The reasoning here is that with a varied workload, we're not sure that a linear increase in requests will result in a linear increase in memory. It may be that for a period of time, we're running into the excess space, but the incoming requests take dramatically less memory than prior requests: we want to throttle as few of these as possible. This lets us take full advantage of our overflow range. But, if we do start creeping further into that range, we want to quickly start throttling more aggressively.
-
-The [logistic function](https://en.wikipedia.org/wiki/Logistic_function) is perfect for that. Here's the shape of the logistic function:
+Here's the shape of the logistic function:
 
 ![](/assets/logistic.png)
 
@@ -244,6 +247,49 @@ f(x) = \left\{
         \end{array}
     \right.
 $$
+
+# Implementing logistic function server throttling
+
+Implementing server throttling with the logistic function is fairly straight forward, adding another positive to its list of positives:
+
+```go
+// This example written in Go. It uses RPC semantics, like protobufs and
+// google.golang.org/grpc/status, but the tools don't really matter. http or any
+// other communication protocol works as well.
+
+func (c *Client) HandleSomeRPC(ctx context.Context, req *mypb.Request, resp *mypb.Response) error {
+  if shouldThrottle(currentMemoryBytes(), allocatedMemoryBytes(), throttleRangeBytes()) {
+    return status.Error(codes.ResourceExhausted, "out of memory - try again later")
+  }
+  // ...
+}
+
+func shouldThrottle(currentMemoryBytes, allocatedMemoryBytes, throttleRangeBytes uint64) bool {
+	if currentMemoryBytes < allocatedMemoryBytes-throttleRangeBytes {
+		return false
+	}
+	if currentMemoryBytes > allocatedMemoryBytes+throttleRangeBytes {
+		// Relevant if your process is in a scenario where max available memory
+		// is greater than max allocated memory (shared containers etc).
+		return true
+	}
+
+	x := currentMemoryBytes
+	x0 := allocatedMemoryBytes - (uint64)(throttleRangeBytes/2)
+	L := 1.0
+	k := (-1 * math.Log((L/.01)-1)) / (float64)(allocatedMemoryBytes-x0)
+
+	// y1 is probability (0.00-1.00) which we roll against to determine whether
+	// to throttle or not. When it is 0, we never throttle (memory below allowed
+	// exceed). When it is 1, we always throttle (memory above allowed exceed).
+	y1 := L / (1.0 + math.Exp(-k*(float64)(x-x0)))
+
+	// y2 is a number between 0 and 1 to compare against y1.
+	y2 := rand.Float64()
+
+	return y2 <= y1
+}
+```
 
 # Conclusion
 
