@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2022-05-06T22:08:44-06:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jean de Klerk</title><subtitle>This is my personal website. The views represented here are my own, and do not represent my employer.</subtitle><entry><title type="html">Graceful degradation with the logistic function</title><link href="http://localhost:4000/2022/05/05/logistic-function-backoff.html" rel="alternate" type="text/html" title="Graceful degradation with the logistic function" /><published>2022-05-05T15:55:23-06:00</published><updated>2022-05-05T15:55:23-06:00</updated><id>http://localhost:4000/2022/05/05/logistic-function-backoff</id><content type="html" xml:base="http://localhost:4000/2022/05/05/logistic-function-backoff.html"><![CDATA[<h1 id="graceful-degradation-with-the-logistic-function">Graceful degradation with the logistic function</h1>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2022-05-06T22:14:56-06:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jean de Klerk</title><subtitle>This is my personal website. The views represented here are my own, and do not represent my employer.</subtitle><entry><title type="html">Graceful degradation with the logistic function</title><link href="http://localhost:4000/2022/05/05/logistic-function-backoff.html" rel="alternate" type="text/html" title="Graceful degradation with the logistic function" /><published>2022-05-05T15:55:23-06:00</published><updated>2022-05-05T15:55:23-06:00</updated><id>http://localhost:4000/2022/05/05/logistic-function-backoff</id><content type="html" xml:base="http://localhost:4000/2022/05/05/logistic-function-backoff.html"><![CDATA[<h1 id="graceful-degradation-with-the-logistic-function">Graceful degradation with the logistic function</h1>
 
 <p>I recently worked on a server throttling feature in one of our build stack’s busiest binaries. We serve files from this binary, which is deployed as tens of thousands of tasks, which cumulatively serve millions of QPS.</p>
 
@@ -25,9 +25,9 @@
 
 <p>It’s starting to sound like we need a linear function, not a stepwise function: something that rejects more and more requests the more memory we’re using. We now need a range to operate our throttler within: at the bottom of the range, we reject no requests; at the top, all requests.</p>
 
-<p>Using the rigid memory model above, we’ll define our range as <code class="language-plaintext highlighter-rouge">[3e9 bytes, 3221225472 bytes]</code>. In the more flexible memory model our production code operates under, it’s more like <code class="language-plaintext highlighter-rouge">[max_bytes, max_bytes+allowed_theft]</code>.</p>
+<p>Let’s define our range as <code class="language-plaintext highlighter-rouge">[3e9 bytes, 3221225472 bytes]</code>, using the same bounds as our step function above.</p>
 
-<p>So, let’s build a linear function for this. Note that the values that we want from our linear function are <code class="language-plaintext highlighter-rouge">[0.0, 1.0]</code>. As above, 0 means “don’t reject”, and 1 means “reject”. Any value between that represents that chance that a request will be rejected. That is, we’ll compare our the result of our linear function against a number taken randomly from a uniform distribution of <code class="language-plaintext highlighter-rouge">[0.0, 1.0]</code>.</p>
+<p>So, let’s build a linear function for this. Note that the values that we want from our linear function are <code class="language-plaintext highlighter-rouge">[0.0, 1.0]</code>. As above, 0 means “don’t reject”, and 1 means “reject”. Any value between that represents that chance that a request will be rejected. That is, we’ll compare the result of our linear function against a number taken randomly from a uniform distribution of <code class="language-plaintext highlighter-rouge">[0.0, 1.0]</code>.</p>
 
 <p>To build this linear function, let’s start with what we know:</p>
 
@@ -42,7 +42,6 @@
 \[\begin{split}
 0 = a \cdot 3e9 + b\\
 -b = 3e9 \cdot a\\
-b = 3e9 \cdot a\\
 b = -3e9 \cdot a
 \end{split}
 \quad\quad

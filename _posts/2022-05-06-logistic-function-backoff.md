@@ -34,9 +34,9 @@ But, this is inefficient: we're not using all our available memory. In a resourc
 
 It's starting to sound like we need a linear function, not a stepwise function: something that rejects more and more requests the more memory we're using. We now need a range to operate our throttler within: at the bottom of the range, we reject no requests; at the top, all requests.
 
-Using the rigid memory model above, we'll define our range as `[3e9 bytes, 3221225472 bytes]`. In the more flexible memory model our production code operates under, it's more like `[max_bytes, max_bytes+allowed_theft]`.
+Let's define our range as `[3e9 bytes, 3221225472 bytes]`, using the same bounds as our step function above.
 
-So, let's build a linear function for this. Note that the values that we want from our linear function are `[0.0, 1.0]`. As above, 0 means "don't reject", and 1 means "reject". Any value between that represents that chance that a request will be rejected. That is, we'll compare our the result of our linear function against a number taken randomly from a uniform distribution of `[0.0, 1.0]`.
+So, let's build a linear function for this. Note that the values that we want from our linear function are `[0.0, 1.0]`. As above, 0 means "don't reject", and 1 means "reject". Any value between that represents that chance that a request will be rejected. That is, we'll compare the result of our linear function against a number taken randomly from a uniform distribution of `[0.0, 1.0]`.
 
 To build this linear function, let's start with what we know:
 
@@ -50,7 +50,6 @@ $$
 \begin{split}
 0 = a \cdot 3e9 + b\\
 -b = 3e9 \cdot a\\
-b = 3e9 \cdot a\\
 b = -3e9 \cdot a
 \end{split}
 \quad\quad
