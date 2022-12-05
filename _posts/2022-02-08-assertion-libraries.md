@@ -3,6 +3,7 @@ layout: post
 title:  "Don't use assertion libraries in Go"
 date:   2022-02-08 15:55:23 -0600
 categories: 
+toc: true
 ---
 
 Foreword #1: This is a very sensitive topic for many people. 🙂 I find that many people have never considered writing tests _without_ assertion libraries. It might come as a shocking surprise to consider such a world. That shock and surprise might be painful. Steel yourself.

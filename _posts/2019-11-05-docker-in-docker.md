@@ -3,6 +3,7 @@ layout: post
 title:  "Docker in Docker"
 date:   2019-11-05 15:55:23 -0600
 categories: 
+toc: true
 ---
 
 # I got beef with all y'alls articles
@@ -24,7 +25,7 @@ _can do what I want! :)_
 The big difference is that I can do both on my local laptop, but the latter
 requires extraorinarily more effort to actually stick in a cloud since most
 automated "run a container in the cloud" services have no idea wtf you're
-talking about trying to link containers and shit. We're just here to run your
+talking about trying to link containers. We're just here to run your
 one, single container dude.
 
 # Ok how do you actually do this

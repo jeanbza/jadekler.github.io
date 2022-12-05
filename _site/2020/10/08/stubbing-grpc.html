@@ -37,23 +37,33 @@
 </header>
 <main class="page-content" aria-label="Content">
       <div class="wrapper">
-        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h1"><a href="#stubbing-grpc-in-go">Stubbing gRPC in Go</a></li>
+<li class="toc-entry toc-h1"><a href="#introduction">Introduction</a></li>
+<li class="toc-entry toc-h1"><a href="#mocking">Mocking</a></li>
+<li class="toc-entry toc-h1"><a href="#stubbing">Stubbing</a></li>
+<li class="toc-entry toc-h1"><a href="#bonus-actually-testing-main-forreal">Bonus: actually testing main, forreal</a></li>
+<li class="toc-entry toc-h1"><a href="#conclusion">Conclusion</a></li>
+</ul><article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">Stubbing gRPC in Go</h1>
+    <h1 class="post-title p-name" itemprop="name headline">
+<a class="anchor" href="#stubbing-grpc-in-go" aria-hidden="true"><span class="octicon octicon-link"></span></a>Stubbing gRPC in Go</h1>
     <p class="post-meta">
       <time class="dt-published" datetime="2020-10-08T15:55:23-06:00" itemprop="datePublished">Oct 8, 2020
       </time></p>
   </header>
 
   <div class="post-content e-content" itemprop="articleBody">
-    <h1 id="introduction">Introduction</h1>
+    <h1 id="introduction">
+<a class="anchor" href="#introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction</h1>
 
 <p>I’ve several times been met with the question, “How do you stub gRPC in Go”?</p>
 
 <p>This is a short blog post about how to do that.</p>
 
-<h1 id="mocking">Mocking</h1>
+<h1 id="mocking">
+<a class="anchor" href="#mocking" aria-hidden="true"><span class="octicon octicon-link"></span></a>Mocking</h1>
 
 <p>Mocking gRPC clients is <em>super easy</em> and doesn’t require a separate mocking
 library. Given some proto with service,</p>
@@ -134,7 +144,8 @@ and our tests we’ll give it a fake client:</p>
 perhaps it always returns the same thing (less complicated), or perhaps it tries
 to mimic the behavior of the real <code class="language-plaintext highlighter-rouge">Greeter</code> (more complicated).</p>
 
-<h1 id="stubbing">Stubbing</h1>
+<h1 id="stubbing">
+<a class="anchor" href="#stubbing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Stubbing</h1>
 
 <p>Sometimes we aren’t able to use dependency injection, but we <em>can</em> choose which
 connection we’re using. For example, this is the case with
@@ -239,7 +250,8 @@ We clearly can’t pass in a <code class="language-plaintext highlighter-rouge">
 
 <p>Ta-da! Very easy to start an in-memory gRPC fake.</p>
 
-<h1 id="bonus-actually-testing-main-forreal">Bonus: actually testing main, forreal</h1>
+<h1 id="bonus-actually-testing-main-forreal">
+<a class="anchor" href="#bonus-actually-testing-main-forreal" aria-hidden="true"><span class="octicon octicon-link"></span></a>Bonus: actually testing main, forreal</h1>
 
 <p>Ok, the above might be a bit arcane if you have the usual HTTP/gRPC API. You’re
 now able to hook your app up to the fake in-memory server, but how do you
@@ -373,13 +385,15 @@ gRPC server would look similar.</p>
 <span class="p">}</span>
 </code></pre></div></div>
 
-<h1 id="conclusion">Conclusion</h1>
+<h1 id="conclusion">
+<a class="anchor" href="#conclusion" aria-hidden="true"><span class="octicon octicon-link"></span></a>Conclusion</h1>
 
 <p>Stubbing and mocking gRPC servers in Go is very easy, doesn’t require any
 libraries, and obviates the need for pre-provided fakes/mocks/emulators/etc.</p>
 
 
-  </div><a class="u-url" href="/2020/10/08/stubbing-grpc.html" hidden></a>
+  </div>
+<a class="u-url" href="/2020/10/08/stubbing-grpc.html" hidden></a>
 </article>
 
       </div>

@@ -3,6 +3,7 @@ layout: post
 title:  "Graceful degradation with the logistic function"
 date:   2022-05-05 15:55:23 -0600
 categories: 
+toc: true
 ---
 
 # Graceful degradation with the logistic function

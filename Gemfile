@@ -20,3 +20,6 @@ end
 
 # jekyll 4.2 seems to need this
 gem "webrick", "~> 1.7.0"
+
+# toc
+gem "jekyll-toc"

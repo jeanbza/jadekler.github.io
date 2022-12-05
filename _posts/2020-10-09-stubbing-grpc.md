@@ -3,6 +3,7 @@ layout: post
 title:  "Stubbing gRPC in Go"
 date:   2020-10-08 15:55:23 -0600
 categories: 
+toc: true
 ---
 
 # Introduction

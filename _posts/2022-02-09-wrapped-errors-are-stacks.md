@@ -3,6 +3,7 @@ layout: post
 title:  "Wrapped errors are stacks"
 date:   2022-02-09 15:55:23 -0600
 categories: 
+toc: true
 ---
 
 # Wrapped errors are stacks

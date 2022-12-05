@@ -3,6 +3,7 @@ layout: post
 title:  "Interfaces in depth"
 date:   2022-12-05 01:55:23 -0600
 categories: 
+toc: true
 ---
 
 ## Foreword

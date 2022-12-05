@@ -37,10 +37,18 @@
 </header>
 <main class="page-content" aria-label="Content">
       <div class="wrapper">
-        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+        <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h1"><a href="#dont-use-assertion-libraries-in-go">Don&#39;t use assertion libraries in Go</a></li>
+<li class="toc-entry toc-h1"><a href="#just-stop">Just stop</a></li>
+<li class="toc-entry toc-h1"><a href="#assertion-libraries-bring-incomprehensibility">Assertion libraries bring incomprehensibility</a></li>
+<li class="toc-entry toc-h1"><a href="#assertion-libraries-dont-provide-value">Assertion libraries don’t provide value</a></li>
+<li class="toc-entry toc-h1"><a href="#random-other-musings-on-the-subject">Random other musings on the subject</a></li>
+<li class="toc-entry toc-h1"><a href="#conclusion">Conclusion</a></li>
+</ul><article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">Don&#39;t use assertion libraries in Go</h1>
+    <h1 class="post-title p-name" itemprop="name headline">
+<a class="anchor" href="#dont-use-assertion-libraries-in-go" aria-hidden="true"><span class="octicon octicon-link"></span></a>Don't use assertion libraries in Go</h1>
     <p class="post-meta">
       <time class="dt-published" datetime="2022-02-08T14:55:23-07:00" itemprop="datePublished">Feb 8, 2022
       </time></p>
@@ -51,7 +59,8 @@
 
 <p>Foreword #2: This is inspired by a long conversation the Google Go readability crowd recently, in which we collectively re-affirmed our position to ban assertion libraries in Google. Most of this post is my own responses, tidied up.</p>
 
-<h1 id="just-stop">Just stop</h1>
+<h1 id="just-stop">
+<a class="anchor" href="#just-stop" aria-hidden="true"><span class="octicon octicon-link"></span></a>Just stop</h1>
 
 <p>Assertion libraries are libraries that attempt to combine the validation and production of failure messages within a test.</p>
 
@@ -61,7 +70,8 @@
 
 <p>Sidenote: The <a href="https://pkg.go.dev/testing">testing</a> library is also an assertion library, but for the sake of this article we’ll just call it “the stdlib” or “testing”, and refer to all the non-stdlib assertion libraries as “assertion libraries”.</p>
 
-<h1 id="assertion-libraries-bring-incomprehensibility">Assertion libraries bring incomprehensibility</h1>
+<h1 id="assertion-libraries-bring-incomprehensibility">
+<a class="anchor" href="#assertion-libraries-bring-incomprehensibility" aria-hidden="true"><span class="octicon octicon-link"></span></a>Assertion libraries bring incomprehensibility</h1>
 
 <p>Consider the following Java code:</p>
 
@@ -100,7 +110,8 @@
 
 <p>The thing with assertion libraries is that it’s never just <code class="language-plaintext highlighter-rouge">assert.Equal(a, b)</code>, like the advertisement purports. There is a continual gravity towards complexity. There are <a href="https://pkg.go.dev/github.com/stretchr/testify/assert"><em>277 assertions in the testify library, as of this writing</em></a>. 277!!!! That’s before you even get into <a href="https://pkg.go.dev/github.com/stretchr/testify/assert">making your own assertions</a>. By the way, the likelihood of your developers - and you! - writing custom assertions approaches 100% as your codebase grows over time. In my experience it approaches 100% awfully quickly; we’re talking a few weeks.</p>
 
-<h1 id="assertion-libraries-dont-provide-value">Assertion libraries don’t provide value</h1>
+<h1 id="assertion-libraries-dont-provide-value">
+<a class="anchor" href="#assertion-libraries-dont-provide-value" aria-hidden="true"><span class="octicon octicon-link"></span></a>Assertion libraries don’t provide value</h1>
 
 <p>Let’s take a look at the examples on the testify front page:</p>
 
@@ -160,7 +171,8 @@ if object != nil &amp;&amp; object.Value != "Something" {
 
 <p>Remember: most code gets read far more than the time it took to write it. Optimise for the reader, not the writer. (<a href="https://www.goodreads.com/quotes/835238-indeed-the-ratio-of-time-spent-reading-versus-writing-is">1</a>, <a href="https://devblogs.microsoft.com/oldnewthing/20070406-00/?p=27343">2</a>)</p>
 
-<h1 id="random-other-musings-on-the-subject">Random other musings on the subject</h1>
+<h1 id="random-other-musings-on-the-subject">
+<a class="anchor" href="#random-other-musings-on-the-subject" aria-hidden="true"><span class="octicon octicon-link"></span></a>Random other musings on the subject</h1>
 
 <p>Two quick notes I wanted to pick out of my emails, but which I couldn’t fit anywhere above:</p>
 
@@ -173,7 +185,8 @@ if object != nil &amp;&amp; object.Value != "Something" {
   </li>
 </ul>
 
-<h1 id="conclusion">Conclusion</h1>
+<h1 id="conclusion">
+<a class="anchor" href="#conclusion" aria-hidden="true"><span class="octicon octicon-link"></span></a>Conclusion</h1>
 
 <p>Don’t use assertion libraries. You don’t need them. You never have. You’ve been optimising your codebase for 1 line zingers but making it less readable and more incomprehensible, which slows down debugging and slows down future maintainers.</p>
 
@@ -183,7 +196,8 @@ if object != nil &amp;&amp; object.Value != "Something" {
 
 <p>Don’t use assertion libraries.</p>
 
-  </div><a class="u-url" href="/2022/02/08/assertion-libraries.html" hidden></a>
+  </div>
+<a class="u-url" href="/2022/02/08/assertion-libraries.html" hidden></a>
 </article>
 
       </div>

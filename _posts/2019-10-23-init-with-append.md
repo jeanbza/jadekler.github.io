@@ -3,6 +3,7 @@ layout: post
 title:  "Bad Times Initializing With Append"
 date:   2019-10-23 15:55:23 -0600
 categories: 
+toc: true
 ---
 
 I recently found out as part of [a code review](https://go-review.googlesource.com/c/tools/+/184357)
