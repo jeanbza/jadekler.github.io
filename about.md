@@ -18,3 +18,4 @@ I've also worked on [grpc-go](https://github.com/grpc/grpc-go), [GCP client libr
 Outside of work, I enjoy reading sci-fi and fantasy, writing, climbing, mountain biking, skiing, learning languages, cooking, and spending time with my community.
 
 You can sometimes find me on the [Gophers Slack](https://invite.slack.golangbridge.org/) under the ID deklerk, or by emailing me at [deklerk@google.com](mailto:deklerk@google.com).
+
