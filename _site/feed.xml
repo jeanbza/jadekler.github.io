@@ -1,4 +1,58 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2022-12-05T14:12:29-07:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jean de Klerk</title><subtitle>This is my personal website. The views represented here are my own, and do not represent my employer.</subtitle><entry><title type="html">Interfaces in depth</title><link href="http://localhost:4000/2022/12/05/interfaces.html" rel="alternate" type="text/html" title="Interfaces in depth" /><published>2022-12-05T00:55:23-07:00</published><updated>2022-12-05T00:55:23-07:00</updated><id>http://localhost:4000/2022/12/05/interfaces</id><content type="html" xml:base="http://localhost:4000/2022/12/05/interfaces.html"><![CDATA[<h2 id="foreword">Foreword</h2>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2022-12-07T11:14:26-07:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jean de Klerk</title><subtitle>This is my personal website. The views represented here are my own, and do not represent my employer.</subtitle><entry><title type="html">Engineering resources from Google</title><link href="http://localhost:4000/2022/12/07/google-resources.html" rel="alternate" type="text/html" title="Engineering resources from Google" /><published>2022-12-07T00:55:23-07:00</published><updated>2022-12-07T00:55:23-07:00</updated><id>http://localhost:4000/2022/12/07/google-resources</id><content type="html" xml:base="http://localhost:4000/2022/12/07/google-resources.html"><![CDATA[<h1 id="engineering-resources-from-google">Engineering resources from Google</h1>
+
+<p>This is a collection of extremely useful internal resources, which are made
+publicly available. I thought I’d share these, since they are a bit hard to find
+externally. And, they really are fantastic - years and years of tweaks and
+discussions and refinement have gone into these, from some of the great minds
+of computer science.</p>
+
+<p>So, enjoy, as I have:</p>
+
+<h2 id="the-swe-book">The “SWE book”</h2>
+
+<p><a href="https://abseil.io/resources/swe-book">https://abseil.io/resources/swe-book</a></p>
+
+<p>The “SWE book” - Google Engineering Practices Documentation. A classic.</p>
+
+<h2 id="the-sre-book">The “SRE book”</h2>
+
+<p><a href="https://sre.google/sre-book/table-of-contents/">https://sre.google/sre-book/table-of-contents/</a></p>
+
+<p>Another classic, more on the operation side of things.</p>
+
+<h2 id="how-to-code-review">How to code review</h2>
+
+<p><a href="https://google.github.io/eng-practices/">https://google.github.io/eng-practices/</a></p>
+
+<p>The page is called “Google Engineering Practices Documentation” because the
+internal version is more broad, but the external version has the bits about how
+reviewers and reviewees of code changes should interact. These are <em>fantastic</em>
+guidelines for a healthy engineering culture.</p>
+
+<h2 id="the-go-style-guide">The Go style guide</h2>
+
+<p><a href="https://google.github.io/styleguide/go/">https://google.github.io/styleguide/go/</a></p>
+
+<p>How to write “good” Go code at Google. Some of it is convention, but a lot of it
+is sensical and very well thought out rules of the road when writing Go code.</p>
+
+<p>(I’m biased, having contributed some of these sections!)</p>
+
+<h2 id="other-language-style-guides">Other language style guides</h2>
+
+<p><a href="https://google.github.io/styleguide/">https://google.github.io/styleguide/</a></p>
+
+<p>Well, I mostly care about Go, hence the callout, but here are the other language
+styleguide.</p>
+
+<p>I’ll also call out the C++ as being fantastic. I’ve not used the others as much
+but I expect them all to be of a very high quality.</p>
+
+<h1 id="post-note">Post-note</h1>
+
+<p>I will continue editing this article as I find more. Stay tuned!</p>
+
+<p>(I wonder if this will turn into a “How to re-create Google’s engineering department in your company”… 🤔)</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Engineering resources from Google]]></summary></entry><entry><title type="html">Interfaces in depth</title><link href="http://localhost:4000/2022/12/05/interfaces.html" rel="alternate" type="text/html" title="Interfaces in depth" /><published>2022-12-05T00:55:23-07:00</published><updated>2022-12-05T00:55:23-07:00</updated><id>http://localhost:4000/2022/12/05/interfaces</id><content type="html" xml:base="http://localhost:4000/2022/12/05/interfaces.html"><![CDATA[<h2 id="foreword">Foreword</h2>
 
 <p>A conversation with a colleague inspired a deep dive into the refspec, to gain
 concrete understanding on some things I had until then only had intuitions
@@ -1203,189 +1257,4 @@ gRPC server would look similar.</p>
 <h1 id="conclusion">Conclusion</h1>
 
 <p>Stubbing and mocking gRPC servers in Go is very easy, doesn’t require any
-libraries, and obviates the need for pre-provided fakes/mocks/emulators/etc.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Introduction]]></summary></entry><entry><title type="html">Keeping Your Modules Compatible</title><link href="http://localhost:4000/2020/07/07/keeping-your-modules-compatible.html" rel="alternate" type="text/html" title="Keeping Your Modules Compatible" /><published>2020-07-07T15:55:23-06:00</published><updated>2020-07-07T15:55:23-06:00</updated><id>http://localhost:4000/2020/07/07/keeping-your-modules-compatible</id><content type="html" xml:base="http://localhost:4000/2020/07/07/keeping-your-modules-compatible.html"><![CDATA[<p>Posted at <a href="https://blog.golang.org/module-compatibility">blog.golang.org/module-compatibility</a>.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Posted at blog.golang.org/module-compatibility.]]></summary></entry><entry><title type="html">Binary Search Tree Runtime Complexities</title><link href="http://localhost:4000/2019/11/23/binary-search-tree-runtime-complexity.html" rel="alternate" type="text/html" title="Binary Search Tree Runtime Complexities" /><published>2019-11-23T14:55:23-07:00</published><updated>2019-11-23T14:55:23-07:00</updated><id>http://localhost:4000/2019/11/23/binary-search-tree-runtime-complexity</id><content type="html" xml:base="http://localhost:4000/2019/11/23/binary-search-tree-runtime-complexity.html"><![CDATA[<h1 id="introduction">Introduction</h1>
-
-<p>I’ve recently inundated myself with interview preparation. Along the way, I
-thought a lot about how to intuit runtime complexities for various algorithms.
-I thought that it might be nice to cement it all with an article - both for the
-sake of others, as well as for my sake. This is the first article in that vein,
-strictly dealing with binary search trees.</p>
-
-<h1 id="terminology">Terminology</h1>
-
-<p>Note: This article frequently uses the abbreviation BST to describe binary
-search trees.</p>
-
-<p>Here are properties of trees that this article deals with:</p>
-
-<ul>
-  <li>Number of nodes in a tree is typically denoted <code class="language-plaintext highlighter-rouge">n</code>.</li>
-  <li>Height of a tree is typically denoted <code class="language-plaintext highlighter-rouge">k</code>.</li>
-  <li><a href="https://en.wikipedia.org/wiki/Binary_tree">Complete</a>: every level except
-possibly the last is completely filled.</li>
-  <li><a href="https://en.wikipedia.org/wiki/Binary_tree">Full</a>: every node has 0 or 2
-children. This is a subset of complete: every full tree is a complete tree.</li>
-  <li><a href="https://en.wikipedia.org/wiki/Binary_tree">Balanced</a>: the height of the left
-and right subtrees of every node differ by at most 1. Using the root node as
-our focus, we can intuit that any balanced tree has fairly uniform height.</li>
-  <li><a href="https://en.wikipedia.org/wiki/Binary_search_tree">Binary Search Tree</a>:
-A tree in which each element to the left of a node is guaranteed to be less,
-and to the right guaranteed to be greater. <em>BSTs may not be balanced</em>.</li>
-  <li><a href="https://en.wikipedia.org/wiki/Red%E2%80%93black_tree">Red-black Tree</a>: A BST
-that is balanced.</li>
-  <li><a href="https://en.wikipedia.org/wiki/AVL_tree">AVL Tree</a>: A BST that is balanced (in
-a different way than red-black trees).</li>
-  <li><a href="https://en.wikipedia.org/wiki/Branching_factor">Branching factor</a>: The number
-of children at each node.</li>
-</ul>
-
-<h1 id="searching-a-bst">Searching a BST</h1>
-
-<p>Everyone knows that searching a binary search tree has runtime complexity
-<code class="language-plaintext highlighter-rouge">O(logn)</code>, right? …right? Let’s take a second to tease apart some questions
-from that assertion to see if we really understand what we mean when we say that:</p>
-
-<ul>
-  <li>
-    <p>Q: What is the <a href="https://en.wikipedia.org/wiki/Logarithm">base</a> of the log?</p>
-
-    <p>A: Typically when we talk about the base of a log, we’re talking about 2 or 10.  In the case of a BST case it’s 2 (we’ll dive into why that is shortly).</p>
-  </li>
-  <li>
-    <p>Q: What does <code class="language-plaintext highlighter-rouge">n</code> represent?</p>
-
-    <p>A: <code class="language-plaintext highlighter-rouge">n</code> <em>usually</em> means “number of elements”. In this case, <code class="language-plaintext highlighter-rouge">n</code> does mean that: or, another way to put that is “number of nodes in the tree”.</p>
-  </li>
-</ul>
-
-<p>So, expanding <code class="language-plaintext highlighter-rouge">O(logn)</code>, we have: <code class="language-plaintext highlighter-rouge">O(log2(&lt;# nodes in tree&gt;))</code>.</p>
-
-<p>Well, searching a BST is not strictly <code class="language-plaintext highlighter-rouge">O(log2(n))</code>: it depends on whether the
-BST is balanced or not. An unbalanced BST may be <code class="language-plaintext highlighter-rouge">O(n)</code>. Let’s discover why by
-exploring how the <code class="language-plaintext highlighter-rouge">log2</code> comes about.</p>
-
-<h1 id="logarithms-and-exponents">Logarithms and exponents</h1>
-
-<p>Let’s look at the following <em>full</em> binary tree:</p>
-
-<p><img src="/assets/simple_complete.png" alt="Full Binary Tree" /></p>
-
-<p>We can tell the following about this tree:</p>
-
-<ul>
-  <li>It has height <code class="language-plaintext highlighter-rouge">k=4</code>.</li>
-  <li>It has nodes <code class="language-plaintext highlighter-rouge">n=15</code>.</li>
-</ul>
-
-<p>The number of nodes is the sum of the nodes at each level. The number of nodes
-at each level are powers of 2. So, at <code class="language-plaintext highlighter-rouge">k=4</code> there are,</p>
-
-\[\begin{align*}
-n=1+2+4+8 &amp;&amp; \text{The sum of the nodes at each level.} \\
-n=2^0+2^1+2^2+2^3 &amp;&amp; \text{Represented in powers of 2.} \\
-n=\sum\limits_{j=0}^{k-1} 2^j &amp;&amp; \text{Represented as a summation.} \\
-\end{align*}\]
-
-<p>The branching factor here is 2 - each node has 2 children. What if each child
-had 7 children, or 9, or 21? Let’s re-write the summation with a generic
-branching factor <code class="language-plaintext highlighter-rouge">b</code>:</p>
-
-\[\begin{align*}
-n=\sum\limits_{j=0}^{k-1} 2^j &amp;&amp; \text{Branching factor of 2, as before.} \\
-n=\sum\limits_{j=0}^{k-1} b^j &amp;&amp; \text{Branching factor of b.} \\
-\end{align*}\]
-
-<p>Sums are a bit of nuisance. Let’s convert this sum into a discrete formula:</p>
-
-\[\begin{align*}
-n=\sum\limits_{j=0}^{k-1} b^j \\
-n=b^{k-1}+b^{k-2}+...+1 &amp;&amp; \text{Expanding the sum.} \\
-n \cdot b=(b^{k-1}+b^{k-2}+...+1) \cdot b &amp;&amp; \text{Multiply by b.} \\
-n \cdot b=b^k+b^{k-1}+...+b &amp;&amp; \text{Distribute the b into the sum.} \\
-n \cdot b + 1=b^k+b^{k-1}+...+b+1 &amp;&amp; \text{Add 1 to each side.} \\
-n \cdot b + 1=b^k + n &amp;&amp; \text{Note that we can use n for the right side.} \\
-n \cdot b - n=b^k - 1 &amp;&amp; \text{Move n left; 1 right.} \\
-n \cdot (b - 1)=b^k - 1 &amp;&amp; \text{Factor out n.} \\
-n = \frac{b^k - 1}{b - 1} &amp;&amp; \text{Divide by n-1.} \\
-\end{align*}\]
-
-<p>Let’s test the formula by using <code class="language-plaintext highlighter-rouge">k=4</code> and <code class="language-plaintext highlighter-rouge">b=2</code> again, which we think should
-equal <code class="language-plaintext highlighter-rouge">n=15</code>:</p>
-
-\[\begin{align*}
-n=\frac{2^4-1}{2-1} \\
-n=\frac{16-1}{1} \\
-n=15 \\
-\end{align*}\]
-
-<p>What if we knew the amount of nodes, but not the height? We can rework the
-formula we just came up with to give us height using number of nodes,</p>
-
-\[\begin{align*}
-n=2^k-1 \\
-n+1=2^k &amp;&amp; \text{Move 1 to the left.} \\
-\log_2 {(n+1)}=\log_2 {(2^k)} &amp;&amp; \text{log2 both sides.} \\
-\log_2 {(n+1)}=k \cdot \log_2 2 &amp;&amp; \text{Power rule.} \\
-\log_2 {(n+1)}=k &amp;&amp; \text{Identity rule.} \\
-k=\log_2 {(n+1)}
-\end{align*}\]
-
-<h1 id="back-to-binary-search-trees">Back to binary search trees</h1>
-
-<p>How can we apply this knowledge? Consider again our original topic of a binary
-search tree: one property of a BST is that a search operation requires no
-backtracking. That is: the path to a node always going to go at most to a leaf
-node - it never reaches a leaf and then has to backtrack and try a different
-choice at a former node.</p>
-
-<p>If the BST is unbalanced, the worst case time complexity to search for a value
-is <code class="language-plaintext highlighter-rouge">O(n)</code>. We can easily show that this is the case with the following tree:</p>
-
-<p><img src="/assets/left_bst.png" alt="Left BST" /></p>
-
-<p>This BST is heavily weighted to the right. To search for the value 109, we’d have to
-look at each of the <code class="language-plaintext highlighter-rouge">n=15</code> elements. That is: the worst case time complexity is
-<code class="language-plaintext highlighter-rouge">O(n)</code>.</p>
-
-<p>What if this BST were balanced, instead?</p>
-
-<p><img src="/assets/balanced_bst.png" alt="Balanced BST" /></p>
-
-<p>Now, to search for <em>any</em> value in the BST, the maximum depth we’d need to
-traverse is <code class="language-plaintext highlighter-rouge">k</code>. We know that <code class="language-plaintext highlighter-rouge">k=log2(n)</code>, so we can say that the big-O runtime
-complexity in terms of <code class="language-plaintext highlighter-rouge">n</code> is <code class="language-plaintext highlighter-rouge">O(log2(n))</code>.</p>
-
-<h1 id="in-conclusion">In conclusion</h1>
-
-<p>There are at most <code class="language-plaintext highlighter-rouge">n=(b^k - 1)/(b - 1)</code> nodes in any tree with height <code class="language-plaintext highlighter-rouge">k</code> and
-branching factor <code class="language-plaintext highlighter-rouge">b</code>. In a binary tree, that simplifies to <code class="language-plaintext highlighter-rouge">n=2^k-1</code>, and can
-be re-written in terms of height as <code class="language-plaintext highlighter-rouge">k=log2(n+1)</code>.</p>
-
-<p>To conclude our original question: binary search trees don’t guarantee
-<code class="language-plaintext highlighter-rouge">O(log2(n))</code> search: <em>balanced</em> BSTs do.</p>
-
-<p>In a future article we’ll look at <a href="https://en.wikipedia.org/wiki/Heap_(data_structure)">Heap</a>
-runtime complexity, and how memoization affects that. In some other future
-article we’ll look at backtracking and permutation runtime complexities.</p>
-
-<script type="text/javascript" async="" src="/assets/MathJax-2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
-
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      extensions: [
-        "MathMenu.js",
-        "MathZoom.js",
-        "AssistiveMML.js"
-      ],
-      jax: ["input/TeX", "output/CommonHTML"],
-      TeX: {
-        extensions: [
-          "AMSmath.js",
-          "AMSsymbols.js",
-          "noErrors.js",
-          "noUndefined.js",
-        ]
-      }
-    });
-  </script>]]></content><author><name></name></author><summary type="html"><![CDATA[Introduction]]></summary></entry></feed>
+libraries, and obviates the need for pre-provided fakes/mocks/emulators/etc.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Introduction]]></summary></entry><entry><title type="html">Keeping Your Modules Compatible</title><link href="http://localhost:4000/2020/07/07/keeping-your-modules-compatible.html" rel="alternate" type="text/html" title="Keeping Your Modules Compatible" /><published>2020-07-07T15:55:23-06:00</published><updated>2020-07-07T15:55:23-06:00</updated><id>http://localhost:4000/2020/07/07/keeping-your-modules-compatible</id><content type="html" xml:base="http://localhost:4000/2020/07/07/keeping-your-modules-compatible.html"><![CDATA[<p>Posted at <a href="https://blog.golang.org/module-compatibility">blog.golang.org/module-compatibility</a>.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Posted at blog.golang.org/module-compatibility.]]></summary></entry></feed>
